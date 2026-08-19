@@ -1,6 +1,6 @@
 # AdsBookCMS — Remaining Work and Blockers
 
-> Reviewed against disk: 2026-08-18 @ `0af225b` on `feat/admin-access-dashboard`.
+> Reviewed against disk: 2026-08-18 @ `09812c7` + the current working tree on `feat/admin-access-dashboard`.
 
 This is the single ledger of work that is **not** done. Implemented behaviour belongs in `STATUS.md`, history in `BUILD-LOG.md`, accepted product behaviour in `PRD.md`, real architecture in `ARCHITECTURE.md`, and constraining decisions in `DECISIONS.md`.
 

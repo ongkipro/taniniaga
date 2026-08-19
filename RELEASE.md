@@ -1,6 +1,6 @@
 # Release and Deployment — AdsBookCMS
 
-> Verified against disk: 2026-08-18 @ `0af225b` on `feat/admin-access-dashboard`
+> Verified against disk: 2026-08-18 @ `09812c7` + the current working tree on `feat/admin-access-dashboard`
 
 This document is the single owner of how a change reaches production. It replaces the previous `VERSION.md` runbook and the deleted `AUTO_UPDATE_DEPLOY.md`, which between them described three mutually exclusive release models, none of which matched the one workflow that exists.
 
@@ -49,17 +49,19 @@ npm run check     # astro check && tsc --noEmit
 npm run build     # astro build
 ```
 
-Current verified branch baseline: **401 tests passing**, `tsc` clean, `astro check` 349 files, 0 errors / 0 warnings / 0 hints, and the Cloudflare server build complete. The branch push itself has no hosted CI result because this workflow runs only for `main`, pull requests, or manual dispatch.
+Current verified working-tree baseline: **403 tests passing**, `tsc` clean, `astro check` 350 files, 0 errors / 0 warnings / 0 hints, and the Cloudflare server build complete. The branch push itself has no hosted CI result because this workflow runs only for `main`, pull requests, or manual dispatch.
 
 ### Current production-readiness assessment
 
-Commit `0af225b` is a **release candidate**, not an unconditional full-production
-release. The local automated and browser gates are green, but the following
-release evidence is still missing:
+The current working tree at `09812c7` is a **release candidate**, not an unconditional full-production
+release. The local automated and browser gates are green. Worker `taniniaga`
+was deployed to both production custom domains on 2026-08-18 as Version ID
+`12a51aa8-c86d-41de-8001-4627d704e108`; the remote D1 migration preflight
+subsequently reported no migrations to apply. The deployment source was the
+local install checkout at `~/Projects/taniniaga`. The following release
+evidence is still missing:
 
 - a hosted CI run for the exact commit;
-- an approved production-D1 migration preflight or an explicitly accepted
-  first-request runtime migration;
 - read-only or approved sandbox/live smoke evidence for the active Mengantar
   account's tracking, pickup, and insufficient-wallet responses;
 - the canonical AutoLaris transaction-inquiry endpoint and paid/pending/expired/
@@ -107,13 +109,13 @@ Two registries, currently in step:
 | --- | --- | --- |
 | `src/lib/version.ts` | `version` | `1.2.0` |
 | `src/lib/version.ts` | `releaseTag` | `2026.08-hardened` |
-| `src/lib/version.ts` | `schemaVersion` | `42` |
+| `src/lib/version.ts` | `schemaVersion` | `43` |
 | `package.json` | `version` | `1.2.0` |
 
 `src/lib/version.ts` is what the admin sidebar renders and is the value users
 see. Keep it and `package.json` in step when bumping.
 
-`schemaVersion` counts migration files, and the tree holds 42 (`0000`–`0041`).
+`schemaVersion` counts migration files, and the tree holds 43 (`0000`–`0042`).
 `schema-version.test.ts` fails CI on drift; middleware enforces the same chain at
 runtime; `operational-health.ts` and the dashboard expose applied version.
 
@@ -152,49 +154,19 @@ There is no automated rollback. Options, in order of preference:
 
 ## 7. Updating an install from the product
 
-This repository is the product; a store is a separate repository that shares history with it (ADR-012). Bringing a product change into a live store is therefore a merge followed by a deploy, performed **from the install's checkout**, never from here.
-
-### Two shapes an install can take
-
-**A. A local clone, no repository of its own.** The lightest form, and usually the right one. Clone this repository, point it at the store's resources, deploy. Cloudflare never asks where the code came from, so the store needs no GitHub repository at all — updates are `git pull` from this one.
-
-```bash
-git clone git@github.com:ongkipro/adsbookcms.git toko-b
-cd toko-b
-# edit wrangler.jsonc with this store's Worker name, D1/KV/R2 ids, and domains
-npm ci && npm run build && npx wrangler deploy
-```
-
-**⚠ The hazard specific to this shape:** `origin` is the product. If the install's real `wrangler.jsonc` is committed and pushed, the store's live Worker name, database id, bucket and domains land in the product repository — and the next clone of the product inherits somebody's live infrastructure as its default. Prevent it in the clone:
-
-```bash
-git remote set-url --push origin DISABLED    # pulls still work; pushes fail loudly
-```
-
-Keep the store's configuration as an uncommitted local change, or commit it only on a branch that is never pushed.
-
-**B. Its own repository.** Warranted when a store needs its own history, its own CI, or collaborators who must not see the product. `origin` is then the store, and this repository is added as a second remote named `product`.
-
-Both shapes use the same update procedure below; only the remote name differs.
-
-### One-time setup, per install clone
-
-```bash
-# shape B only — in shape A the product is already `origin`
-git remote add product git@github.com:ongkipro/adsbookcms.git
-
-git config merge.keepours.name "keep the install's own copy"
-git config merge.keepours.driver true
-git check-attr merge -- wrangler.jsonc     # expect: merge: keepours
-```
-
-The merge driver is what stops the product's placeholder `wrangler.jsonc` from replacing the install's real one. Git cannot ship a driver inside a repository, so this configuration lives in each clone and must be repeated on every machine. If it is missing, those files conflict instead — noisy, but safe.
+AdsBookCMS is the upstream product; Tani Niaga is a local install checkout. On this workstation, product changes originate in `~/Projects/adsbookcms`, are pulled or merged into `~/Projects/taniniaga`, adjusted there for the Tani Niaga install, and only then deployed to Cloudflare from `~/Projects/taniniaga`. Never deploy Tani Niaga directly from the upstream AdsBookCMS checkout.
 
 ### The procedure, in this order
 
+For Tani Niaga specifically, every command from merge conflict resolution
+through `wrangler deploy` runs inside `~/Projects/taniniaga`. Its
+`wrangler.jsonc`, bindings, routes, runtime fallbacks, and install-specific
+changes must survive the upstream merge.
+
 ```bash
-git fetch product                       # or `git fetch origin` in shape A
-git merge product/main                  # resolve conflicts; keep the install's config
+cd ~/Projects/taniniaga
+git fetch origin
+git merge origin/main                    # keep and reconcile Tani Niaga config
 npm ci                                  # only if the lockfile moved
 npm run check && npm test               # gates, before touching anything live
 npm run build                           # identity is runtime-owned; this is code only

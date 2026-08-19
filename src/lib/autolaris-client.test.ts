@@ -80,6 +80,46 @@ test("provider-locked AutoLaris channels fail before an outbound payment request
   assert.equal(providerCalls, 0);
 });
 
+test("AutoLaris payment creation pins courir_id to one", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  let requestUrl = "";
+  let requestBody: Record<string, unknown> = {};
+  globalThis.fetch = async (input, init) => {
+    requestUrl = String(input);
+    requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    return Response.json({
+      rc: "00",
+      data: {
+        trx_id: "TRX-QA-1",
+        amount: 100_000,
+        admin: 1_000,
+        total: 101_000,
+      },
+    });
+  };
+
+  await new AutoLarisClient(
+    "qa-key",
+    "https://autolaris.example.test",
+  ).createPayment({
+    reffId: "INV-QA-1",
+    channelCode: "QRIS",
+    customerId: "1",
+    customerName: "QA Customer",
+    customerPhone: "6281234567890",
+    customerEmail: "qa@example.test",
+    amount: 100_000,
+    callbackUrl: "https://store.example.test/api/webhooks/autolaris",
+  });
+
+  assert.equal(requestUrl, "https://autolaris.example.test/api/h2h/create_payment");
+  assert.equal(requestBody.courir_id, 1);
+});
+
 test("test-autolaris returns the exact unsupported contract without leaking or probing credentials", async (context) => {
   const originalFetch = globalThis.fetch;
   context.after(() => {

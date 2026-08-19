@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
+import { readFileSync } from "node:fs";
 
 import { planInstall, runInstall, slugFromStoreName } from "./install.ts";
 import { verifyPasswordHash } from "./auth.ts";
@@ -55,6 +56,14 @@ function sqliteD1() {
       id INTEGER PRIMARY KEY, name TEXT NOT NULL, slug TEXT NOT NULL,
       site_url TEXT, tagline TEXT, locale TEXT, storefront_template TEXT,
       admin_name TEXT, support_whatsapp TEXT, created_at TEXT NOT NULL
+    );
+    CREATE TABLE courier_rules (
+      id INTEGER PRIMARY KEY,
+      store_id INTEGER NOT NULL,
+      courier_code TEXT NOT NULL,
+      is_enabled INTEGER NOT NULL DEFAULT 1,
+      is_cod_enabled INTEGER NOT NULL DEFAULT 1,
+      excluded_provinces TEXT
     );
     CREATE TABLE admin_credentials (
       id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE,
@@ -181,7 +190,11 @@ test("the install writes the store and the credential together", async () => {
       };
     },
     async batch() {
-      return [{ meta: { changes: 1 } }, { meta: { changes: 1 } }];
+      return [
+        { meta: { changes: 1 } },
+        { meta: { changes: 10 } },
+        { meta: { changes: 1 } },
+      ];
     },
   } as unknown as D1Database;
 
@@ -192,8 +205,8 @@ test("the install writes the store and the credential together", async () => {
   const result = await runInstall(database, planned.plan);
   assert.equal(result.ok, true);
 
-  const [seatCheck, storeInsert, credentialUpdate] = statements;
-  assert.equal(statements.length, 3, "one seat check, then a batch of two");
+  const [seatCheck, storeInsert, courierInsert, credentialUpdate] = statements;
+  assert.equal(statements.length, 4, "one seat check, then a batch of three");
   assert.match(seatCheck, /COUNT\(\*\).+FROM admin_credentials/s);
   assert.match(storeInsert, /INSERT INTO stores/);
   assert.match(
@@ -201,6 +214,7 @@ test("the install writes the store and the credential together", async () => {
     /WHERE NOT EXISTS/,
     "a concurrent submission must not be able to create a second store",
   );
+  assert.match(courierInsert, /INSERT INTO courier_rules/);
   assert.match(credentialUpdate, /UPDATE admin_credentials/);
   assert.match(
     credentialUpdate,
@@ -227,7 +241,11 @@ test("a second install finds nothing left to do", async () => {
     }),
     // changes: 0 is what `WHERE NOT EXISTS` produces once a store row exists.
     async batch() {
-      return [{ meta: { changes: 0 } }, { meta: { changes: 1 } }];
+      return [
+        { meta: { changes: 0 } },
+        { meta: { changes: 0 } },
+        { meta: { changes: 0 } },
+      ];
     },
   } as unknown as D1Database;
 
@@ -281,6 +299,45 @@ test("a second install cannot take the admin account from the first", async () =
     total: number;
   };
   assert.equal(stores.total, 1);
+  const couriers = raw.prepare("SELECT COUNT(*) AS total FROM courier_rules").get() as {
+    total: number;
+  };
+  assert.equal(couriers.total, 10);
+});
+
+test("courier defaults backfill existing stores without replacing operator choices", () => {
+  const database = new DatabaseSync(":memory:");
+  database.exec(`
+    CREATE TABLE stores (id INTEGER PRIMARY KEY, name TEXT NOT NULL);
+    CREATE TABLE courier_rules (
+      id INTEGER PRIMARY KEY,
+      store_id INTEGER NOT NULL,
+      courier_code TEXT NOT NULL,
+      is_enabled INTEGER NOT NULL DEFAULT 1,
+      is_cod_enabled INTEGER NOT NULL DEFAULT 1,
+      excluded_provinces TEXT
+    );
+    INSERT INTO stores (id, name) VALUES (1, 'Existing Store');
+  `);
+
+  const migration = readFileSync(
+    new URL("../db/migrations/0042_default_courier_rules.sql", import.meta.url),
+    "utf8",
+  );
+  database.exec(migration);
+  database
+    .prepare("UPDATE courier_rules SET is_enabled = 0 WHERE courier_code = 'JNE'")
+    .run();
+  database.exec(migration);
+
+  const count = database
+    .prepare("SELECT COUNT(*) AS total FROM courier_rules")
+    .get() as { total: number };
+  const jne = database
+    .prepare("SELECT is_enabled FROM courier_rules WHERE courier_code = 'JNE'")
+    .get() as { is_enabled: number };
+  assert.equal(count.total, 10);
+  assert.equal(jne.is_enabled, 0);
 });
 
 test("an install with no seeded credential row refuses instead of bricking", async () => {

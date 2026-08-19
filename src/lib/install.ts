@@ -130,11 +130,11 @@ export function planInstall(
 }
 
 /**
- * Writes the install. Both statements go through `batch()` so the store row and
- * the credential land together or not at all — the half-installed state this
- * guards against is the one an operator cannot diagnose.
+ * Writes the install. Every statement goes through `batch()` so the store,
+ * courier defaults, and credential land together or not at all — preventing
+ * a half-installed state that an operator cannot diagnose.
  *
- * Both statements are guarded, and that is not belt-and-braces. Guarding only
+ * Every write is guarded, and that is not belt-and-braces. Guarding only
  * the store insert left the credential UPDATE unconditional: a zero-row insert
  * is not an error, so D1 kept the batch, the second submission was told
  * "already installed" — and had nonetheless just replaced the operator's
@@ -172,7 +172,7 @@ export async function runInstall(
   }
 
   try {
-    const [storeResult, credentialResult] = await database.batch([
+    const [storeResult, courierResult, credentialResult] = await database.batch([
       database
         .prepare(
           `INSERT INTO stores (name, slug, site_url, tagline, locale, storefront_template, admin_name, support_whatsapp, created_at)
@@ -190,6 +190,41 @@ export async function runInstall(
           plan.supportWhatsapp || null,
           now,
         ),
+      database.prepare(`
+        WITH defaults(courier_code) AS (
+          VALUES
+            ('JNE'),
+            ('SiCepat'),
+            ('J&T'),
+            ('SAP'),
+            ('Ninja'),
+            ('Anteraja'),
+            ('Lion'),
+            ('IDexpress'),
+            ('Paxel'),
+            ('Pos')
+        )
+        INSERT INTO courier_rules (
+          store_id,
+          courier_code,
+          is_enabled,
+          is_cod_enabled
+        )
+        SELECT stores.id, defaults.courier_code, 1, 1
+        FROM stores
+        CROSS JOIN defaults
+        WHERE EXISTS (
+          SELECT 1
+          FROM admin_credentials
+          WHERE must_change_password = 1
+        )
+          AND NOT EXISTS (
+            SELECT 1
+            FROM courier_rules
+            WHERE courier_rules.store_id = stores.id
+              AND lower(courier_rules.courier_code) = lower(defaults.courier_code)
+          )
+      `),
       database
         .prepare(
           `UPDATE admin_credentials
@@ -200,7 +235,11 @@ export async function runInstall(
         .bind(plan.adminUsername, passwordHash, now),
     ]);
 
-    if (!storeResult.meta.changes || !credentialResult.meta.changes) {
+    if (
+      !storeResult.meta.changes ||
+      courierResult.meta.changes !== 10 ||
+      !credentialResult.meta.changes
+    ) {
       return { ok: false, error: "Instalasi sudah pernah diselesaikan." };
     }
     return { ok: true };

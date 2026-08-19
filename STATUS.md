@@ -1,11 +1,11 @@
 # STATUS — AdsBookCMS
 
-> Last executed baseline: 2026-08-18 @ `5cb1d32` + the A15 working tree.
+> Last executed baseline: 2026-08-18 @ `09812c7` + the current working tree.
 > `main` was re-founded as AdsBookCMS and its history rewritten (ADR-012), so the
 > commit range this document once cited no longer exists on this branch; the
 > previous 61 commits are preserved on `backup/pre-history-rewrite`. Gates re-run
-> on the current tree, not inherited: `npm run check` 349 files / 0 errors /
-> 0 warnings / 0 hints · `npm test` 401 / 401 · `npm run build` Cloudflare server
+> on the current tree, not inherited: `npm run check` 350 files / 0 errors /
+> 0 warnings / 0 hints · `npm test` 403 / 403 · `npm run build` Cloudflare server
 > bundle complete.
 
 Current state of the system. Implemented behaviour lives here; history lives in `BUILD-LOG.md`; remaining work lives in `UNIMPLEMENTED_SPECS.md`; structure lives in `ARCHITECTURE.md`.
@@ -22,7 +22,7 @@ The previous version of this file described a different repository — it opened
 | Repository role | **Product.** Deploys nothing; CI runs check, test and build only |
 | Install model | 1 installer = 1 Worker = 1 store (ADR-001) |
 | Version | `1.2.0` / `2026.08-hardened` (`src/lib/version.ts`) |
-| Schema | 42 migration files, `0000`-`0041` |
+| Schema | 43 migration files, `0000`-`0042` |
 | Bindings | `OMS_DB` (D1), `SESSION` (KV), `ASSET_BUCKET` (R2), `AI`, `ASSETS` — names fixed across installs |
 | `wrangler.jsonc` | template of placeholders; each install supplies its own resources |
 
@@ -31,6 +31,7 @@ The previous version of this file described a different repository — it opened
 | Install | Repository | Notes |
 | --- | --- | --- |
 | `permatamall.shop` | `ongkipro/permatamall` | First install. Holds its own catalogue in its own database; nothing is bundled here any more (ADR-016). Its Cloudflare resources keep legacy `cmsads-*` names |
+| `taniniaga.shop` | Local install checkout `~/Projects/taniniaga` | Worker `taniniaga`, deployed from this checkout as Version ID `12a51aa8-c86d-41de-8001-4627d704e108` on 2026-08-18 |
 
 As of the split on 2026-08-16, the fixes recorded below live in this repository. Whether and when an install adopts them is that install's own deploy decision.
 
@@ -40,10 +41,11 @@ As of the split on 2026-08-16, the fixes recorded below live in this repository.
 
 | Gate | Result |
 | --- | --- |
-| `npm test` | **401 / 401 passing** |
-| `npm run check` | 349 files · 0 errors · 0 warnings · 0 hints |
-| `npm run build` | Cloudflare server bundle complete; 42 bundled migrations |
-| Browser smoke | `/admin/orders/abandoned` and the order buyer/address editor were exercised in an isolated authenticated Worker at 390, 768, and 1280 CSS px with zero root overflow. A controlled populated lead proved field-level focus, the exact ABN-to-INV payload, redirect intent, and dirty-field-only buyer edits. Provider boundaries were intercepted; no live provider request, deployment, or remote D1 mutation occurred. |
+| `npm test` | **403 / 403 passing** |
+| `npm run check` | 350 files · 0 errors · 0 warnings · 0 hints |
+| `npm run build` | Cloudflare server bundle complete; 43 bundled migrations |
+| Browser smoke | `/admin/orders/abandoned` and the order buyer/address editor were exercised in an isolated authenticated Worker at 390, 768, and 1280 CSS px with zero root overflow. A controlled populated lead proved field-level focus, the exact ABN-to-INV payload, redirect intent, and dirty-field-only buyer edits. `/admin/expeditions` was also exercised after a fresh local install at 390 and 1280 CSS px: all 10 default couriers rendered, the empty state stayed absent, and mobile had zero root overflow. Provider boundaries were intercepted; no live provider request, deployment, or remote D1 mutation occurred. |
+| Production deployment | Worker `taniniaga` deployed to `taniniaga.shop` and `www.taniniaga.shop` on 2026-08-18 as Version ID `12a51aa8-c86d-41de-8001-4627d704e108`; startup time 30 ms. Remote D1 reported `No migrations to apply!` after the first production request. A 1280 CSS px browser smoke rendered `https://taniniaga.shop/` with the configured Tani Niaga identity and zero root overflow. No checkout, provider side effect, or remote data mutation was exercised. |
 
 ---
 
@@ -78,7 +80,7 @@ Known data issues, all tracked:
 
 - The local development D1 may hold a previously provisioned warehouse row with address, phone, and Mengantar identifiers. Remote state was not read and is explicitly unverified; any local or remote scrub is a separate destructive-data decision.
 - No seed ships. `scripts/seed-catalog.sql`, `public/images/products/` and `db:reset:demo:local` were removed on 2026-08-17 (ADR-016); whether to reintroduce sample data, and in what form, is deferred rather than decided against. The earlier `src/db/seed.sql`, which held two previous merchants' catalogs plus genuine-looking provider ids, a real address and a real phone number, was deleted on 2026-08-16.
-- Migration `0017` once aborted the chain on an empty database; that insert was removed 2026-08-16. All 42 migrations now apply from zero, and the Worker applies a valid missing suffix automatically before database-backed requests. Migration `0040` adds persisted provider status text, provider event time, and synchronization time to `orders`; migration `0041` adds persisted missed-order follow-up state.
+- Migration `0017` once aborted the chain on an empty database; that insert was removed 2026-08-16. All 43 migrations now apply from zero, and the Worker applies a valid missing suffix automatically before database-backed requests. Migration `0040` adds persisted provider status text, provider event time, and synchronization time to `orders`; migration `0041` adds persisted missed-order follow-up state; migration `0042` backfills the ten default courier rules for existing stores.
 
 ---
 
@@ -122,7 +124,8 @@ System-wide security, correctness, documentation, navigation, and UX audit:
 | Medium | Theme colour, locale, and admin display name resolve from D1 but still lack complete admin editors. |
 | Medium | External uptime checks and a cross-install operational view do not exist; per-install schema/CAPI alerting does. |
 | Blocked | Mengantar tracking, pickup, insufficient-wallet recovery, and wallet balance still require canonical provider contracts or explicitly approved sandbox/live evidence. |
-| Release evidence | Commit `0af225b` has local test/check/build and authenticated browser evidence, but no hosted CI result, production-D1 preflight, or install-specific provider smoke. |
+| Release evidence | Working tree at `09812c7` has 403 passing tests, clean 350-file check, successful build and dry-run, production deployment Version ID `12a51aa8-c86d-41de-8001-4627d704e108`, remote D1 with no pending migrations, and a public storefront browser smoke. Hosted CI and install-specific provider smoke remain missing. |
+| AutoLaris request contract | Payment creation now pins the provider-spelled `courir_id` field to integer `1`; a focused regression test captures the outbound payload. Scheduled status reconciliation remains blocked by the missing canonical inquiry contract above. |
 | Data note | Local/remote D1 may still contain a previously provisioned warehouse address, phone, and provider ObjectIds; scrubbing it is a separate destructive/remote-data action |
 
 ---

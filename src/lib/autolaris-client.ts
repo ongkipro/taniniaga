@@ -202,6 +202,7 @@ export class AutoLarisClient {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          courir_id: 1,
           reff_id: input.reffId,
           channel_code: input.channelCode,
           customer_id: input.customerId,
