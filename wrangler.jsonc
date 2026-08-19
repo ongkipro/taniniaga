@@ -18,11 +18,11 @@
 
   // Globally unique within the Cloudflare account. Placeholder values below are
   // syntactically valid so tooling runs on a fresh clone — they are NOT a target.
-  "name": "adsbookcms-your-store",
+  "name": "taniniaga",
   "main": "./src/worker.ts",
 
 
-  "compatibility_date": "2026-08-01",
+  "compatibility_date": "2026-08-18",
   "compatibility_flags": [
     "nodejs_compat"
   ],
@@ -57,21 +57,21 @@
   "kv_namespaces": [
     {
       "binding": "SESSION",
-      "id": "00000000000000000000000000000000"
+      "id": "f760e8f3724a44438fd7ed0d76ac9cf4"
     }
   ],
   "d1_databases": [
     {
       "binding": "OMS_DB",
-      "database_name": "adsbookcms-your-store-d1",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_name": "taniniaga-d1",
+      "database_id": "925955e5-44b8-4cc8-8f23-272429936038",
       "migrations_dir": "src/db/migrations"
     }
   ],
   "r2_buckets": [
     {
       "binding": "ASSET_BUCKET",
-      "bucket_name": "adsbookcms-your-store-assets"
+      "bucket_name": "taniniaga-assets"
     }
   ],
   "ai": {
@@ -88,11 +88,11 @@
 
   "routes": [
     {
-      "pattern": "example.com",
+      "pattern": "taniniaga.shop",
       "custom_domain": true
     },
     {
-      "pattern": "www.example.com",
+      "pattern": "www.taniniaga.shop",
       "custom_domain": true
     }
   ],
@@ -101,8 +101,8 @@
   // change here only takes effect after `npm run build`. Redeploying an already
   // built bundle with new vars changes nothing. See ARCHITECTURE.md §5.
   "vars": {
-    "PUBLIC_SITE_NAME": "Your Store",
-    "PUBLIC_SITE_URL": "https://example.com",
+    "PUBLIC_SITE_NAME": "Tani Niaga",
+    "PUBLIC_SITE_URL": "https://taniniaga.shop",
     // Deliberately empty, like the tagline below. A placeholder here becomes
     // the meta description Google prints under the store, and the second half
     // of the home page <title>.
@@ -111,8 +111,8 @@
     // every unconfigured store's <title>, which is how a fresh install came to
     // announce itself as "Toko Anda — Belum Dikonfigurasi".
     "PUBLIC_SITE_TAGLINE": "",
-    "PUBLIC_ADMIN_NAME": "AdsBookCMS Admin",
-    "PUBLIC_EMBED_ALLOWED_ORIGINS": "https://example.com",
+    "PUBLIC_ADMIN_NAME": "Tani Niaga Admin",
+    "PUBLIC_EMBED_ALLOWED_ORIGINS": "https://taniniaga.shop",
 
     // Root-relative or absolute. Replace the placeholder wordmark in
     // public/images/ with the store's own brand assets.
