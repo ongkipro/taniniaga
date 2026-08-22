@@ -154,7 +154,7 @@ test("a store that has never taken a gateway payment is unknown", () => {
     {
       rowsScanned: 0,
       lastOutboundAt: null,
-      lastCallbackAt: null,
+      lastManualConfirmationAt: null,
       failedInWindow: 0,
     },
     NOW,
@@ -168,13 +168,17 @@ test("payments created but not yet paid is nobody paid today, not an outage", ()
     {
       rowsScanned: 9,
       lastOutboundAt: minutesAgo(10),
-      lastCallbackAt: null,
+      lastManualConfirmationAt: null,
       failedInWindow: 0,
     },
     NOW,
   );
-  assert.equal(health.state, "unknown");
-  assert.equal(health.reason, "awaiting-first-callback");
+  // The test's own title says it: this is not an outage. The provider has
+  // accepted requests, so there is data; "unknown" rendered as "Belum ada
+  // data" beside a column of real transactions. Healthy, awaiting an operator
+  // step the reason already names.
+  assert.equal(health.state, "healthy");
+  assert.equal(health.reason, "awaiting-first-manual-confirmation");
   assert.equal(health.ageMinutes, 10, "outbound contact is still reported");
 });
 
@@ -183,7 +187,7 @@ test("create-payment calls that all failed are degraded", () => {
     {
       rowsScanned: 9,
       lastOutboundAt: null,
-      lastCallbackAt: null,
+      lastManualConfirmationAt: null,
       failedInWindow: 9,
     },
     NOW,
@@ -192,18 +196,18 @@ test("create-payment calls that all failed are degraded", () => {
   assert.equal(health.reason, "create-failing");
 });
 
-test("a received callback proves both directions and reads healthy", () => {
+test("an audited manual confirmation reports the last verified payment", () => {
   const health = classifyAutoLaris(
     {
       rowsScanned: 9,
       lastOutboundAt: minutesAgo(90),
-      lastCallbackAt: minutesAgo(3),
+      lastManualConfirmationAt: minutesAgo(3),
       failedInWindow: 1,
     },
     NOW,
   );
   assert.equal(health.state, "healthy");
-  assert.equal(health.reason, "callback-received");
+  assert.equal(health.reason, "manually-confirmed");
   assert.equal(health.ageMinutes, 3);
 });
 

@@ -76,8 +76,9 @@ export const GET: APIRoute = async ({ request, url, locals }) => {
       courier_service: rate.courier_service,
       name: rate.is_fallback ? "ICO · Estimasi rata-rata kota" : rate.courier_code,
       shipment_provider_code: rate.courier_code,
-      shipping_cost:
-        rate.price + (paymentMethod === "cod" ? Number(rate.cod_fee || 0) : 0),
+      // See the COD fee note in `shipping-quote.ts`: the provider figure is
+      // displayed, never billed here.
+      shipping_cost: rate.price,
       estimated_days: rate.estimated_days,
       unsupported: rate.unsupported,
       unsupported_cod: rate.unsupported_cod,
@@ -99,6 +100,17 @@ export const GET: APIRoute = async ({ request, url, locals }) => {
     );
   } catch (error) {
     const quoteError = error instanceof ShippingQuoteError ? error : null;
+    if (!quoteError) {
+      // The provider's own message is the only thing that says why a quote
+      // failed, and MengantarClient already redacts the key out of it. This
+      // catch used to drop it, so a store could stop quoting shipping with
+      // nothing whatsoever in Workers Logs. Expected ShippingQuoteError
+      // conditions stay unlogged; they are buyer-facing states, not faults.
+      console.error(
+        "shipping-rates",
+        error instanceof Error ? error.message : error,
+      );
+    }
     return new Response(
       JSON.stringify({
         success: false,

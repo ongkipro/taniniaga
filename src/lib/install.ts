@@ -30,6 +30,30 @@ export interface InstallPlan {
   storefrontTemplate: string;
 }
 
+/**
+ * The provider-neutral courier catalogue shown to a new operator. Availability
+ * still depends on the live quote returned for the configured warehouse and
+ * destination; these rows only let the operator explicitly narrow that result.
+ * Paxel COD stays off because that was the existing product policy before the
+ * demo seed that carried these rows was removed.
+ */
+export const DEFAULT_COURIER_RULES = [
+  { code: "JNE", cod: 1 },
+  { code: "SiCepat", cod: 1 },
+  { code: "J&T", cod: 1 },
+  { code: "SAP", cod: 1 },
+  { code: "Ninja", cod: 1 },
+  { code: "Anteraja", cod: 1 },
+  { code: "Lion", cod: 1 },
+  { code: "IDexpress", cod: 1 },
+  { code: "Paxel", cod: 0 },
+  { code: "Pos", cod: 1 },
+] as const;
+
+const defaultCourierValues = DEFAULT_COURIER_RULES.map(
+  (rule) => `('${rule.code.replace("'", "''")}', 1, ${rule.cod})`,
+).join(",\n");
+
 const LOCALE_PATTERN = /^[a-z]{2}(?:-[A-Z]{2})?$/;
 
 function text(value: unknown, max: number): string {
@@ -130,11 +154,11 @@ export function planInstall(
 }
 
 /**
- * Writes the install. Every statement goes through `batch()` so the store,
- * courier defaults, and credential land together or not at all — preventing
- * a half-installed state that an operator cannot diagnose.
+ * Writes the install. All statements go through `batch()` so the store row,
+ * credential, and default courier catalogue land together or not at all — the half-installed state this
+ * guards against is the one an operator cannot diagnose.
  *
- * Every write is guarded, and that is not belt-and-braces. Guarding only
+ * The store and credential statements are guarded, and that is not belt-and-braces. Guarding only
  * the store insert left the credential UPDATE unconditional: a zero-row insert
  * is not an error, so D1 kept the batch, the second submission was told
  * "already installed" — and had nonetheless just replaced the operator's
@@ -172,7 +196,7 @@ export async function runInstall(
   }
 
   try {
-    const [storeResult, courierResult, credentialResult] = await database.batch([
+    const [storeResult, credentialResult] = await database.batch([
       database
         .prepare(
           `INSERT INTO stores (name, slug, site_url, tagline, locale, storefront_template, admin_name, support_whatsapp, created_at)
@@ -190,41 +214,6 @@ export async function runInstall(
           plan.supportWhatsapp || null,
           now,
         ),
-      database.prepare(`
-        WITH defaults(courier_code) AS (
-          VALUES
-            ('JNE'),
-            ('SiCepat'),
-            ('J&T'),
-            ('SAP'),
-            ('Ninja'),
-            ('Anteraja'),
-            ('Lion'),
-            ('IDexpress'),
-            ('Paxel'),
-            ('Pos')
-        )
-        INSERT INTO courier_rules (
-          store_id,
-          courier_code,
-          is_enabled,
-          is_cod_enabled
-        )
-        SELECT stores.id, defaults.courier_code, 1, 1
-        FROM stores
-        CROSS JOIN defaults
-        WHERE EXISTS (
-          SELECT 1
-          FROM admin_credentials
-          WHERE must_change_password = 1
-        )
-          AND NOT EXISTS (
-            SELECT 1
-            FROM courier_rules
-            WHERE courier_rules.store_id = stores.id
-              AND lower(courier_rules.courier_code) = lower(defaults.courier_code)
-          )
-      `),
       database
         .prepare(
           `UPDATE admin_credentials
@@ -233,13 +222,27 @@ export async function runInstall(
              AND must_change_password = 1`,
         )
         .bind(plan.adminUsername, passwordHash, now),
+      database
+        .prepare(
+          `INSERT INTO courier_rules (
+             store_id, courier_code, is_enabled, is_cod_enabled, excluded_provinces
+           )
+           WITH defaults(courier_code, is_enabled, is_cod_enabled) AS (
+             VALUES ${defaultCourierValues}
+           )
+           SELECT store.id, defaults.courier_code, defaults.is_enabled,
+                  defaults.is_cod_enabled, NULL
+           FROM stores AS store
+           CROSS JOIN defaults
+           WHERE store.slug = ?
+             AND NOT EXISTS (
+               SELECT 1 FROM courier_rules WHERE store_id = store.id
+             )`,
+        )
+        .bind(plan.slug),
     ]);
 
-    if (
-      !storeResult.meta.changes ||
-      courierResult.meta.changes !== 10 ||
-      !credentialResult.meta.changes
-    ) {
+    if (!storeResult.meta.changes || !credentialResult.meta.changes) {
       return { ok: false, error: "Instalasi sudah pernah diselesaikan." };
     }
     return { ok: true };

@@ -3,12 +3,22 @@ import test from "node:test";
 import {
   AutoLarisClient,
   autoLarisChannelLockReason,
+  type AutoLarisCreatePaymentInput,
   resolveDisabledAutoLarisChannels,
 } from "./autolaris-client.ts";
 import { POST as updateSettings } from "../pages/api/admin/settings.ts";
 
-const UNAVAILABLE_MESSAGE =
-  "API Key AutoLaris tersimpan, tetapi tidak dapat diverifikasi otomatis karena kontrak yang tersedia tidak menyediakan endpoint baca-saja. Tidak ada permintaan ke AutoLaris yang dikirim.";
+const VERIFIED_MESSAGE = "Koneksi AutoLaris aktif: 3 channel tersedia.";
+
+const CHANNEL_CATALOGUE = {
+  rc: "00",
+  ket: "Sukses",
+  data: [
+    { channel_code: "QRIS", name: "QRIS", admin: "0.7", tipe_admin: "persen" },
+    { channel_code: "VABCA", name: "Bank BCA", admin: "6500.0", tipe_admin: "fix" },
+    { channel_code: "VABNI", name: "Bank BNI", admin: "3000.0", tipe_admin: "fix" },
+  ],
+};
 
 const PROVIDER_CONFIG_ROW = {
   mengantar_api_key: null,
@@ -17,16 +27,35 @@ const PROVIDER_CONFIG_ROW = {
   autolaris_base_url: "https://autolaris.example.test",
 } as const;
 
-test("AutoLaris credential verification is explicitly unsupported and makes no provider request", async (context) => {
+const CREATE_PAYMENT_INPUT = {
+  reffId: "10001",
+  channelCode: "QRIS",
+  customerId: "42",
+  customerName: "QA Customer",
+  customerPhone: "081331000000",
+  customerEmail: "qa@example.test",
+  // 10:00 WIB, so the provider-facing `expired` proves the timezone shift.
+  expiresAt: new Date("2026-08-20T03:00:00.000Z"),
+  amount: 118_400,
+  callbackUrl: "https://store.example.test/api/webhooks/autolaris",
+} as const satisfies AutoLarisCreatePaymentInput;
+
+test("AutoLaris credential verification reads the provider channel catalogue", async (context) => {
   const originalFetch = globalThis.fetch;
   context.after(() => {
     globalThis.fetch = originalFetch;
   });
 
-  let providerCalls = 0;
-  globalThis.fetch = async () => {
-    providerCalls += 1;
-    return new Response(JSON.stringify({ ket: "server error" }), { status: 500 });
+  let requestedUrl = "";
+  let requestedMethod = "";
+  let sentAuthorization = "";
+  globalThis.fetch = async (input, init) => {
+    requestedUrl = String(input);
+    requestedMethod = String(init?.method || "GET");
+    sentAuthorization = String(
+      new Headers(init?.headers).get("Authorization") || "",
+    );
+    return Response.json(CHANNEL_CATALOGUE);
   };
 
   const result = await new AutoLarisClient(
@@ -35,11 +64,33 @@ test("AutoLaris credential verification is explicitly unsupported and makes no p
   ).verifyCredentials();
 
   assert.deepEqual(result, {
-    verified: false,
-    verificationSupported: false,
-    message: UNAVAILABLE_MESSAGE,
+    verified: true,
+    verificationSupported: true,
+    channels: ["QRIS", "VABCA", "VABNI"],
+    message: VERIFIED_MESSAGE,
   });
-  assert.equal(providerCalls, 0);
+  // list_payment is the one AutoLaris read that creates nothing.
+  assert.equal(requestedUrl, "https://autolaris.example.test/api/h2h/list_payment");
+  assert.equal(requestedMethod, "GET");
+  assert.equal(sentAuthorization, "Bearer autolaris-secret-must-not-leak");
+});
+
+test("AutoLaris credential verification reports a rejected key without throwing", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  globalThis.fetch = async () =>
+    Response.json({ rc: "01", ket: "Invalid parameter", data: [] });
+
+  const result = await new AutoLarisClient(
+    "wrong-key",
+    "https://autolaris.example.test",
+  ).verifyCredentials();
+
+  assert.equal(result.verified, false);
+  assert.equal(result.verificationSupported, true);
+  assert.match(result.message, /invalid parameter/i);
 });
 
 test("provider-locked AutoLaris channels cannot be removed from the disabled policy", () => {
@@ -66,70 +117,170 @@ test("provider-locked AutoLaris channels fail before an outbound payment request
 
   await assert.rejects(
     new AutoLarisClient("qa-key").createPayment({
-      reffId: "INV-QA-LOCKED",
+      ...CREATE_PAYMENT_INPUT,
       channelCode: "VABSI",
-      customerId: "1",
-      customerName: "QA Customer",
-      customerPhone: "6281234567890",
-      customerEmail: "qa@example.test",
-      amount: 100_000,
-      callbackUrl: "https://store.example.test/api/webhooks/autolaris",
     }),
     /tidak aktif di provider/i,
   );
   assert.equal(providerCalls, 0);
 });
 
-test("AutoLaris payment creation pins courir_id to one", async (context) => {
+test("AutoLaris online checkout creates a payment and never a shipment", async (context) => {
   const originalFetch = globalThis.fetch;
   context.after(() => {
     globalThis.fetch = originalFetch;
   });
 
-  let requestUrl = "";
-  let requestBody: Record<string, unknown> = {};
+  let requestedUrl = "";
+  let requestedBody: Record<string, unknown> | undefined;
   globalThis.fetch = async (input, init) => {
-    requestUrl = String(input);
-    requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    requestedUrl = String(input);
+    requestedBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
     return Response.json({
       rc: "00",
+      ket: "Sukses",
       data: {
-        trx_id: "TRX-QA-1",
-        amount: 100_000,
-        admin: 1_000,
-        total: 101_000,
+        trx_id: "874546",
+        virtual_account: "",
+        qr: "000201010212...",
+        payment_code: "",
+        url: "",
+        amount: 118_400,
+        admin: 84,
+        total: 118_484,
       },
     });
   };
 
-  await new AutoLarisClient(
+  const payment = await new AutoLarisClient(
     "qa-key",
     "https://autolaris.example.test",
-  ).createPayment({
-    reffId: "INV-QA-1",
-    channelCode: "QRIS",
-    customerId: "1",
-    customerName: "QA Customer",
-    customerPhone: "6281234567890",
-    customerEmail: "qa@example.test",
-    amount: 100_000,
-    callbackUrl: "https://store.example.test/api/webhooks/autolaris",
-  });
+  ).createPayment(CREATE_PAYMENT_INPUT);
 
-  assert.equal(requestUrl, "https://autolaris.example.test/api/h2h/create_payment");
-  assert.equal(requestBody.courir_id, 1);
+  assert.equal(
+    requestedUrl,
+    "https://autolaris.example.test/api/h2h/create_payment",
+  );
+  // No origin, destination, courier or parcel field may reach the gateway:
+  // shipping is Mengantar's, and /submit would register a shipment nobody ships.
+  assert.deepEqual(requestedBody, {
+    reff_id: "10001",
+    channel_code: "QRIS",
+    customer_id: "42",
+    customer_name: "QA Customer",
+    customer_phone: "081331000000",
+    customer_email: "qa@example.test",
+    expired: "20260820100000",
+    amount: "118400",
+    callback_url: "https://store.example.test/api/webhooks/autolaris",
+  });
+  assert.deepEqual(payment, {
+    transactionId: "874546",
+    virtualAccount: undefined,
+    qr: "000201010212...",
+    paymentCode: undefined,
+    url: undefined,
+    amount: 118_400,
+    admin: 84,
+    total: 118_484,
+  });
 });
 
-test("test-autolaris returns the exact unsupported contract without leaking or probing credentials", async (context) => {
+test("AutoLaris rejects the store order number, so the payload fails before fetch", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  let providerCalls = 0;
+  globalThis.fetch = async () => {
+    providerCalls += 1;
+    return new Response(null, { status: 500 });
+  };
+
+  // The provider answers `rc: "01" / Invalid parameter` for each of these, with
+  // no field named, so a customer must never be the one who discovers them.
+  await assert.rejects(
+    new AutoLarisClient("qa-key").createPayment({
+      ...CREATE_PAYMENT_INPUT,
+      reffId: "INV-10001",
+    }),
+    /referensi AutoLaris harus berupa angka/i,
+  );
+  await assert.rejects(
+    new AutoLarisClient("qa-key").createPayment({
+      ...CREATE_PAYMENT_INPUT,
+      customerId: "",
+    }),
+    /id pembeli AutoLaris tidak lengkap/i,
+  );
+  await assert.rejects(
+    new AutoLarisClient("qa-key").createPayment({
+      ...CREATE_PAYMENT_INPUT,
+      callbackUrl: "",
+    }),
+    /callback AutoLaris tidak lengkap/i,
+  );
+  assert.equal(providerCalls, 0);
+});
+
+test("an unpaid AutoLaris transaction reads back as pending and nothing else", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  let requestedUrl = "";
+  let requestedBody: Record<string, unknown> | undefined;
+  globalThis.fetch = async (input, init) => {
+    requestedUrl = String(input);
+    requestedBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    return Response.json({ rc: "02", ket: "PENDING", data: { awb: "" } });
+  };
+
+  const inquiry = await new AutoLarisClient(
+    "qa-key",
+    "https://autolaris.example.test",
+  ).inquirePayment("956123");
+
+  assert.equal(requestedUrl, "https://autolaris.example.test/api/h2h/advice");
+  assert.deepEqual(requestedBody, { transaction_id: "956123" });
+  assert.deepEqual(inquiry, {
+    code: "02",
+    status: "PENDING",
+    awb: undefined,
+    settlement: "pending",
+  });
+});
+
+test("an unobserved AutoLaris settlement code is never read as paid", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  globalThis.fetch = async () =>
+    Response.json({ rc: "00", ket: "SUCCESS", data: { awb: "" } });
+
+  const inquiry = await new AutoLarisClient("qa-key").inquirePayment("956123");
+
+  // `00` plausibly means settled, but no settled transaction has been observed.
+  // Until one is, it stays unproven and cannot move money-bearing state.
+  assert.equal(inquiry.settlement, "unproven");
+});
+
+test("test-autolaris verifies the stored key against the provider without leaking it", async (context) => {
   const originalFetch = globalThis.fetch;
   context.after(() => {
     globalThis.fetch = originalFetch;
   });
 
   let providerCalls = 0;
-  globalThis.fetch = async () => {
+  globalThis.fetch = async (input) => {
     providerCalls += 1;
-    return new Response(null, { status: 500 });
+    assert.equal(
+      String(input),
+      "https://autolaris.example.test/api/h2h/list_payment",
+    );
+    return Response.json(CHANNEL_CATALOGUE);
   };
 
   const database = {
@@ -153,15 +304,17 @@ test("test-autolaris returns the exact unsupported contract without leaking or p
   } as never);
 
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), {
+  const payload = await response.json();
+  assert.deepEqual(payload, {
     success: true,
     configured: true,
-    verified: false,
-    verification_supported: false,
+    verified: true,
+    verification_supported: true,
     base_url: "https://autolaris.example.test",
-    message: UNAVAILABLE_MESSAGE,
+    message: VERIFIED_MESSAGE,
   });
-  assert.equal(providerCalls, 0);
+  assert.equal(providerCalls, 1);
+  assert.equal(JSON.stringify(payload).includes(PROVIDER_CONFIG_ROW.autolaris_api_key), false);
 });
 
 test("only the owner may replace provider endpoints or credentials", async () => {
@@ -189,7 +342,7 @@ test("only the owner may replace provider endpoints or credentials", async () =>
   assert.equal(databaseReads, 0);
 });
 
-test("AutoLaris channel checks report local state as unverified without provider calls", async (context) => {
+test("AutoLaris channel checks report verified provider state", async (context) => {
   const originalFetch = globalThis.fetch;
   context.after(() => {
     globalThis.fetch = originalFetch;
@@ -198,7 +351,7 @@ test("AutoLaris channel checks report local state as unverified without provider
   let providerCalls = 0;
   globalThis.fetch = async () => {
     providerCalls += 1;
-    return new Response(null, { status: 500 });
+    return Response.json(CHANNEL_CATALOGUE);
   };
 
   const database = {
@@ -244,7 +397,7 @@ test("AutoLaris channel checks report local state as unverified without provider
     };
   };
   assert.equal(payload.success, true);
-  assert.equal(payload.message, `Pemeriksaan konfigurasi selesai: ${UNAVAILABLE_MESSAGE}`);
+  assert.match(payload.message, /terverifikasi aktif oleh server AutoLaris/i);
   assert.deepEqual(
     {
       api_key_configured: payload.data.api_key_configured,
@@ -253,8 +406,8 @@ test("AutoLaris channel checks report local state as unverified without provider
     },
     {
       api_key_configured: true,
-      api_key_verified: false,
-      api_key_verification_supported: false,
+      api_key_verified: true,
+      api_key_verification_supported: true,
     },
   );
   assert.deepEqual(
@@ -262,9 +415,9 @@ test("AutoLaris channel checks report local state as unverified without provider
     {
       code: "QRIS",
       name: "QRIS",
-      status: "configured_unverified",
+      status: "ready",
       is_active: true,
-      message: UNAVAILABLE_MESSAGE,
+      message: "Channel aktif & siap digunakan di checkout.",
     },
   );
   assert.deepEqual(
@@ -289,7 +442,7 @@ test("AutoLaris channel checks report local state as unverified without provider
   );
   assert.equal(payload.data.channels.length, 9);
   assert.equal(payload.data.channels.some((channel) => channel.code === "DANA"), false);
-  assert.equal(providerCalls, 0);
+  assert.equal(providerCalls, 1);
 });
 
 test("save-autolaris-channels keeps provider-locked channels disabled", async () => {

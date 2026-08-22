@@ -25,7 +25,10 @@ import {
   resolveDisabledAutoLarisChannels,
 } from "../../../lib/autolaris-client.ts";
 import { MengantarClient } from "../../../lib/mengantar-client.ts";
-import { getProviderConfig } from "../../../lib/provider-config.ts";
+import {
+  getProviderConfig,
+  resolveCredentialUpdate,
+} from "../../../lib/provider-config.ts";
 
 export const prerender = false;
 
@@ -64,9 +67,9 @@ type SettingsPayload = {
   payment_fee_bearer?: "buyer" | "seller";
   cod_fee_bearer?: "buyer" | "seller";
   integrations?: {
-    mengantar_api_key?: string;
+    mengantar_api_key?: string | null;
     mengantar_base_url?: string;
-    autolaris_api_key?: string;
+    autolaris_api_key?: string | null;
     autolaris_base_url?: string;
   };
   warehouse?: {
@@ -221,10 +224,6 @@ async function getSettingsRow(database: D1Database) {
 
 async function credentialStatus(database: D1Database, locals: App.Locals) {
   const config = await getProviderConfig(database, locals);
-  const webhookSecret = getEnvValue(
-    "AUTOLARIS_WEBHOOK_SECRET",
-    getRuntimeEnv(locals),
-  );
 
   return {
     mengantar: {
@@ -239,8 +238,6 @@ async function credentialStatus(database: D1Database, locals: App.Locals) {
       api_key_masked: maskSecretValue(config.autolaris.apiKey),
       base_url: config.autolaris.baseUrl,
       source: config.autolaris.source,
-      webhook_secret_configured: Boolean(webhookSecret),
-      webhook_secret_masked: maskSecretValue(webhookSecret),
     },
   };
 }
@@ -593,8 +590,14 @@ export const PUT: APIRoute = async ({ request, locals }) => {
     }
 
     if (body.action === "save-integrations") {
-      const mengantarApiKey = clean(body.integrations?.mengantar_api_key, 1000);
-      const autolarisApiKey = clean(body.integrations?.autolaris_api_key, 1000);
+      const mengantarKey = resolveCredentialUpdate(
+        body.integrations?.mengantar_api_key,
+      );
+      const autolarisKey = resolveCredentialUpdate(
+        body.integrations?.autolaris_api_key,
+      );
+      const mengantarApiKey = clean(mengantarKey.value, 1000);
+      const autolarisApiKey = clean(autolarisKey.value, 1000);
       const mengantarBaseUrl = normalizeHttpUrl(
         body.integrations?.mengantar_base_url,
       );
@@ -612,16 +615,20 @@ export const PUT: APIRoute = async ({ request, locals }) => {
         .prepare(
           `
         UPDATE stores
-        SET mengantar_api_key = COALESCE(NULLIF(?, ''), mengantar_api_key),
+        SET mengantar_api_key = CASE WHEN ? = 1 THEN NULL
+              ELSE COALESCE(NULLIF(?, ''), mengantar_api_key) END,
             mengantar_base_url = ?,
-            autolaris_api_key = COALESCE(NULLIF(?, ''), autolaris_api_key),
+            autolaris_api_key = CASE WHEN ? = 1 THEN NULL
+              ELSE COALESCE(NULLIF(?, ''), autolaris_api_key) END,
             autolaris_base_url = ?
         WHERE id = ?
       `,
         )
         .bind(
+          mengantarKey.clear ? 1 : 0,
           mengantarApiKey,
           mengantarBaseUrl,
+          autolarisKey.clear ? 1 : 0,
           autolarisApiKey,
           autolarisBaseUrl,
           current.store_id,

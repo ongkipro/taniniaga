@@ -377,3 +377,71 @@ fail closed and require an explicit catalog remap rather than silent padding,
 because padding would break the promise that external identity equals Product
 ID. Variant selectors and embed URLs must always use `variant.id`, never the
 shared `content_id`.
+
+---
+
+## ADR-018 — The storefront ships one layout
+
+**Date:** 2026-08-20 · **Status:** Accepted
+
+**Context.** Two storefront templates shipped: `compact-market`, a 480 px column,
+and `wide-catalog`, an unconstrained shell. `wide` was not merely one built-in —
+it was a value in the composition schema, so any runtime definition in
+`storefront_templates` could declare it. That put the width branch in three
+places (`BaseLayout`, `Breadcrumb`, `PageIntro`) and they drifted: two product
+pages force `compact`, so on a `wide-catalog` store they rendered a 480 px shell
+around a `max-w-6xl` breadcrumb until it was repaired.
+
+All three live installs render compact. None selected the wide template.
+
+**Decision.** The public storefront is compact only. `wide-catalog` and the
+`wide` layout value are removed: `WideCatalogHome.astro` is deleted, the
+composition schema takes `z.literal("compact")`, and the template pickers in the
+install wizard and store settings offer one option.
+
+**Consequences.**
+- The width contract added for the drift is deleted with it. One width needs no
+  resolver, no class map and no `contentWidth` prop — that abstraction existed
+  only to keep two answers in step.
+- Migration `0044` moves any store still pointing at `wide-catalog` to
+  `compact-market` and deletes runtime definitions declaring `layout: "wide"`.
+  Without it such a store would fail validation on the next request and take its
+  home page to the unavailable state. It is idempotent and matches nothing on a
+  store that was already compact.
+- A second layout can return, but as a deliberate design with its own renderer
+  rather than a branch inherited from the engine this repository forked.
+- The cost was named before it was accepted: this removes a shipped capability
+  and the data migration is one way. It was taken as an explicit product
+  decision, not inferred from the fact that no install happened to use it.
+
+---
+
+## ADR-019 — The public surface is monochrome
+
+**Date:** 2026-08-20 · **Status:** Accepted
+
+**Context.** The storefront shipped a warm neutral palette with a gold accent,
+`#C5A880`, across 48 usages. That reads as a brand — and this repository is not
+a brand. It is a CMS that installs for any merchant, and the merchant has their
+own. A house accent in twelve badge backgrounds is something every landing page
+and every custom product page then has to argue with.
+
+Measured while removing it: `#C5A880` is **2.26:1 on white**. It was failing
+WCAG AA as text the whole time it was used as text, in ten places.
+
+**Decision.** Ink on white, Dawn-clean. `#111111` ink, three neutral steps
+(`#FAFAFA` canvas, `#FFFFFF` column, `#F5F5F5` wells), `#E5E5E5` hairlines used
+sparingly, square corners, no decorative shadows. Product images are 1:1.
+Tokens live in `design-tokens.md` at the repository root.
+
+**Consequences.**
+- A landing page or a custom product page can introduce one colour and own it
+  completely. That is the point of the change, not a side effect.
+- The focus ring stays blue. It is the one colour left and it is deliberate:
+  monochrome cannot express focus against a monochrome page, and a focus
+  indicator needs 3:1.
+- `#999999`, used for footer text, was 2.85:1 and is now `#767676` at 4.54:1 —
+  the floor for body copy.
+- Card frames and small shadows are gone from the public surface. Borders
+  separate; they do not wrap a photo that already has edges.
+- The admin keeps its own palette. `admin.css` owns shadcn and is untouched.
