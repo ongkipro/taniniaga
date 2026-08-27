@@ -1,10 +1,10 @@
 # STATUS — AdsBookCMS
 
-> Verified against disk: 2026-08-27 @ `1acbd7e` + review-hardening working tree
+> Verified against disk: 2026-08-27 @ `551d099` + admin-blank hotfix
 
 > Last executed baseline: 2026-08-27 @ `1acbd7e` + review-hardening working tree.
-> `npm run check` 397 files / 0 errors / 0 warnings / 0 hints · `npm test`
-> 587 / 587 · `npm run build` Cloudflare server bundle complete · local
+> `npm run check` 399 files / 0 errors / 0 warnings / 0 hints · `npm test`
+> 591 / 591 · `npm run build` Cloudflare server bundle complete · local
 > `wrangler dev` run: fresh install applied `0049`–`0050` (51 claims),
 > login/logout/session revocation, local district search, the 60/min and
 > 5/10min public limits, and a recorded AutoLaris callback all observed.
@@ -26,7 +26,7 @@ The previous version of this file described a different repository — it opened
 | Product | AdsBookCMS (single) |
 | Repository role | **Product.** Deploys nothing; CI runs check, test and build only |
 | Install model | 1 installer = 1 Worker = 1 store (ADR-001) |
-| Version | `1.3.4` / `2026.08-payment-recovery` (`src/lib/version.ts`) |
+| Version | `1.3.5` / `2026.08-admin-blank-hotfix` (`src/lib/version.ts`) |
 | Schema | 51 migration files, `0000`-`0050` |
 | Bindings | `OMS_DB` (D1), `SESSION` (KV, caches only since ADR-021), `ASSET_BUCKET` (R2), `AI`, `ASSETS` — names fixed across installs |
 | `wrangler.jsonc` | template of placeholders; each install supplies its own resources |
@@ -64,6 +64,13 @@ from migration `0050` is live on each D1 (one probe row per store, body
 `{"probe":"adsbook-audit-2026-08-27"}`); `/payment` ships the copy-link and
 retry controls; kecamatan search 200; wrong-password login 401;
 `/api/order-status` 404.
+
+**2026-08-27 rollout of 1.3.4 (product `1c071d8`, review hardening).** All
+six installs again (tests 582–586 in the installs); the merge-type runner
+initially redeployed stale code because it had not fetched `product` — caught
+by the test count, fixed, rerun. Measured live afterwards on every host:
+`/` 200, kecamatan search 200, wrong-password login 401, `/api/order-status`
+404, JSON callback 200. Installs carry `1.3.4` in `src/lib/version.ts`.
 
 Verified live 2026-08-25 after the Google server/offline release: every host
 answers `200` on `/`, `401` on unauthenticated `/api/admin/health`, and has zero
