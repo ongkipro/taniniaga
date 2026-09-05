@@ -1,6 +1,6 @@
 # Tasks: AdsBookCMS
 
-> Verified against disk: 2026-08-27 @ `679f577` + stock-unlimited working tree
+> Verified against disk: 2026-08-29 @ `9766ad6`
 
 ## A21 — A landing page may become the product page
 
@@ -1525,3 +1525,613 @@ genuinely unmanageable.
 
 - [x] **A-173** — A variant must be purchasable whatever its stock figure says. **Done 2026-08-27 (ADR-023, 1.4.0).**
   -> Done when: no checkout, CS conversion, storefront publication, admin picker or product save consults stock; releasing an order returns nothing; the suite asserts the inverse of every rule that was removed; and a store whose only variant carries `stock = 0` renders and offers it in a browser. Evidence: BUILD-LOG entry 88.
+
+## A27 — Bounded landing-page content and images
+
+- [x] **A-174** — Extend `landing_sections` for typed CMS content without
+  changing any existing `html` or `form` row.
+      -> Primary requirement: REQ-173 · Constraints: REQ-178 · Dependencies:
+      None · Done when: a new forward migration applies on an empty local D1
+      and on a fixture containing existing HTML/form rows, and focused tests
+      prove the five typed section kinds round-trip in their declared order.
+- [x] **A-175** — Validate typed landing-section configuration at the shared
+  create/update boundary.
+      -> Primary requirement: REQ-174 · Constraints: REQ-173, REQ-178 ·
+      Dependencies: A-174 · Done when: focused tests prove missing required
+      text, malformed list items, unsupported image configuration, and raw
+      markup in a plain-text field are refused without replacing stored
+      sections; valid typed input persists unchanged.
+- [x] **A-176** — Replace the common-content HTML authoring path with bounded
+  headline, paragraph, numbered-list, and bullet-list controls.
+      -> Primary requirement: REQ-174 · Constraints: REQ-173, REQ-178 ·
+      Dependencies: A-175 · Done when: a browser session creates, edits,
+      reorders, previews, saves, and reloads every text/list section at 390 px
+      and desktop width without losing draft values or introducing horizontal
+      overflow.
+- [ ] **A-177** — Add the browser-side landing-image conversion and WebP-only
+  R2 acceptance boundary.
+      -> Primary requirement: REQ-175 · Constraints: REQ-176, REQ-178 ·
+      Dependencies: A-175 · Done when: focused tests cover the size and WebP
+      signature gates; a browser uploads a supported source image and stores
+      one `/assets/uploads/...webp` object; an oversized, unsupported, malformed,
+      or encode-failed source leaves no object behind.
+- [x] **A-178** — Render typed landing sections through semantic public markup
+  with fluid, uncropped images.
+      -> Primary requirement: REQ-177 · Constraints: REQ-173, REQ-178 ·
+      Dependencies: A-175, A-177 · Done when: route tests prove semantic
+      heading, paragraph, `ol`, `ul`, and image output without `set:html` for
+      typed sections; Chromium at 390 px and desktop proves portrait and
+      landscape WebP images retain aspect ratio, no page overflow, lazy
+      below-fold loading, and a working checkout form.
+- [ ] **A-179** — Prove legacy landing-page compatibility through the new
+  section schema and renderer.
+      -> Primary requirement: REQ-178 · Constraints: REQ-173–REQ-177 ·
+      Dependencies: A-174, A-178 · Done when: focused migration/route tests
+      prove a legacy HTML shortcode and form remain byte-for-byte behaviorally
+      equivalent, and browser smoke proves preview, inactive-page access
+      control, product-page claim, and canonical redirect remain intact.
+
+- [x] **A-180** — Make canvas section insertion work from a Tailscale HTTP
+  development origin. **Done locally 2026-08-28.**
+      -> Primary requirement: REQ-174 · Constraints: REQ-173, REQ-178 ·
+      Dependencies: A-176 · Evidence: an isolated Worker fixture served at
+      `http://100.127.67.86:8791` reported `typeof crypto.randomUUID ===
+      "undefined"`; clicking Headline still added the selected canvas card,
+      produced no browser error, and left mobile overflow at 0 px. The fallback
+      is transient only; D1 continues to assign persisted section IDs.
+
+- [x] **A-181** — Make a long canvas navigable without a drag-only editor.
+  **Done locally 2026-08-28.**
+      -> Primary requirement: REQ-174 · Constraints: REQ-178, REQ-179 ·
+      Evidence: the 480px canvas exposes a numbered navigator; choosing a
+      number selects and smooth-scrolls its card, while direct card clicks and
+      up/down controls remain touch/keyboard alternatives.
+
+## A28 — Ad signal review, 2026-08-28
+
+- [x] **A-182** — Google Ads offline conversions must not stop uploading once
+  fifty unattributable orders accumulate. **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 (catalog/signal integrity) · Constraints:
+      TRACKING_SPECS §10 · Dependencies: None · Done when: the discovery query
+      and `buildGoogleClickConversion` share one definition of an eligible
+      order, and a focused D1 test proves that sixty organic delivered COD
+      orders ahead of one Google-clicked order still queue that order.
+      Evidence: `reconcileGoogleAdsConversions` had no database test at all;
+      the new one failed before the fix (0 queued after repeated passes) and
+      passes after (`INV-10062` / `cod_delivered`, idempotent on re-run).
+
+- [x] **A-183** — One legacy product row must not take both catalog feeds down.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Constraints: ADR-017 identity rule ·
+      Dependencies: None · Done when: a catalog containing an unpublishable
+      short id emits every other product and omits that one, on both feeds,
+      and the same row reports no catalog identity on its product page instead
+      of a 500. Evidence: `catalog-identity.test.ts` — "one unpublishable row
+      is skipped, not allowed to take the whole feed down".
+
+- [x] **A-184** — A typed landing section must never fall through to the
+  checkout form. **Done 2026-08-28.**
+      -> Primary requirement: REQ-177 · Constraints: REQ-178 · Dependencies:
+      A-178 · Done when: `[slug].astro` renders a form only for `type ===
+      'form'`. The final `return` was a safe else while the type was
+      `'html' | 'form'`; with seven kinds, any typed section whose stored
+      config failed to parse would have injected a second checkout form.
+
+- [x] **A-185** — Refused landing-page input must answer 400, not 500.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 · Constraints: REQ-178 · Dependencies:
+      A-175 · Done when: `LandingPageValidationError` carries its own status
+      and both admin routes map it — 400 for malformed input, 409 for a slug
+      already in use — so an empty title or a `<` in a headline no longer
+      tells the operator the server broke.
+
+- [x] **A-186** — Remove the duplicated ViewContent tracker. **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 (maintainability) · Dependencies: None ·
+      Done when: `MetaViewContentTracker.astro` is deleted and
+      `/produk/[slug]` renders `MetaLandingTracker`. The two files were
+      identical apart from a `checkoutSelector` prop that was declared, passed
+      into `define:vars`, never read, and never supplied by the one caller —
+      two copies of an 85-line inline script that had to be edited in step.
+
+## A29 — Ad signal audit, second pass, 2026-08-28
+
+- [x] **A-187** — A headless storefront's Purchase must actually reach Meta.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Constraints: TRACKING_SPECS §12,
+      STOREFRONT_INTEGRATION §4.8 · Dependencies: None · Done when:
+      `/api/v1/tracking/events` resolves a Purchase against D1 and sets
+      `customData.orderNumber`, and a focused test proves that a Purchase
+      without it never opens a connection to Meta at all. Evidence:
+      `meta-purchase-order.test.ts` — the refused call records
+      `fetched === false`, so no retry could ever have recovered those events.
+
+- [x] **A-188** — A campaign-tagged link must not erase the ad click that was
+  paid for. **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Constraints: TRACKING_SPECS §7 ·
+      Dependencies: None · Done when: `mergeClickIds` keeps a stored
+      `gclid`/`gbraid`/`wbraid`/`fbclid` through a UTM-only landing, a genuine
+      new ad click still replaces attribution wholesale, and no stale tag from
+      an older click survives. Evidence: `click-ids.test.ts` — "a
+      campaign-tagged link never erases the ad click that was paid for".
+
+- [x] **A-189** — The headline size control must change the headline size.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 · Constraints: REQ-178, DESIGN-SYSTEM
+      type ramp · Dependencies: A-176 · Done when: Kecil/Sedang/Besar render
+      18/20/24 px in a browser. Evidence: headless Chrome at 390 px reported
+      all three at `20px` before the fix — `.lp-section h2` (0-1-1) beat
+      `.lp-headline-large` (0-1-0) — and `18px / 20px / 24px` after.
+
+- [x] **A-190** — A list must survive the operator's closing Enter.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 · Constraints: REQ-178 · Dependencies:
+      A-176 · Done when: trailing and blank lines are dropped at save rather
+      than refused by the server. Filtering while the operator types would make
+      Enter impossible to press, so it happens once, in the save payload; the
+      server boundary stays strict for direct API callers.
+
+- [x] **A-191** — Refused landing input must read as Indonesian.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 · Dependencies: A-185 · Done when: every
+      `LandingPageValidationError` message is Indonesian, because the editor
+      toasts it verbatim to an operator working in an Indonesian admin.
+
+- [x] **A-192** — Collapse the two catalog feed generators into one.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Dependencies: A-183 · Done when: Google
+      and Meta declare only their three real differences — channel title,
+      `fb_product_category`, GTIN-substitute identity — and the emitted XML is
+      byte-identical to before. Evidence: a fixture covering sale pricing, an
+      absent taxonomy, an absolute image URL, XML-escaped text and an
+      unpublishable row diffed clean on both feeds; `catalog-feed.ts` 222 → 228
+      lines with ~55 duplicated lines removed.
+
+- [x] **A-193** — Browser evidence for the typed landing sections.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-177 · Constraints: REQ-178 · Dependencies:
+      A-178, A-184 · Evidence: a seeded page carrying all five typed kinds plus
+      legacy `html` and `form`, served by `astro dev` against local D1, in
+      headless Chrome at 390 px / DPR 2.625 — semantic `h2`/`p`/`ol`/`ul`,
+      shortcodes parsed with no `{{...}}` left, exactly one checkout form with
+      18 fields, `scrollWidth === clientWidth` and zero overflowing elements.
+      Two deliberately unusable typed rows rendered **three** checkout forms
+      without the A-184 guard and one with it. Fixture rows were removed from
+      the local D1 afterwards.
+
+## A30 — Admin editor driven in a browser, 2026-08-28
+
+- [x] **A-194** — Prove the landing editor through a real operator session, not
+  by reasoning. **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 · Constraints: REQ-178 · Dependencies:
+      A-176, A-185, A-190, A-191 · Evidence: headless Chrome against
+      `astro dev` and local D1, signed in as a throwaway `auditbot` owner
+      created for the run and deleted after it (the operator's own account was
+      never touched). Login → `/admin/landing-pages/new` → title, slug and the
+      D1 product picker → insert Headline and Daftar angka → numbered
+      navigator re-selects card 1 → save → redirect to `.../edit`. Zero console
+      errors throughout.
+
+- [x] **A-195** — A-190 proven by A/B, not argued.
+  **Done 2026-08-28.**
+      -> Evidence: the operator's literal input `"Buka kemasan\nLarutkan ke
+      air\n"` — a closing Enter. **Without** the save-time filter: toast
+      "Daftar harus berisi minimal satu item teks tanpa tanda < atau >.",
+      HTTP 400, stuck on `/admin/landing-pages/new`. **With** it: no error
+      toast, redirect to `.../edit`, and D1 holds
+      `{"items":["Buka kemasan","Larutkan ke air"]}`.
+
+- [x] **A-196** — A-185 and A-191 proven in the browser.
+  **Done 2026-08-28.**
+      -> Evidence: a headline of `<script>alert(1)</script>` produced HTTP
+      **400** (not 500), the toast read "Teks section harus diisi tanpa tanda <
+      atau >." in Indonesian, and the operator stayed on the editor with the
+      draft intact. Correcting the field then saved and redirected.
+
+- [x] **A-197** — The 390 px claim in A-176 measured rather than asserted.
+  **Done 2026-08-28.**
+      -> Evidence: at 390 px / DPR 2.625, the login page, the empty editor, and
+      an editor carrying **all seven** section kinds each reported
+      `scrollWidth === clientWidth` and `horizontalScrollPossible === false`.
+      Draft values survived every insertion and the navigator listed 1–7. The
+      one element extending past 390 px is Sonner's `ol.toaster`, confirmed
+      `position: fixed`, so it adds no scrollable width.
+
+## A31 — Upstreamed from the zvarashop install, 2026-08-28
+
+Reported by another session working in the install repo. Each claim was
+re-verified against this repository's code before anything was changed.
+
+- [x] **A-198** — The browser Purchase must match on eight keys, not one.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Constraints: TRACKING_SPECS §4a ·
+      Dependencies: None · Done when: `MetaPixelBase` owns the only
+      `fbq('init')` and exposes `__PS_META_INIT__`; `/thanks` declares
+      `__PS_META_AWAIT_MATCHING__` in the head slot rendered ahead of it; no
+      other file calls `fbq('init')`. Evidence: probed against the live
+      `fbevents.js` — a second init left
+      `fbq.instance.pixelsByID[id].userData` at **1 key** (`external_id`); the
+      single init leaves it at **8**. Guarded at runtime by
+      `meta-purchase-dedup.test.ts` and at source by `meta-identity.test.ts`.
+
+- [x] **A-199** — `client_user_agent` removed from Pixel advanced matching.
+  **Done 2026-08-28.**
+      -> It is a Conversions API field; Meta's Pixel reference does not list it
+      and the browser attaches its own user agent anyway.
+
+- [x] **A-200** — A conversion must not wait on the pixel's deferral timer.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Dependencies: A-198 · Done when
+      `__PS_LOAD_META_PIXEL__` mirrors the `__PS_LOAD_GOOGLE_TAG__` hatch the
+      Google leg already had, and the Purchase calls it. The stub queues the
+      event but transmits nothing until the library lands, and a buyer who
+      reads `/thanks` and closes it trips neither the interaction listeners nor
+      the 2.5 s timer.
+
+- [x] **A-201** — A manufactured provider email must never be hashed into `em`.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Constraints: TRACKING_SPECS §7 ·
+      Dependencies: None · Done when `matchableCustomerEmail` guards all three
+      CAPI legs. Confirmed in this repo that `submit-order.ts:269` persists
+      `<phone>@<host>` into `orders.customer_email` for every non-COD order, so
+      the column is not only a `buyerEmail()` product. The guard requires the
+      store's own host as well as an all-digits local part: numeric Gmail
+      addresses are ordinary in Indonesia and must not be discarded.
+
+- [x] **A-202** — A deploy must refuse the product's placeholder target.
+  **Done 2026-08-28.**
+      -> Resolved by reading the repository's own contract rather than by
+      opinion. The scripts stay: `npm run deploy` is the **install's**
+      documented deploy path (README §Deploy, INSTALLATION §163, RELEASE §8),
+      and AGENTS.md's "this repository deploys nothing" means no CI deploy and
+      no Cloudflare credentials here — not no script. RELEASE §7 already
+      *requires* the check (`--dry-run`, stop on `adsbookcms-your-store` or an
+      all-zero database id) and then admits "nothing verifies that an install
+      ran it". Done when: `predeploy` and `precf:deploy` run
+      `preflight:deploy`, which refuses a placeholder Worker name, D1 name or
+      id, or R2 bucket name. Evidence: `deploy-preflight.test.ts` — a real
+      install passes, this repository's own `wrangler.jsonc` is refused (which
+      §1 says is correct), each placeholder is caught alone, and the JSONC
+      comments and trailing commas the file actually uses parse.
+
+## A32 — Product audit: public surface and the signal chain, 2026-08-28
+
+- [x] **A-203** — Rate-limit the public Meta event endpoint. **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Constraints: TRACKING_SPECS §12 ·
+      Dependencies: None · Done when `/api/meta-event` counts 60/minute per IP
+      and fails open. It was the only public POST in the repository with no
+      limit; each accepted event writes an unpruned outbox row and calls
+      graph.facebook.com, and `event_id` deduplication stops a replay but never
+      a flood. Evidence: `meta-purchase-order.test.ts`.
+
+- [x] **A-204** — One minting shape for the provider's placeholder email.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Dependencies: A-201 · Done when
+      `submit-order.ts` calls `buyerEmail` instead of hand-rolling the same
+      string against `new URL(request.url).hostname`, and
+      `matchableCustomerEmail` accepts every host the store answers on.
+      A-201's guard checked one host and the fabricated address reached the
+      CAPI payload anyway. Evidence: a live `/thanks` run enqueued
+      `email: '6281234567890@localhost'` before the fix and no `email` at all
+      after; `autolaris-payment.test.ts` covers the multi-host case.
+
+- [x] **A-205** — Watch the whole signal chain fire on a real page.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Dependencies: A-188, A-198, A-200 ·
+      Evidence: headless Chrome at 390 px against `astro dev`, a configured
+      pixel and local D1. An ad landing stored `{gclid, utm_source, utm_campaign}`;
+      a following `?utm_source=whatsapp` visit left the `gclid` intact and
+      replaced only the tags. The landing page sent Pixel `PageView` and
+      `ViewContent` and the matching CAPI pair. On `/thanks` the Pixel
+      `Purchase` carried `eid=INV-19001` — byte-identical to the CAPI leg's
+      `event_id` — `value=135000` (the goods, not the 214000 invoice), and
+      **eight** `ud[...]` keys. `__PS_META_INIT__` returned `false` to a second
+      caller. Zero console errors throughout.
+
+## A33 — Validation audit, 2026-08-28
+
+- [x] **A-206** — Bound every landing-page field an operator can submit.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 · Constraints: REQ-178 · Dependencies:
+      A-185 · Done when `title`, `meta_title`, `meta_description`, the section
+      count, one HTML section, typed text, list items and the form mode all
+      carry a bound, and focused tests prove each refusal writes nothing. The
+      public checkout schema bounds every field it takes; this path bounded
+      none, and two of them ship inside `<title>` and `<meta name="description">`
+      on every render of a page ads point at.
+
+- [x] **A-207** — A landing page must point at a product this store carries.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-174 · Dependencies: A-206 · Done when
+      `createLandingPage` and a submitted `product_id` on update resolve the
+      product in D1. An unknown id saved, listed in the admin, and answered
+      `404` to every visitor who clicked the ad. The native-landing register
+      has always refused this; the CMS path had not. Evidence: this file's own
+      fixtures created pages against product `10001`, which the fixture never
+      inserted — the tests described broken pages as normal until now.
+
+- [x] **A-208** — The throwing catalogue id must not escape its own row.
+  **Done 2026-08-28.**
+      -> Primary requirement: REQ-58 · Dependencies: A-183 · Done when every
+      strict `catalogProductId` call sits where a throw cannot escape, proven
+      by an allowlist scan. `getStorefrontProduct` ran it inside a `.find`
+      predicate over every product, so **one** legacy row returned 500 for the
+      product page, the landing page, every form page, `/api/form-config` and
+      `/api/v1/products/<slug>` — the whole storefront, not the bad row. Also
+      fixed: `/api/v1/products` (whole list failed), `ProductForm.tsx` (a throw
+      in render blanks the form, leaving the operator unable to repair the very
+      product that needs it), and the three checkout form routes.
+
+- [x] **A-209** — A masked secret must not disclose a meaningful fraction of
+  itself. **Done 2026-08-28.**
+      -> Primary requirement: AGENTS.md §3 (never echo a stored credential) ·
+      Done when values below 24 characters are shown as mask alone. The
+      five-to-eight branch returned `ab••••de`, four of five characters for a
+      short secret. The credentials in play are long provider tokens so this
+      was never exploited, but nothing guarantees a length and a setup
+      placeholder is exactly the short value it handled worst. `env.ts` had no
+      test file at all; it has one now, covering masking and the env
+      resolution order.
+
+## A34 — Closing the landing-builder queue honestly, 2026-08-28
+
+- **A-174, A-175, A-176, A-178 closed.** Migration `0051` applies from zero and
+  over a fixture holding existing HTML/form rows; the shared create/update
+  boundary refuses missing text, malformed list items, unsupported image
+  configuration, raw markup in a plain-text field, and now every field bound
+  and an unknown product (A-206, A-207); a browser session created, edited,
+  reordered, previewed, saved and reloaded text and list sections at 390 px and
+  desktop with no lost draft and no overflow (A-193, A-194, A-197); and the
+  route emits semantic `h2`/`p`/`ol`/`ul` and `img` with no `set:html` for
+  typed sections, proven in Chromium at 390 px with zero horizontal overflow
+  and a working checkout form.
+
+- [ ] **A-177** — Landing-image upload remains unproven end to end.
+      -> The size and WebP-signature gates are covered by focused tests and the
+      editor path is wired, but no browser has stored an object: `ASSET_BUCKET`
+      is an R2 binding the local run does not provide. This closes on the first
+      install, not here.
+
+- [ ] **A-179** — Legacy landing-page compatibility is proven for the renderer,
+  not for the admin.
+      -> A legacy `html` section with shortcodes and a `form` section both
+      render byte-for-byte as before (browser-verified alongside the five typed
+      kinds), and preview, inactive-page access control, the product-page claim
+      and the canonical redirect are covered by focused tests. What is missing
+      is a browser pass over those four admin behaviours; they were exercised
+      as route tests only.
+
+---
+
+# Forward backlog — QA, security, Cloudflare, Meta Ads, Google Ads
+
+> Written 2026-08-28 @ `0042e75`. Every item below was grounded against the
+> tree, not proposed from a checklist: each names what is true today and what
+> would have to become true. Items marked **needs an ADR** record a decision
+> that does not exist yet — write the ADR when the task is picked up, not now,
+> because an ADR for an undecided question is a guess with a number on it.
+
+## What is already true, so nobody re-does it
+
+**Ad signal.** Both catalog feeds publish the Product ID the Pixel sends, byte
+for byte, and one unpublishable row no longer takes a feed or the storefront
+down. The browser Purchase matches on eight keys through the single
+`fbq('init')` MetaPixelBase owns, shares its `event_id` with the CAPI leg, and
+reports the goods rather than the invoice. The Meta outbox is transactional
+with bounded retries and an hourly drain. Google offline conversions discover
+only click-attributed orders. A campaign tag no longer erases a paid click. A
+minted provider email never reaches Meta's `em`. `/api/meta-event` is rate
+limited. All of this is browser-verified end to end (BUILD-LOG 89–93).
+
+**Security.** Admin routes are gated centrally — 401 without a session, 403
+through a default-deny role policy, an origin check on unsafe methods. Sessions
+and rate limits are D1-backed. `X-Content-Type-Options`, `X-Frame-Options`,
+HSTS, `Referrer-Policy` and `Permissions-Policy` ship on every response.
+Provider credentials are D1-first, masked on read, never echoed. `npm audit`
+reports zero vulnerabilities. Checkout re-quotes shipping server-side, prices
+come from D1, and `submit_token` is uniquely indexed against replay.
+
+**QA.** 618 checks across 102 test files, `astro check` clean over 400 files, a
+Cloudflare build, and CI running all three on every push.
+
+## QA — the verification that does not exist yet
+
+- [ ] **A-210** — Give the repository a runnable browser suite.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when: the
+      browser evidence this project keeps producing by hand — a landing page at
+      390 px, an operator session through the admin editor, the storefront
+      signal chain — runs from one command and fails CI when it breaks.
+      Today every such run has been ad-hoc: driven from a scratch CDP script,
+      reported in BUILD-LOG, and then thrown away. That is why A-179's admin
+      half and A-172's island check are still open, and why the headline-size
+      defect (A-189) survived every static check. **Needs an ADR**: whether the
+      runner belongs in CI at all, given CI has no browser today and adding one
+      changes what a green build means.
+
+- [ ] **A-211** — Cover the twelve modules no test imports.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when:
+      `catalog.ts`, `geo.ts`, `public-store.ts`, `tenant-content.ts`,
+      `tenant-contract.ts`, `gtm.ts`, `api.ts`, `order-status.ts`,
+      `bundled-migrations.ts`, `utils.ts`, `cn.ts` and `ui-variants.ts` each
+      have an importing test, or are recorded here as deliberately untestable
+      with the reason. This exact question — which modules does no test
+      *import*, not which files lack a same-named test — is what surfaced the
+      `getStorefrontProduct` defect (A-208) and the province gating gap
+      (BUILD-LOG 95). The list is the remainder of that sweep.
+
+- [ ] **A-212** — Prove a fresh install from zero, in a browser.
+      -> Primary requirement: REQ-179 · Dependencies: A-210 · Done when: an
+      empty D1 runs `0000`–`0051`, the install wizard completes, an operator
+      logs in, creates a product, publishes a landing page, and a buyer
+      completes a COD order — all in one recorded run. Migrations are asserted
+      to apply from zero; nothing asserts the store is *usable* afterwards.
+
+- [ ] **A-213** — Decide what the admin's React islands are allowed to break.
+      -> Supersedes the framing of A-172 · Dependencies: A-210 · Done when: the
+      islands that carry money or state — `OrdersTable`, `OrderDetail`,
+      `PaymentReconciliationQueue`, `ProductForm`, `LandingPageEditor` — each
+      have a rendering check the runner can see. A throw inside a React render
+      blanks the surface silently; that has now happened twice
+      (`ProductCatalog`, then `ProductForm` in A-208).
+
+## Security — what the current posture does not cover
+
+- [ ] **A-214** — Ship a real Content-Security-Policy for the storefront.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when: public
+      responses carry a CSP that constrains script, style, connect and frame
+      sources, and the embed's `frame-ancestors` keeps working. Today CSP is
+      set **only** on the embed, to carry `frame-ancestors`; every other
+      response has none, so `X-Frame-Options` is the whole story. The obstacle
+      is real and must be solved rather than waved at: this storefront runs
+      many `is:inline` scripts by design (`define:vars` forces it), so a
+      meaningful policy needs nonces or hashes threaded through Astro's inline
+      output, and a wrong one silently breaks tracking. **Needs an ADR**: the
+      nonce-vs-hash choice and what `connect-src` admits — Meta, Google, and
+      the store's own origin at minimum.
+
+- [ ] **A-215** — Put a ceiling on the CAPI outbox.
+      -> Primary requirement: REQ-58 · Dependencies: None · Done when:
+      delivered rows are pruned on a retention window the way
+      `autolaris_callbacks` already is, and the table cannot grow without
+      bound. `capi-outbox.ts` says plainly that "the outbox is never pruned",
+      and `readCapiDeliveryWindow` carries a `lazy:` note whose upgrade path
+      is a `(status, updated_at)` index. A-203's rate limit caps the inflow;
+      nothing caps the total.
+
+- [ ] **A-216** — Give the install token a brute-force ceiling.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when:
+      `/api/install` counts failed token attempts per IP the way every other
+      public POST does. The token must be at least 16 characters, which makes
+      guessing impractical rather than impossible, and this is the only public
+      POST left with no counter after A-203.
+
+- [ ] **A-217** — Decide the credential rotation story.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when: an
+      operator can rotate a Meta CAPI token, a Mengantar key or an AutoLaris
+      key and know that in-flight work survives it. Today a token is replaced
+      in place; a Meta outbox row queued under the old one fails with code
+      `190`, which `decideRetry` treats as terminal and drops. **Needs an ADR.**
+
+## Cloudflare — what the platform offers that this install does not use
+
+- [ ] **A-218** — Give the ad-signal outboxes a Queue, or record why not.
+      -> Primary requirement: REQ-58 · Dependencies: None · Done when: either
+      Cloudflare Queues carries CAPI and Google Ads delivery with its own
+      retry and dead-letter semantics, or an ADR records that the D1 outbox
+      plus the hourly cron is the deliberate choice. The current design is
+      documented as a consequence of the Astro adapter owning the Worker
+      entrypoint (TRACKING_SPECS §11); Queues did not exist in that reasoning.
+      Weigh it honestly — a queue binding is another resource every install must
+      provision, which ADR-012 says costs more than it looks. **Needs an ADR.**
+
+- [ ] **A-219** — Read the storefront's own performance from Cloudflare rather
+  than from a laptop.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when:
+      `observability` (already enabled, with `head_sampling_rate`) is paired
+      with an Analytics Engine dataset or Logpush so p75 TTFB, D1 query time
+      and outbox drain outcomes are readable per install. Every performance
+      number in this repository was measured locally; none came from a live
+      store.
+
+- [ ] **A-220** — Evaluate Smart Placement for the D1-bound routes.
+      -> Primary requirement: REQ-179 · Dependencies: A-219 · Done when: a
+      measurement decides it. Checkout, `/api/shipping-rates` and the admin all
+      make several sequential D1 round trips; Smart Placement moves the Worker
+      toward the data. It can also make a mostly-static storefront slower, so
+      this closes on numbers from A-219, not on the feature existing.
+
+- [ ] **A-221** — Serve storefront images through Cloudflare Images or a
+  Worker-side transform.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when: a
+      product image is resized and re-encoded at the edge rather than in the
+      operator's browser. `client-image.ts` compresses on upload — forward-only,
+      no backfill — so every object stored before that rule, and every size
+      other than the two it emits, is served as-is from R2. The adapter runs
+      `imageService: 'passthrough'` today, which is what makes this visible.
+
+- [ ] **A-222** — Set explicit Worker limits and a tail consumer.
+      -> Primary requirement: REQ-179 · Dependencies: None · Done when:
+      `wrangler.jsonc` declares a CPU limit and errors reach somewhere an
+      operator looks. `runScheduledMaintenance` now does migrations, four
+      purges, two outbox drains, a reconcile and a health evaluation in one
+      invocation; nothing bounds it, and a failure is a `console.error` nobody
+      is subscribed to.
+
+## Meta Ads — beyond "the events arrive"
+
+- [ ] **A-223** — Surface Event Match Quality where the operator configures the
+  pixel.
+      -> Primary requirement: REQ-58 · Dependencies: None · Done when:
+      `/admin/ads/meta` shows the dataset's match quality and recent event
+      volume, read from Meta rather than asserted by this repository. A-198
+      raised browser matching from one key to eight, and the only way anyone
+      can see the difference today is by opening Events Manager. A store that
+      never opens it cannot tell a working pixel from a silent one.
+
+- [ ] **A-224** — Verify deduplication from Meta's side, not ours.
+      -> Primary requirement: REQ-58 · Dependencies: A-223 · Done when: a
+      Purchase is confirmed deduplicated in Events Manager for a real order.
+      Both legs are proven to send the same `event_id` — asserted in tests and
+      observed on the wire — but no one has confirmed Meta *counted* it once.
+      That is the claim the whole design rests on and the only one still taken
+      on trust.
+
+- [ ] **A-225** — Validate the catalog feed against Meta's own diagnostics.
+      -> Primary requirement: REQ-58 · Dependencies: None · Done when
+      `/feed/meta-catalog.xml` is ingested by a real Commerce catalog and its
+      diagnostics are clean, or each warning is recorded here with a decision.
+      The feed is asserted against the Pixel's `content_ids` and against its own
+      shape; it has never been read by Meta.
+
+- [ ] **A-226** — Decide what happens to a Purchase when a store has no CAPI
+  token.
+      -> Primary requirement: REQ-58 · Dependencies: None · Done when the
+      behaviour is deliberate. `/api/meta-event` answers `202 skipped` when the
+      token is unset, so the browser leg fires alone and the server leg is lost
+      with no record — invisible to the operator who has not finished setup.
+
+## Google Ads — the leg with the least instrumentation
+
+- [ ] **A-227** — Give the Google Ads offline outbox a health signal and an
+  alert.
+      -> Primary requirement: REQ-58 · Constraints: OBSERVABILITY.md ·
+      Dependencies: None · Done when `google_ads_conversion_outbox` reports
+      depth, overdue rows and last delivery the way `capi_event_outbox` does,
+      and a stalled queue fires. **This is the highest-value item in this
+      backlog.** `HealthSignalId` is `capi-outbox | meta-capi | mengantar |
+      autolaris` and `OperationalAlertId` is `schema | capi-outbox` — Google has
+      neither. That is exactly why A-182's head-of-line block was invisible:
+      the cron logged `queuedGoogleAdsConversions: 0`, which is also what a
+      quiet week looks like. The Meta side has a depth signal *and* an alert;
+      the Google side has been running blind.
+
+- [ ] **A-228** — Prove one offline conversion lands in Google Ads.
+      -> Primary requirement: REQ-58 · Dependencies: A-227 · Done when a real
+      `uploadClickConversions` call is accepted and the conversion appears in
+      the account. The transport is contract-matched and unit-tested against
+      `v25`; A-182's fix is proven against a D1 fixture. No call has ever been
+      made to Google.
+
+- [ ] **A-229** — Close the Consent Mode gap or state it as policy.
+      -> Primary requirement: REQ-58 · Dependencies: None · Done when either a
+      CMP calls `gtag('consent', 'update', …)`, or the region list stops
+      claiming to serve EEA/UK traffic. `GoogleAdsBase.astro` defaults those 32
+      regions to `denied` with `wait_for_update: 500`, and nothing in this
+      repository ever sends the update — so an EEA visitor stays denied for the
+      whole session and is measured not at all. Deliberate for an Indonesian
+      store; a blocker the moment one advertises into those regions.
+      **Needs an ADR.**
+
+- [ ] **A-230** — Reconcile the two Google conversion actions in the account.
+      -> Primary requirement: REQ-58 · Dependencies: A-228 · Done when the
+      browser action and the offline action are confirmed as Secondary and
+      Primary respectively in a live account, per TRACKING_SPECS §10. The
+      repository documents the recommended policy; `transaction_id` does not
+      make two Primary actions safe, and nothing here can see which they are.
+
+- [ ] **A-231** — Submit the feed to Merchant Center and read its diagnostics.
+      -> Primary requirement: REQ-58 · Dependencies: None · Done when
+      `/feed/google-catalog.xml` is fetched on schedule and every item is
+      either approved or its disapproval recorded with a decision. The
+      taxonomy engine picks `google_product_category` from the product's own
+      text and omits it when unsure; whether Google accepts those choices has
+      never been observed.

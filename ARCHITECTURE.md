@@ -4,7 +4,7 @@
 > **Install model:** **1 installer = 1 Worker = 1 store.** Isolation comes from the deployment boundary, not from request-time tenant routing.
 > **This repository:** the product. It deploys nothing; each install deploys from its own repository against its own resources.
 > **First install:** `permatamall.shop`, in the separate `ongkipro/permatamall` repository, carrying its own catalogue in its own database. Its `cmsads-*` resource names are legacy and deliberately not renamed.
-> Verified against disk: 2026-08-27 @ `679f577` + stock-unlimited working tree
+> Verified against disk: 2026-08-29 @ `9766ad6`
 
 This document describes what the system **actually is**. Where the intended AdsBookCMS product differs from what ships today, the gap is stated explicitly in §10 rather than written as if it were already true. Code and executable evidence win over this document; when they disagree, fix the document.
 
@@ -57,6 +57,14 @@ Runs on every request, in order: canonical host redirect (`www` → apex), ad cl
 
 ## 3. Route Surface
 
+> The table below is a summary and has drifted before — it said `/admin/*` was
+> 27 pages when there were 28, and §4 described a 41-file migration chain that
+> was already 52. **`docs/ROUTE-MAP.md` and `docs/route-map.xml` are the map to
+> trust**: `npm run route-map` derives all 111 routes from `src/pages/` with
+> their files, HTTP verbs, auth boundary and the roles `canAccessAdminRoute`
+> actually admits, and `src/lib/route-map.test.ts` fails when the committed map
+> and the filesystem disagree.
+
 | Family | Entry points |
 | --- | --- |
 | Storefront | `/`, `/produk`, `/produk/[slug]`, `/404`, `/thanks`, `/payment` |
@@ -65,7 +73,7 @@ Runs on every request, in order: canonical host redirect (`www` → apex), ad cl
 | Checkout forms | `/hybrid-form`, `/middle-form`, `/full-form`, `/geoipform`, `/embed/form`. `/form-hybrid`, `/form-middle`, `/form-full` are query-preserving 308 redirects that **do** exist |
 | Feeds | `/sitemap.xml`, `/feed/google-catalog.xml`, `/feed/meta-catalog.xml`, static `/robots.txt` |
 | Media | `/assets/[...key]` (R2 `uploads/` prefix), `/media/[...key]` (R2 `content/` prefix) |
-| Admin | `/hello` (login), `/admin/*` — 27 pages |
+| Admin | `/hello` (login), `/admin/*` — 28 pages |
 | Public API | `/api/*` — checkout, locations, shipping rates, payment methods, order status, Meta events |
 | Headless API | `/api/v1/*` — storefront descriptor, products, geo, shipping rates, checkout, tracking events |
 | Admin payment reconciliation | `/api/admin/payment-reconciliation` |
@@ -88,7 +96,8 @@ Stock integrity is enforced by the database, not the application: trigger `produ
 
 ### Migration chain
 
-41 files, `0000`–`0040`. The Worker bundle contains the exact checked-in SQL and applies any missing suffix automatically before serving a database-backed request. Each migration's SQL statements and `d1_migrations` claim row execute in one D1 batch; concurrent requests serialize on the claim, re-read history, and continue without double-applying. `wrangler d1 migrations apply OMS_DB` remains an optional operator preflight, not the runtime correctness boundary. Migration `0040` adds provider status text, provider event time, and synchronization time to `orders`.
+56 files, `0000`–`0055` (ADR-024 gave the product sole ownership of the
+numbering after three different `0051` files appeared across the fleet). The Worker bundle contains the exact checked-in SQL and applies any missing suffix automatically before serving a database-backed request. Each migration's SQL statements and `d1_migrations` claim row execute in one D1 batch; concurrent requests serialize on the claim, re-read history, and continue without double-applying. `wrangler d1 migrations apply OMS_DB` remains an optional operator preflight, not the runtime correctness boundary. Migration `0040` adds provider status text, provider event time, and synchronization time to `orders`.
 
 **Migrations are hand-authored.** There is no generator to keep in sync, which is deliberate: the schema contains data-integrity triggers, ordered indexes, CHECK constraints, and data migrations that a schema generator cannot represent safely.
 
@@ -181,7 +190,7 @@ Stock is not part of this flow: a variant is sellable when it is active and pric
 Two independent content systems:
 
 - **Storefront content** (`storefront_content`) — legacy draft/published presentation records remain preserved for migration compatibility. Public homepage availability no longer depends on a published home record; active catalog rows remain the authority for product identity, price, stock, and listing.
-- **Landing pages** (`landing_pages` + `landing_sections`) — an ordered section builder with `html` and `form` section types, rendered by the `/[slug]` catch-all.
+- **Landing pages** (`landing_pages` + `landing_sections`) — an ordered section builder with bounded `headline`, `paragraph`, `numbered_list`, `bullet_list`, `image`, legacy `html`, and `form` types, rendered by the `/[slug]` catch-all.
 
 Missing optional homepage content falls back to a neutral catalog composition.
 The current `admin/content` JSON/AI workbench is retired from navigation; A18
@@ -227,8 +236,20 @@ live in `UNIMPLEMENTED_SPECS.md`.
 | ~~G6~~ | ~~Theme set is compile-time~~ | **Closed 2026-08-17.** Migration `0039` adds editable D1 template definitions; built-in layouts render runtime composition and operator-created definitions require no rebuild | `src/lib/storefront-template.ts`, `/admin/settings/store` |
 | ~~G7~~ | ~~Partial observability with no alerting~~ | **Closed 2026-08-17 for actionable per-install alerts.** The scheduled Worker evaluates schema and CAPI outbox health, persists transition state in KV, and sends deduplicated firing/recovery webhook events without commerce payloads. External uptime and cross-install aggregation remain separate product decisions | `src/lib/operational-alerts.ts`, `src/worker.ts`, `OBSERVABILITY.md` |
 | ~~G8~~ | ~~Drizzle journal broken~~ | **Closed 2026-08-16.** Drizzle retired rather than repaired: its snapshots could not represent the stock trigger, so a repaired generator would have emitted SQL that silently dropped a data-integrity guarantee (ADR-005) | — |
-| ~~G9~~ | ~~Meta Purchase deduplication is broken~~ | **Closed 2026-08-16.** Both legs now key on the `INV-` order number. Historical data stays inflated — Meta offers no retroactive merge | `src/components/tracking/MetaThanksTracker.astro` |
+| ~~G9~~ | ~~Meta Purchase deduplication is broken~~ | **Closed 2026-08-16.** Both legs now key on the `INV-` order number. Historical data stays inflated — Meta offers no retroactive merge | `src/components/storefront/tracking/MetaThanksTracker.astro` |
 | ~~G10~~ | ~~Embedded checkout fired Purchase before verified confirmation~~ | **Closed 2026-08-16.** Embedded forms now send only a constrained completion-navigation message; the parent navigates to the same verified `/payment` or `/thanks` flow, whose browser and CAPI legs share the order number as `event_id` | `src/lib/embed-markup.ts`, `src/lib/checkout-navigation.ts` |
+
+**One caveat on G7, so the register is not read as more than it says.** Its
+closure covers schema and the **Meta** CAPI outbox. The Google Ads offline
+outbox (`google_ads_conversion_outbox`, migration `0048`) arrived afterwards
+with the same retry discipline and **no health signal and no alert** —
+`HealthSignalId` is `capi-outbox | meta-capi | mengantar | autolaris`,
+`OperationalAlertId` is `schema | capi-outbox`. That blind spot is why a
+head-of-line block stopped Google uploads entirely while the hourly cron logged
+`queuedGoogleAdsConversions: 0`, which is also what a quiet week looks like
+(BUILD-LOG 89). It is recorded in `OBSERVABILITY.md` §3 and queued as **A-227**;
+it is not a reopened architecture gap, but outbox observability is not a solved
+category either.
 
 ---
 
