@@ -9,6 +9,8 @@ import { readMetaBrowserIds } from '../../lib/click-ids';
 import { matchableCustomerEmail } from '../../lib/autolaris-payment';
 import {
   findPurchaseOrderByStatusToken,
+  isMetaPurchaseOrderEligible,
+  resolveMetaPurchaseContentIds,
   type MetaPurchaseOrder,
 } from '../../lib/meta-purchase-order';
 
@@ -135,6 +137,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       if (!purchaseOrder) {
         return json({ success: false, error: 'Order Purchase tidak ditemukan atau token tidak valid.' }, 404);
       }
+      if (!isMetaPurchaseOrderEligible(purchaseOrder)) {
+        return json({ success: false, error: 'Order belum memenuhi syarat Purchase.' }, 409);
+      }
       purchaseOrderNumber = purchaseOrder.order_number;
     }
 
@@ -178,7 +183,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       },
       customData: {
         contentName: payload.contentName,
-        contentIds: payload.contentIds,
+        contentIds: resolveMetaPurchaseContentIds(purchaseOrder, payload.contentIds),
         // The goods, not the invoice — the same figure the browser leg sends,
         // read the same way, so the two legs of one Purchase never disagree on
         // revenue. Shipping, the COD service fee and its VAT, and the payment
