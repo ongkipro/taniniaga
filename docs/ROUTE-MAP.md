@@ -94,7 +94,7 @@ The [Modules](#modules) section is the same book read from the other side.
 | `/api/geo-province` | GET | public | — | `src/pages/api/geo-province.ts` | `env` `form-mode` | `stores` | `env.test.ts` `form-mode.test.ts` |
 | `/api/install` | POST | install token | — | `src/pages/api/install.ts` | `auth` `env` `install` `tenant` | `admin_credentials` `courier_rules` `stores` | `auth.test.ts` `env.test.ts` `install.test.ts` `tenant.test.ts` |
 | `/api/locations` | GET | public | — | `src/pages/api/locations.ts` | `district-catalog` `env` `location-cache` `location-search` `mengantar-client` `provider-config` `rate-limit` | `rate_limits` `stores` | `district-catalog.test.ts` `env.test.ts` `location-cache.test.ts` `location-search.test.ts` `mengantar-client.test.ts` `provider-config.test.ts` `rate-limit.test.ts` |
-| `/api/meta-event` | POST | public | — | `src/pages/api/meta-event.ts` | `autolaris-payment` `capi-outbox` `click-ids` `env` `meta-capi` `meta-event-contract` `meta-purchase-order` `rate-limit` `store-ads` | `autolaris_callbacks` `capi_event_outbox` `order_items` `orders` `payment_transactions` `product_variants` `products` `rate_limits` `stores` `warehouses` | `autolaris-payment.test.ts` `capi-outbox.test.ts` `click-ids.test.ts` `env.test.ts` `meta-capi.test.ts` `meta-event-contract.test.ts` `meta-purchase-order.test.ts` `rate-limit.test.ts` `store-ads.test.ts` |
+| `/api/meta-event` | POST | public | — | `src/pages/api/meta-event.ts` | `autolaris-payment` `capi-outbox` `click-ids` `env` `meta-capi` `meta-event-contract` `meta-identity` `meta-purchase-order` `rate-limit` `store-ads` | `autolaris_callbacks` `capi_event_outbox` `order_items` `orders` `payment_transactions` `product_variants` `products` `rate_limits` `stores` `warehouses` | `autolaris-payment.test.ts` `capi-outbox.test.ts` `click-ids.test.ts` `env.test.ts` `meta-capi.test.ts` `meta-event-contract.test.ts` `meta-identity.test.ts` `meta-purchase-order.test.ts` `rate-limit.test.ts` `store-ads.test.ts` |
 | `/api/order-status` | POST | public | — | `src/pages/api/order-status.ts` | `autolaris-client` `autolaris-payment` `env` `order-status` `rate-limit` | `autolaris_callbacks` `order_items` `orders` `payment_transactions` `product_variants` `products` `rate_limits` `stores` `warehouses` | `autolaris-client.test.ts` `autolaris-payment.test.ts` `env.test.ts` `order-status.test.ts` `rate-limit.test.ts` |
 | `/api/payment-methods` | GET | public | — | `src/pages/api/payment-methods.ts` | `autolaris-client` `env` `payment-brand` `payment-fee-policy` `provider-config` | `seller_bank_accounts` `stores` | `autolaris-client.test.ts` `env.test.ts` `payment-brand.test.ts` `payment-fee-policy.test.ts` `provider-config.test.ts` |
 | `/api/record-abandoned-order` | POST | public | — | `src/pages/api/record-abandoned-order.ts` | `api` `env` `order-persistence` `rate-limit` `validation` | `order_items` `order_number_counters` `orders` `payment_transactions` `product_variants` `products` `rate_limits` `seller_bank_accounts` `stores` | `env.test.ts` `order-persistence.test.ts` `rate-limit.test.ts` `validation.test.ts` |
@@ -115,7 +115,7 @@ The [Modules](#modules) section is the same book read from the other side.
 | `/api/v1/products` | GET, OPTIONS | api key | — | `src/pages/api/v1/products/index.ts` | `catalog` `catalog-feed` `headless-api` | `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `product_variants` `products` `stores` | `catalog.test.ts` `catalog-feed.test.ts` `headless-api.test.ts` |
 | `/api/v1/products/[slug]` | GET, OPTIONS | api key | — | `src/pages/api/v1/products/[slug].ts` | `catalog` `catalog-feed` `headless-api` | `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `product_variants` `products` `stores` | `catalog.test.ts` `catalog-feed.test.ts` `headless-api.test.ts` |
 | `/api/v1/storefront` | GET, OPTIONS | api key | — | `src/pages/api/v1/storefront.ts` | `env` `form-mode` `headless-api` `store-ads` `tenant-content` | `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `stores` | `env.test.ts` `form-mode.test.ts` `headless-api.test.ts` `store-ads.test.ts` |
-| `/api/v1/tracking/events` | OPTIONS, POST | api key | — | `src/pages/api/v1/tracking/events.ts` | `autolaris-payment` `capi-outbox` `click-ids` `env` `headless-api` `meta-capi` `meta-event-contract` `meta-order-context` `meta-purchase-order` `rate-limit` `store-ads` | `autolaris_callbacks` `capi_event_outbox` `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `order_items` `orders` `payment_transactions` `product_variants` `products` `rate_limits` `stores` `warehouses` | `autolaris-payment.test.ts` `capi-outbox.test.ts` `click-ids.test.ts` `env.test.ts` `headless-api.test.ts` `meta-capi.test.ts` `meta-event-contract.test.ts` `meta-order-context.test.ts` `meta-purchase-order.test.ts` `rate-limit.test.ts` `store-ads.test.ts` |
+| `/api/v1/tracking/events` | OPTIONS, POST | api key | — | `src/pages/api/v1/tracking/events.ts` | `autolaris-payment` `capi-outbox` `click-ids` `env` `headless-api` `meta-capi` `meta-event-contract` `meta-identity` `meta-order-context` `meta-purchase-order` `rate-limit` `store-ads` | `autolaris_callbacks` `capi_event_outbox` `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `order_items` `orders` `payment_transactions` `product_variants` `products` `rate_limits` `stores` `warehouses` | `autolaris-payment.test.ts` `capi-outbox.test.ts` `click-ids.test.ts` `env.test.ts` `headless-api.test.ts` `meta-capi.test.ts` `meta-event-contract.test.ts` `meta-identity.test.ts` `meta-order-context.test.ts` `meta-purchase-order.test.ts` `rate-limit.test.ts` `store-ads.test.ts` |
 
 ## Webhook (1)
 
@@ -182,7 +182,7 @@ The [Modules](#modules) section is the same book read from the other side.
 | `/api/admin/profile` | GET, PUT | admin session | owner, admin, advertiser, customer_service | `src/pages/api/admin/profile.ts` | `admin-credentials` `admin-session` `api` `auth` `env` | `admin_credentials` `admin_sessions` | `admin-credentials.test.ts` `admin-session.test.ts` `auth.test.ts` `env.test.ts` |
 | `/api/admin/rules` | GET, PUT | admin session | owner, admin | `src/pages/api/admin/rules.ts` | `api` `env` | `courier_rules` | `env.test.ts` |
 | `/api/admin/seller-bank-accounts` | DELETE, GET, POST, PUT | admin session | owner, admin | `src/pages/api/admin/seller-bank-accounts.ts` | `api` `env` `seller-bank-account` | `seller_bank_accounts` `stores` | `env.test.ts` `seller-bank-account.test.ts` |
-| `/api/admin/settings` | GET, POST, PUT | admin session | owner, admin | `src/pages/api/admin/settings.ts` | `api` `autolaris-client` `crm-template` `embed-security` `env` `headless-api` `mengantar-client` `provider-config` `storefront-template` | `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `storefront_templates` `stores` `warehouses` | `autolaris-client.test.ts` `crm-template.test.ts` `embed-security.test.ts` `env.test.ts` `headless-api.test.ts` `mengantar-client.test.ts` `provider-config.test.ts` `storefront-template.test.ts` |
+| `/api/admin/settings` | GET, POST, PUT | admin session | owner, admin | `src/pages/api/admin/settings.ts` | `api` `autolaris-client` `crm-template` `embed-security` `env` `headless-api` `mengantar-client` `provider-config` `storefront-template` `tenant` | `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `storefront_templates` `stores` `warehouses` | `autolaris-client.test.ts` `crm-template.test.ts` `embed-security.test.ts` `env.test.ts` `headless-api.test.ts` `mengantar-client.test.ts` `provider-config.test.ts` `storefront-template.test.ts` `tenant.test.ts` |
 | `/api/admin/settings/developer` | DELETE, GET, PATCH, POST | admin session | owner, admin | `src/pages/api/admin/settings/developer.ts` | `api` `developer-api-keys` `env` | `developer_api_keys` `headless_api_audit_events` | `developer-api-keys.test.ts` `env.test.ts` |
 | `/api/admin/shipping` | GET, PATCH, POST | admin session | owner, admin, customer_service | `src/pages/api/admin/shipping.ts` | `admin-date-filter` `api` `env` `mengantar-client` `mengantar-order` `order-lifecycle` `payment-dispatch-policy` `provider-config` | `order_items` `orders` `payment_reconciliation_audits` `payment_transactions` `pickup_schedules` `stores` `warehouses` | `admin-date-filter.test.ts` `env.test.ts` `mengantar-client.test.ts` `mengantar-order.test.ts` `order-lifecycle.test.ts` `payment-dispatch-policy.test.ts` `provider-config.test.ts` |
 | `/api/admin/upload-r2` | POST | admin session | owner, admin, advertiser | `src/pages/api/admin/upload-r2.ts` | `api` `env` `rate-limit` | `rate_limits` | `env.test.ts` `rate-limit.test.ts` |
@@ -210,7 +210,7 @@ is either transitive (imported by another lib) or dead, and only reading tells w
 | `bundled-migrations` | 1 | — | **none** | — |
 | `capi-outbox` | 17 | `capi_event_outbox` | ✓ | `/api/meta-event` `/api/v1/tracking/events` `/api/admin/ads` |
 | `catalog-data` | 4 | — | ✓ | `/api/admin/products` |
-| `catalog-feed` | 8 | — | ✓ | `/produk/[slug]` `/[slug]` `/contoh-landing` `/full-form` `/geoipform` `/hybrid-form` `/middle-form` `/feed/google-catalog.xml` `/feed/meta-catalog.xml` `/api/form-config` `/api/v1/products` `/api/v1/products/[slug]` |
+| `catalog-feed` | 9 | — | ✓ | `/produk/[slug]` `/[slug]` `/contoh-landing` `/full-form` `/geoipform` `/hybrid-form` `/middle-form` `/feed/google-catalog.xml` `/feed/meta-catalog.xml` `/api/form-config` `/api/v1/products` `/api/v1/products/[slug]` |
 | `catalog` | 2 | `product_variants` `products` | ✓ | `/` `/404` `/produk` `/produk/[slug]` `/thanks` `/sitemap` `/[slug]` `/contoh-landing` `/embed/form` `/full-form` `/geoipform` `/hybrid-form` `/middle-form` `/feed/google-catalog.xml` `/feed/meta-catalog.xml` `/sitemap.xml` `/api/form-config` `/api/v1/products` `/api/v1/products/[slug]` |
 | `checkout-navigation` | 2 | — | ✓ | — |
 | `click-ids` | 17 | — | ✓ | `/api/meta-event` `/api/submit-middle-order` `/api/submit-order` `/api/v1/checkout` `/api/v1/tracking/events` |
@@ -230,7 +230,7 @@ is either transitive (imported by another lib) or dead, and only reading tells w
 | `form-mode` | 8 | `stores` | ✓ | `/produk/[slug]` `/geoipform` `/hybrid-form` `/api/form-config` `/api/geo-province` `/api/submit-middle-order` `/api/submit-order` `/api/v1/checkout` `/api/v1/storefront` |
 | `format-idr` | 1 | — | ✓ | `/payment` `/produk` `/admin/check` |
 | `geo` | 2 | — | **none** | `/api/submit-middle-order` |
-| `google-ads-offline` | 9 | `google_ads_conversion_outbox` `order_items` `orders` | ✓ | — |
+| `google-ads-offline` | 12 | `google_ads_conversion_outbox` `order_items` `orders` | ✓ | — |
 | `gtm` | 3 | — | **none** | — |
 | `headless-api` | 16 | `developer_api_key_usage` `developer_api_keys` `headless_api_audit_events` `stores` | ✓ | `/api/v1/checkout` `/api/v1/geo/districts` `/api/v1/geo/shipping-rates` `/api/v1/openapi.json` `/api/v1/orders/status` `/api/v1/products` `/api/v1/products/[slug]` `/api/v1/storefront` `/api/v1/tracking/events` `/api/admin/settings` |
 | `headless-checkout` | 4 | — | ✓ | `/api/v1/checkout` |
@@ -250,14 +250,14 @@ is either transitive (imported by another lib) or dead, and only reading tells w
 | `mengantar-order` | 10 | — | ✓ | `/api/admin/orders` `/api/admin/shipping` |
 | `meta-capi` | 7 | — | ✓ | `/api/meta-event` `/api/v1/tracking/events` `/admin/ads/meta` `/api/admin/ads` |
 | `meta-event-contract` | 4 | — | ✓ | `/api/meta-event` `/api/v1/tracking/events` |
-| `meta-identity` | 6 | — | ✓ | — |
+| `meta-identity` | 7 | — | ✓ | `/api/meta-event` `/api/v1/tracking/events` |
 | `meta-order-context` | 4 | — | ✓ | `/api/submit-middle-order` `/api/submit-order` `/api/v1/checkout` `/api/v1/tracking/events` |
 | `meta-purchase-order` | 6 | `order_items` `orders` `product_variants` `products` | ✓ | `/api/meta-event` `/api/v1/tracking/events` |
 | `native-landing-pages` | 7 | — | ✓ | — |
 | `notification-chime` | 3 | — | ✓ | — |
 | `notifications` | 15 | `admin_credentials` `notification_reads` `notifications` `orders` | ✓ | `/api/admin/notifications` `/api/admin/orders/[id]` |
 | `operational-alerts` | 9 | — | ✓ | `/api/admin/health` |
-| `operational-health` | 13 | `orders` `payment_transactions` | ✓ | `/api/admin/health` |
+| `operational-health` | 15 | `orders` `payment_transactions` | ✓ | `/api/admin/health` |
 | `order-instruction-hint` | 2 | — | ✓ | — |
 | `order-lifecycle` | 12 | `order_items` `orders` `payment_reconciliation_audits` `payment_transactions` | ✓ | `/api/admin/orders` `/api/admin/orders/[id]` `/api/admin/shipping` |
 | `order-persistence` | 13 | `order_items` `order_number_counters` `orders` `payment_transactions` `product_variants` `products` `seller_bank_accounts` `stores` | ✓ | `/api/record-abandoned-order` `/api/submit-middle-order` `/api/submit-order` `/api/v1/checkout` `/api/admin/orders/retention` |
@@ -288,7 +288,7 @@ is either transitive (imported by another lib) or dead, and only reading tells w
 | `storefront-template` | 9 | `storefront_templates` `stores` | ✓ | `/` `/api/admin/settings` |
 | `tenant-content` | 3 | — | **none** | `/` `/api/v1/storefront` |
 | `tenant-contract` | 3 | — | **none** | — |
-| `tenant` | 7 | `stores` | ✓ | `/api/install` |
+| `tenant` | 9 | `stores` | ✓ | `/api/install` `/api/admin/settings` |
 | `traffic-source` | 3 | — | ✓ | — |
 | `ui-variants` | 8 | — | **none** | `/thanks` |
 | `utils` | 0 | — | **none** | — |

@@ -5,6 +5,12 @@ import {
   type CapiDeliveryWindow,
   type CapiOutboxDepth,
 } from "./capi-outbox.ts";
+import { getEnvValue, getRuntimeEnv } from "./env.ts";
+import {
+  GOOGLE_ADS_MAX_BACKOFF_MS,
+  readGoogleAdsOutboxDepth,
+  type GoogleAdsOutboxDepth,
+} from "./google-ads-offline.ts";
 import { getSchemaVersionStatus } from "./schema-version.ts";
 import { CMS_VERSION } from "./version.ts";
 
@@ -35,7 +41,9 @@ export type HealthSignalId =
   | "capi-outbox"
   | "meta-capi"
   | "mengantar"
-  | "autolaris";
+  | "autolaris"
+  | "google-ads-outbox"
+  | "alerting";
 
 export type HealthSignal = {
   id: HealthSignalId;
@@ -122,14 +130,99 @@ export function classifyCapiOutbox(
   if (depth.pending + depth.failed === 0) {
     return signal("capi-outbox", "healthy", "empty", null, now, metrics);
   }
-  if (depth.failed > 0) {
-    return signal("capi-outbox", "degraded", "terminal-failures", oldest, now, metrics);
-  }
+  // Both conditions are reported, because they are different problems with
+  // different responses and one used to hide the other: `failed > 0` returned
+  // first, so a queue that was *also* stalled read as nothing but terminal
+  // failures. Terminal rows are already lost; stalled rows are still
+  // recoverable and nothing is moving them.
   const oldestAge = oldest ? now - Date.parse(oldest) : 0;
-  if (depth.overdue > 0 && oldestAge > CAPI_MAX_BACKOFF_MS) {
+  const stalled = depth.overdue > 0 && oldestAge > CAPI_MAX_BACKOFF_MS;
+  if (depth.failed > 0) {
+    return signal(
+      "capi-outbox",
+      "degraded",
+      stalled ? "stalled-with-terminal-failures" : "terminal-failures",
+      oldest,
+      now,
+      metrics,
+    );
+  }
+  if (stalled) {
     return signal("capi-outbox", "degraded", "stalled", oldest, now, metrics);
   }
   return signal("capi-outbox", "healthy", "draining", oldest, now, metrics);
+}
+
+
+/**
+ * How much conversion signal Google is owed.
+ *
+ * The Google outbox shipped with no health signal at all, and that absence had
+ * a cost: a head-of-line block in reconciliation stopped discovery entirely and
+ * nothing reported it (`UNIMPLEMENTED_SPECS.md`, task A-227). The shape mirrors
+ * `classifyCapiOutbox` deliberately — the two queues fail the same way and an
+ * operator should not have to learn two vocabularies.
+ */
+export function classifyGoogleAdsOutbox(
+  depth: GoogleAdsOutboxDepth | null,
+  now: number,
+): HealthSignal {
+  if (!depth) return signal("google-ads-outbox", "unknown", "unreadable", null, now);
+
+  const metrics = {
+    pending: depth.pending,
+    failed: depth.failed,
+    overdue: depth.overdue,
+  };
+  const oldest = depth.oldestCreatedAt;
+  if (depth.pending + depth.failed === 0) {
+    return signal("google-ads-outbox", "healthy", "empty", null, now, metrics);
+  }
+  const oldestAge = oldest ? now - Date.parse(oldest) : 0;
+  const stalled = depth.overdue > 0 && oldestAge > GOOGLE_ADS_MAX_BACKOFF_MS;
+  if (depth.failed > 0) {
+    return signal(
+      "google-ads-outbox",
+      "degraded",
+      stalled ? "stalled-with-terminal-failures" : "terminal-failures",
+      oldest,
+      now,
+      metrics,
+    );
+  }
+  if (stalled) {
+    return signal("google-ads-outbox", "degraded", "stalled", oldest, now, metrics);
+  }
+  return signal("google-ads-outbox", "healthy", "draining", oldest, now, metrics);
+}
+
+/**
+ * Whether anything can actually tell the operator.
+ *
+ * The scheduled Worker evaluates every signal above hourly and sends firing and
+ * recovery events to `OPS_ALERT_WEBHOOK_URL`. When that is unset the evaluation
+ * still runs and the transitions still compute — they simply go nowhere, and
+ * the dashboard becomes the only channel, which means somebody has to think to
+ * look.
+ *
+ * That is not hypothetical. On a sibling install a Meta outage turned
+ * `capi-outbox` degraded within the hour and ran two days before anyone opened
+ * the panel. The system knew the whole time and had no way to say so, because
+ * the variable had never been set.
+ *
+ * Reported as `unknown`, not `degraded`. A store may legitimately decide it
+ * does not want webhooks, and this module's own rule is that colouring a
+ * deliberate choice red produces an alarm nobody trusts. Amber with an explicit
+ * reason says the thing that matters — nothing will be sent — without crying
+ * wolf on every refresh.
+ */
+export function classifyAlerting(
+  webhookConfigured: boolean,
+  now: number,
+): HealthSignal {
+  return webhookConfigured
+    ? signal("alerting", "healthy", "configured", null, now)
+    : signal("alerting", "unknown", "not-configured", null, now);
 }
 
 /** When Meta last accepted an event. */
@@ -332,11 +425,12 @@ export async function collectOperationalHealth(
   database: D1Database,
   locals?: App.Locals,
 ): Promise<OperationalHealth> {
-  const [depth, delivery, mengantar, autolaris, schema] = await Promise.all([
+  const [depth, delivery, mengantar, autolaris, googleAdsDepth, schema] = await Promise.all([
     readCapiOutboxDepth(database),
     readCapiDeliveryWindow(database),
     readMengantarWindow(database),
     readAutoLarisWindow(database),
+    readGoogleAdsOutboxDepth(database),
     getSchemaVersionStatus(locals),
   ]);
 
@@ -346,6 +440,11 @@ export async function collectOperationalHealth(
     classifyCapiDelivery(delivery, now),
     classifyMengantar(mengantar, now),
     classifyAutoLaris(autolaris, now),
+    classifyGoogleAdsOutbox(googleAdsDepth, now),
+    classifyAlerting(
+      Boolean(getEnvValue("OPS_ALERT_WEBHOOK_URL", getRuntimeEnv(locals))?.trim()),
+      now,
+    ),
   ];
 
   return {

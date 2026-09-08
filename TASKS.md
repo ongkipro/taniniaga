@@ -834,10 +834,68 @@ Implementation, contract tests, static checks, build, and focused authenticated 
 
 ## Phase 72: Full-System Heavy Audit & Code Precisioning (Order Submission & Admin Invoice Engine)
 
-- [ ] **T248** - Comprehensive Tracing & Security Audit of Submit Order APIs (`/api/submit-order`, `/api/submit-middle-order`, `cmsads-form-widget.js`, `form-middle.ts`).
+- [x] **T248** - Comprehensive Tracing & Security Audit of Submit Order APIs (`/api/submit-order`, `/api/submit-middle-order`, `cmsads-form-widget.js`, `form-middle.ts`). **Done 2026-09-09.**
   -> REQ: REQ-10, REQ-16 · deps: [] · Done when: end-to-end tracing guarantees 100% reliable redirect to `/thanks` for COD and `/payment?order=...` for online payment, with strict payload validation, D1 mutation safety, and zero unhandled errors.
-- [ ] **T249** - Comprehensive Tracing & React Hydration Audit of Admin Invoice Page (`/admin/orders/[id].ts`, `/admin/orders/[invoice].astro`, `OrderDetail.tsx`).
+      -> **The `?order=...` half of this acceptance text is superseded and was not
+      implemented.** `payment.astro` 303-redirects away every query parameter but
+      `preview`, and `checkout-navigation.ts` clears `search` on both completion
+      paths, because no order identifier or status token belongs in a URL a
+      server or a referrer can read. The locator rides in the fragment instead,
+      which browsers never transmit. Building `?order=...` would have undone a
+      deliberate decision in two places.
+      -> **The reliability half was genuinely broken.** `sessionStorage.setItem`
+      sat outside the try/catch, *after* the order was committed to D1. Safari's
+      private mode has historically thrown on any write and a browser set to
+      block site data does the same — so that throw stranded the buyer on the
+      submitting spinner with a real order behind them, and because the server
+      Purchase is only ever triggered from `/thanks`, neither leg fired. Guarded
+      in both forms, and both now carry the fragment locator, so `/thanks` can
+      recover the order the way `/payment` already could.
+      -> Opening the page found what the tests could not: recovered that way the
+      summary rendered `Rp0` beside a real order, because the fragment carries a
+      locator and not the money. `/api/order-status` already returned the right
+      figures; the page now fills only what the local state could not.
+      -> Payload validation, D1 mutation safety and error handling were audited
+      and found sound: `orderSubmitSchema` guards the boundary, `persistOrder`
+      writes through one `db.batch`, price is server-authoritative (shipping is
+      re-quoted and `unit_price` comes from the D1 variant), and every fetch path
+      already terminates in a user-visible message.
+      -> Evidence: 679 tests, `astro check` clean, build passed, route map
+      regenerated; and in Chromium with `sessionStorage` cleared,
+      `/thanks#o=42&t=…` recovered the order, removed the fragment from the
+      address bar, and rendered `Rp95.000` / `Rp89.000` with zero horizontal
+      overflow and a clean console.
+- [x] **T249** - Comprehensive Tracing & React Hydration Audit of Admin Invoice Page (`/admin/orders/[id].ts`, `/admin/orders/[invoice].astro`, `OrderDetail.tsx`). **Done 2026-09-09.**
   -> REQ: REQ-24 · deps: [T248] · Done when: invoice page handles numeric IDs, invoice strings (`INV-10018`), and fallback keys with 100% uptime, zero React hook order violations, and clean fallback state rendering.
+      -> **No code change was needed; what was missing was the evidence.** The
+      audit found the behaviour already correct and this entry records how that
+      was established, so the next reader does not re-open it.
+      -> Key resolution is exhaustive: the lookup matches `order_number`, a
+      case-insensitive `order_number`, `public_status_token`, `CAST(id AS TEXT)`
+      and the integer `id`. Verified live — `42`, `INV-10042`, `inv-10042` and
+      the status token all answered `200`; an unknown key answered `404`.
+      -> **Zero hook-order violations.** The two early returns sit at the end of
+      the component (`loading`, then `error || !order`), and no hook is called
+      after either — checked mechanically, not by eye. The `useMemo` bodies guard
+      `!order` *inside* the hook rather than around it, which is the correct
+      shape.
+      -> Fallback state is clean: an unknown key renders "Detail Order Tidak
+      Ditemukan" with a route back to the order list — no stuck spinner, no blank
+      island. The only console entry is the `404` the page is reporting.
+      -> Evidence: Chromium, logged in against a seeded local D1. `INV-10042`
+      and `42` both hydrated with the customer visible; `tidak-ada` rendered the
+      empty state; zero horizontal overflow on all three.
+
+- [x] **A-58** — Browser verification debt on two admin surfaces. **Cleared 2026-09-09.**
+      -> Both surfaces were seen rendered at 390 px and 1440 px, which is what
+      the entry asked for. The schema notice on `/admin/dashboard` (A-13) reads
+      `skema 56/56` against a real migrated local D1, and the operational health
+      panel renders beside it — including the two signals added this week,
+      `Saluran peringatan` and `Antrean Google Ads offline`. The renamed
+      embed-dialog strings (A-9) render as `Embed Checkout Form - <product>` with
+      the `ADSBOOKCMS WIDGET SNIPPET` label, and the dialog does not overflow the
+      viewport at 390 px.
+      -> Zero horizontal overflow on both surfaces at both widths; console clean.
 
 ## Phase 73: Cloudflare Maximum Acceleration Engine Implementation
 - [x] **T250** — Zero-Waterfall SSR Data Injection for Admin Pages (`/admin/orders`, `/admin/products`, `OrdersTable.tsx`, `ProductCatalog.tsx`).
@@ -1109,9 +1167,7 @@ A-50 install topology (blocked until A-10 removes the build-time constraint)
 - [x] **A-57** — Two maintenance scripts point at a repository that no longer exists. **Deleted 2026-08-16.** Their inputs, their dependencies and the repository they pointed at were all gone, and their outputs matched nothing in the tree.
  -> `scripts/generate-logo-assets.cjs` and `scripts/generate-webp-logo.cjs` hardcode `projectRoot = '/home/ongki/Projects/cmsads'` and `require` sharp from that checkout's `node_modules`. That repository is gone. Both are unrunnable from this tree and would write into the wrong project if it returned. Done when: they resolve paths relative to this repository and take their dependency from it, or they are deleted. They also still emit `adscms-logo.*` filenames.
 
-- [ ] **A-58** — Browser verification debt on two admin surfaces.
- -> `AGENTS.md` §1 requires opening a page for browser-visible changes. Two shipped changes have not had that: the schema-mismatch notice on `/admin/dashboard` (A-13) and the renamed embed-dialog strings (A-9). Both were verified statically only — build, typecheck, `astro check`, and for A-13 against the real local D1 — because the admin is behind auth and the tree was contended. Done when: both are seen rendered at a mobile and a desktop width.
- · Note the local D1 is 19 migrations behind the tree, so it needs migrating before it can serve a realistic admin session.
+- [x] **A-58** — Browser verification debt on two admin surfaces. **Cleared 2026-09-09**, recorded above with T249.
 
 - [x] **A-59** — A fresh install could not be logged into. **Fixed 2026-08-16.**
  -> REQ: REQ-3 · LOGIN-1 · The seeded `admin` credential accepted only a password supplied through `BOOTSTRAP_ADMIN_PASSWORD`, and nothing sets that on a new Worker — so a new install had an admin account no password could open. This is the second install blocker found today, after the migration chain (A-56); together they meant the product could not be installed at all.
@@ -1203,6 +1259,34 @@ A-50 install topology (blocked until A-10 removes the build-time constraint)
  -> deps: [A-50] · Done when: either the product is published as an installable artifact so installs depend on a version rather than copying a tree, or the idea is recorded as rejected with its reason. This is what would make "one product, many installs" true rather than aspirational.
 
 ---
+
+## Phase A — added 2026-09-07
+
+Parity with the two forked installs, taken upstream after screening each
+behaviour against both. BUILD-LOG Entry 175 carries the evidence.
+
+- [x] **A-257** — The route map is a dictionary: libs, tables and tests per route, and a module index. **Done 2026-09-07.**
+ -> `src/lib/route-map.ts` derives every column; `route-map.test.ts` fails on drift. 14 of 99 modules named as untested.
+- [x] **A-258** — Checkout deduplication guard for the columns `0053` shipped. **Done 2026-09-07.**
+ -> `persistOrder` fingerprints and reuses inside two hours; test verified by disabling the guard.
+- [x] **A-259** — Meta identity captured at checkout reaches the Purchase sent later. **Done 2026-09-07.**
+ -> three capture points, two consumers, `country` sent; ported by hand around `buyerEmail`/`matchableCustomerEmail`.
+- [x] **A-260** — CAPI outbox: claim-before-send lease, thirty-day purge, recovery requeue. **Done 2026-09-07.**
+ -> `UPDATE … RETURNING` claim, Purchases first; tests on real SQLite for the two-writer property.
+- [x] **A-261** — AutoLaris digital orders submitted; Advice reconciliation hourly, paid on `rc: "00"` only. **Done 2026-09-07.**
+ -> `reconcileAutoLarisPaymentStatuses` from the cron; health reads `paid_at`; RELEASE/STATUS/UNIMPLEMENTED corrected.
+- [x] **A-262** — Pixel ID verified against Meta before save; ads settings report their source. **Done 2026-09-07.**
+ -> `verifyMetaPixelIdentity`; `AdsConfigSource`; Google Ads destination taken whole from one source.
+- [x] **A-263** — Notification floor stamped at operator creation; ninety-day purge. **Done 2026-09-07.**
+ -> the `// lazy:` ceiling in `notifications.ts` is closed.
+- [x] **A-264** — Deploy preflight refuses a stale or dirty tree, after fetching. **Done 2026-09-07.**
+ -> `evaluateDeployPreflight`; placeholder refusal kept and non-overridable; `ALLOW_STALE_DEPLOY=1` documented in RELEASE §7.
+- [x] **A-265** — A Purchase requires an eligible order and carries the order's catalog identity. **Done 2026-09-07.**
+ -> `isMetaPurchaseOrderEligible` (409 on both routes); `resolveMetaPurchaseContentIds` replaces the caller's list.
+- [x] **A-266** — One robots directive per page; product brand in the feeds. **Done 2026-09-07.**
+ -> `nofollow={noindex}` through `astro-seo`; `<g:brand>` from `products.brand`, store name as fallback.
+- [ ] **A-267** — Decide the fleet's Meta Pixel loading strategy: deferred (product, measured 2522 → 45 ms Purchase) or synchronous (two installs, "immediate detection"). Owner decision; not a port.
+- [ ] **A-268** — Bring `zvarashop` and `zanobyshop` forward. Proven behaviour is upstream; what remains is pages and config. Each needs a backup, a maintenance window and its own session.
 
 ## Phase A — added 2026-08-17
 
