@@ -329,6 +329,37 @@ Treat this file as history, not as a specification. Current system state is owne
 
 ## Chronological Progress Log
 
+### 2026-09-09 — Merge the product line (AdsBookCMS `9d537fb`)
+
+Brought this install forward thirteen commits from `product/main`, cleanly and
+with no conflicts. The product's own `BUILD-LOG` carries the detail; what
+arrived here, and why each mattered:
+
+- **`country` now reaches the Conversions API leg.** It was validated, hashed,
+  sent by the `/thanks` browser leg and forwarded by the headless route — and
+  dropped by `/api/meta-event`, which carries every first-party PageView,
+  ViewContent and `/thanks` Purchase, so the two legs of one order described the
+  buyer with different key sets.
+- **A Pixel ID is verified against Meta on save.** `^\d{5,25}$` accepts a
+  Business Manager ID; when one was saved into that field on a sibling install
+  both legs died silently for two days.
+- **Outbox rows are claimed before they are sent**, so two overlapping drains
+  cannot transmit the same row twice, and a terminated outage can be requeued
+  once by an operator after the destination is proven live.
+- **A committed order can no longer lose its own confirmation.**
+  `sessionStorage.setItem` sat outside the try/catch and after the order reached
+  D1; a browser that refuses storage stranded the buyer with a real order behind
+  them and fired neither Purchase leg. Both forms now carry the locator in the
+  URL fragment so `/thanks` can recover.
+- **The honeypot no longer names itself** on the public checkout endpoints, the
+  catalog feeds clamp `title`/`description` to what each platform accepts, the
+  Google feed stops claiming an MPN from the merchant-editable `sku`, and the
+  operational panel reports both a stalled queue and whether alerting can reach
+  anyone at all.
+
+**Evidence.** 681 tests (680 passed, 1 intentional skip), `astro check` clean,
+build passed, route map regenerated.
+
 ### Entry 01: Core Architecture & Setup
 
 - Initialized Astro v6 SSR with Cloudflare Workers adapter & Tailwind CSS v4.
