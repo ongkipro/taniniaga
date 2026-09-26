@@ -1,15 +1,15 @@
 # AdsBookCMS — Design System
 
-> Verified against disk: 2026-09-09 @ `b7bc43b`
+> Verified against disk: 2026-09-26 @ `01f87ed` + working tree (control contract, type anatomy, responsive)
 >
 > **The public palette is neutral plus one overridable accent (ADR-019, as
 > amended 2026-08-23).** Colour tokens below that describe the retired gold
 > accent are historical; `design-tokens.md` at the repository root is the
-> current source for the neutrals, and the eight `--sf-*` custom properties in
+> current source for the neutrals, and the nine `--sf-*` custom properties in
 > `src/styles/form-hybrid.css` are the re-brand contract in full — four accent
-> tokens including the focus ring, plus the field, its border, the alternate
-> surface and the separator hairline. An install overrides those five declarations; it does not fork the
-> stylesheet.
+> tokens including the focus ring, plus the field, its border, its empty state,
+> the alternate surface and the separator hairline. An install overrides those
+> declarations; it does not fork the stylesheet.
 
 This document describes the presentation layer **as it ships**, extracted from the code rather than from intent. Concrete values carry a file reference, and a line number where that line number is stable. Section 1.4 dropped its line numbers after they drifted through a refactor and left the document wrong about its own subject. Anything that could not be verified against the tree was left out — see `DECISIONS.md` ADR-010.
 
@@ -58,8 +58,8 @@ Named in `src/lib/ui-variants.ts`:
 
 - `buttonVariants` primary — `bg-[#111111] text-white hover:bg-[#333333]`
 - `badgeVariants` green — `bg-[#F5F5F5] text-[#111111] ring-1 ring-[#E5E5E5]`
-- `secondary`, `dark`, `ghost` and the `listItemVariants` /
-  `metaTextVariants` values are Tailwind **slate**, not the storefront
+- `secondary`, `dark`, `ghost` and the `listItemVariants` values are
+  Tailwind **slate**, not the storefront
   neutrals. See §8.
 
 `#8A704F`, listed here as the muted-gold eyebrow colour, has **zero**
@@ -93,16 +93,22 @@ Admin colour **is** tokenised. `.admin-shell` redefines the shadcn variables in 
 
 The `:root` oklch scale and its `.dark` overrides live in `src/styles/admin.css`,
 which is the only entry that imports shadcn. `--primary: oklch(0.546 0.245 262.881)`
-is a blue matching `ADMIN_ACCENT`; `.admin-shell` raises `--radius` from `0.625rem`
-to `0.75rem`.
+is a blue matching `ADMIN_ACCENT`. The admin radius is **one thin value,
+`--radius: 0.375rem`**, declared on both `:root` and `.admin-shell` in
+`admin.css`: shadcn popups (Select, Combobox, DropdownMenu) portal to `<body>`,
+outside `.admin-shell`, so two different values made every menu rounder than
+the control that opened it. The scale derives from it — `rounded-lg` 6px,
+`rounded-xl` ≈8px — and admin cards use `rounded-xl`; no admin file writes
+`rounded-2xl`/`rounded-3xl` or a fixed pixel radius for a card.
 
 The radius scale itself is **shared**, declared in `src/styles/foundation.css`.
 It reached every surface through shadcn's theme block until the three-way split;
 leaving it behind in `admin.css` silently reshaped every rounded corner on the
 storefront, because `rounded-md` fell back to Tailwind's `0.375rem`. `admin.css`
-also declares `--radius: 0.625rem` for shadcn's own `:root` block, and the two
-agree deliberately. Giving the storefront its own radius is a design decision,
-not something to arrive at by moving a file.
+overrides `--radius` for the admin surface only (above); the storefront never
+loads `admin.css` and keeps `foundation.css`'s `0.625rem`. Giving the
+storefront its own radius is a design decision, not something to arrive at by
+moving a file.
 
 The base variable set — `--bg-canvas: #fafafa`, `--text-main: #0f172a`,
 `--focus-ring: #2563eb` — is also in `foundation.css`. `--focus-ring` is live;
@@ -329,6 +335,14 @@ Inner content repeats `max-w-[480px]` independently rather than inheriting the s
 
 `AdminLayout` is not width-constrained: `flex h-dvh overflow-hidden` on the body (`src/layouts/AdminLayout.astro:39`), with layout owned by `AdminShell` and the shadcn sidebar.
 
+**Admin page width is one contract, owned by `AdminShell`:** the content box is
+`mx-auto w-full max-w-[1560px]`, the same box as the top bar. Pages and islands
+do not set their own centred `max-w-*`; before this rule five page widths gave
+five different content edges at 1920px. Measured 2026-09-26: all 25 admin
+pages share one left and right edge at 1280, 1440 and 1920px.
+`src/lib/admin-page-width.test.ts` refuses a centred page-level `max-w-5xl`/
+`6xl`/`7xl` coming back; inner blocks may still limit a paragraph or preview.
+
 ### 5.1 Admin navigation motion contract
 
 Admin navigation is intentionally static. Desktop renders direct workspace links
@@ -433,7 +447,95 @@ Class-variance-authority variants for storefront primitives live in `src/lib/ui-
 
 ### 7.1 `src/components/ui/` — shadcn primitives
 
-The directory contains 21 primitives used by admin React islands. The former zero-import primitives `input-group.tsx` and `popover.tsx` were removed by A-34. Treat this directory as shared admin infrastructure; extend an existing primitive before introducing another component system.
+The directory holds the shadcn primitives used by admin React islands (`input-group.tsx`, `popover.tsx` and `combobox.tsx` came back with A-295). Treat it as shared admin infrastructure; extend an existing primitive before introducing another component system.
+
+**Admin control contract (A-307).** The primitive owns a form control's
+geometry; a caller never does.
+
+| Control | Height (desktop) | Owner |
+| --- | --- | --- |
+| `Input`, `SelectTrigger`, `InputGroup`, `Combobox` input, `Button` default and `lg` | 40px (`h-10`) | `ui/*.tsx` |
+| `NativeSelect.astro`, `.admin-input-flat`, `.btn-primary` / `.btn-blue` / `.btn-secondary` (static Astro pages) | 40px | the static twins of the above, in `admin.css` |
+| `size="sm"` buttons: chips, quick picks, row actions, section adders | 28px | a compact tier inside a panel — never a page or card header action |
+| Table row actions (`icon-sm`, row menus) | 32–36px | deliberately compact, inside a row |
+| Below 768px | 48px for inputs and triggers, 44px buttons | `admin.css` touch floor |
+
+- Callers pass layout only: width, `flex-1`, `font-mono`, a textarea's
+  `min-h-*`, `rounded-l-none` on an input joined to an addon. Never height,
+  radius, background, border colour, shadow or type size, and never `size="sm"`
+  on a `SelectTrigger` or `size="xl"` on an admin `Button`.
+- A page or card header action (save, edit, delete, refresh, preview) is the
+  default `Button` size. A link that acts as a button is `buttonVariants()`
+  or `.btn-*`, never hand-built from `min-h-11 rounded-xl text-xs` (one
+  wrapped at 768px). `buttonVariants()` returns a tailwind-merged string,
+  so an Astro page or an `<a>` using it directly keeps the variant's border
+  (the unmerged base `border-transparent` used to win and drew outline
+  buttons borderless). Guards: `admin-controls.test.ts` refuses geometry on
+  `<Button>` and on any `.btn-*` class string.
+- A destructive action confirms through `useConfirm`
+  (`components/admin/useConfirm.tsx`), a shadcn Dialog naming the
+  consequence and the action — never `window.confirm`, which a guard refuses.
+- A filter toolbar is `FilterBar` + `FilterField` (one label style, a width from
+  `size`, wraps instead of overlapping) from `components/admin/filter-bar.tsx`.
+- Search is `SearchInput` from the same file — an `InputGroup` with the icon as
+  an addon and a clear button — never an icon absolutely positioned over an
+  `<Input>`.
+- Choose by role, not taste:
+  - **a toolbar filter** (status, source, category, role, date) is
+    `FilterSelect` — a DropdownMenu with a radio group sharing
+    `FILTER_TRIGGER_CLASS` with the date filter, so every filter trigger is
+    the same control (leading icon, label, chevron) and renders its own label;
+  - **a form field** whose value is submitted and validated is `Select` with an
+    `items` map always set (so the server render reads the label, never the
+    raw value) — it keeps `aria-invalid`, form reset and keyboard typeahead.
+- Object-valued comboboxes set `itemToStringValue` to the id: the hidden form
+  input otherwise carries the whole object as JSON.
+- Courier marks live in `public/images/couriers/` (WebP ≤ 5 KB each, SVGs
+  checked for script, event handlers, external references and
+  `foreignObject`); a courier without one shows its initials.
+- Kecamatan search is `DistrictCombobox`; inside a modal dialog its popup
+  portals into the dialog.
+- The one declared exception is a dark code editor, marked `data-code-editor`.
+- Lists of a few settings or methods are rows in one card (`divide-y`), not a
+  card per item inside a card.
+- Every panel has the same 1px frame: `admin.css` gives shadcn `Card` (which
+  draws none in base-nova) the border the hand-built sections already had.
+- Page gutter is 16px below `md`, 24px from `md`, 32px from `xl` (AdminShell).
+- A small, uniform set with two switches each (couriers) is a grid of one-line
+  cards: mark and name on the left, switches on the right, coverage shown only
+  when restricted.
+
+`src/lib/admin-controls.test.ts` enforces all of this and reads JSX tags to
+their real end (a `>` inside `onChange={(e) => …}` does not close the tag).
+
+**Admin type anatomy (A-310).** Inter; the admin loads 400/500/600
+(`admin.css` adds the 500 face `foundation.css` does not ship — without it every
+`font-medium` primitive rendered at 400). Five sizes, three weights, a 12px floor:
+
+| Role | Desktop | Phone (<768px) | Class |
+| --- | --- | --- | --- |
+| Page title (`AdminPageHeader`, order id) | 24/600 | 20/600 | `text-xl md:text-2xl font-semibold tracking-tight` |
+| KPI value | 24/600 | 24/600 | `text-2xl font-semibold` (tabular for money) |
+| Card / section title, top bar title | 16/600 | 16/600 | `text-base font-semibold` |
+| Body, table cell, sidebar and submenu item, menu item, button, input | 14/400 (UI 500) | 14; inputs 16 | `text-sm` — phone inputs 16px so iOS never zooms |
+| Label, helper, meta, badge, table head, sidebar section, bottom nav | 12/400–600 | 12 | `text-xs` — table head and section labels uppercase, `tracking-wider` |
+
+- Weights: 400 reading text, 500 interactive (buttons, nav, active item,
+  labels), 600 titles and emphasis. `font-bold`, `font-extrabold` and
+  `font-black` are not used in admin; they rendered as the same 700 face
+  anyway.
+- Nothing below 12px (`text-[9–11px]` measured on ~250 phone labels before
+  this). A code editor may use 13px mono.
+- `admin-controls.test.ts` enforces the floor, the weight ceiling and the
+  absence of `text-3xl`+ across `components/admin`, `pages/admin` and
+  `AdminLayout`.
+
+**Phone layout.** A fixed-size `FilterField` is half the row below `sm`, so a
+four-filter toolbar is two rows; KPI tiles are two-up and drop their
+explanatory sentence; a settings row keeps its icon beside the text and puts
+actions under it. A store without its own logo shows its initial
+(`StoreMark`) — the product mark is a 4:1 wordmark, illegible in a square.
+A table wider than the page pins its row actions (`sticky right-0`).
 
 ### 7.2 `src/components/storefront/shared/`
 
@@ -488,8 +590,7 @@ Current observations, not a second backlog. Any item selected for implementation
 
 **8.2 Two parallel colour systems remain, not three.** The storefront neutrals
 (§1.1) and Tailwind **slate**, the latter in `src/lib/ui-variants.ts` —
-`secondary`, `dark`, `ghost` and the `listItemVariants` / `metaTextVariants`
-values — and in `src/pages/thanks.astro` and `src/pages/payment.astro`. Those
+`secondary`, `dark`, `ghost` and the `listItemVariants` values — and in `src/pages/thanks.astro` and `src/pages/payment.astro`. Those
 two are customer-facing pages that adopted the square shape rule but never the
 storefront palette.
 

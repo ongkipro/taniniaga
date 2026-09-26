@@ -2,17 +2,15 @@
 import { META_EXTERNAL_ID_COOKIE } from '../../../lib/click-ids';
 interface Props {
   tenantName: string;
-  tenantSlug: string;
 }
 
-const { tenantName, tenantSlug } = Astro.props;
+const { tenantName } = Astro.props;
 ---
 
 <script
   is:inline
   define:vars={{
     tenantName,
-    tenantSlug,
     metaExternalIdCookie: META_EXTERNAL_ID_COOKIE,
   }}
 >
@@ -49,12 +47,20 @@ const { tenantName, tenantSlug } = Astro.props;
       const normalized = String(input || '')
         .trim()
         .toLowerCase();
-      if (!normalized || !globalThis.crypto?.subtle) return '';
-      const bytes = new TextEncoder().encode(normalized);
-      const digest = await crypto.subtle.digest('SHA-256', bytes);
-      return Array.from(new Uint8Array(digest))
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
+      // undefined, never '': an empty string travels as a present-but-blank
+      // match key (sha256_phone_number: "") on both the Pixel and Google
+      // enhanced conversions, where an omitted key is simply not matched on.
+      // Web Crypto is absent outside a secure context.
+      if (!normalized || !globalThis.crypto?.subtle) return undefined;
+      try {
+        const bytes = new TextEncoder().encode(normalized);
+        const digest = await crypto.subtle.digest('SHA-256', bytes);
+        return Array.from(new Uint8Array(digest))
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('');
+      } catch {
+        return undefined;
+      }
     };
 
     if (new URLSearchParams(window.location.search).get('preview') === '1') return;
@@ -65,12 +71,16 @@ const { tenantName, tenantSlug } = Astro.props;
 
     const pick = (key, fallback = '') => String(state?.[key] ?? fallback);
     const pickNum = (key, fallback = 0) => Number(state?.[key] ?? fallback);
+    // Storage that throws (blocked site data, quota) must not cost the
+    // Purchase: for COD the server leg below is the only one. Meta still
+    // deduplicates a repeat on event_id.
     const once = (key) => {
       const fullKey = `meta_once_${key}`;
-      const prev = localStorage.getItem(fullKey);
-      if (prev === '1') return false;
-      localStorage.setItem(fullKey, '1');
-      sessionStorage.setItem(fullKey, '1');
+      try {
+        if (localStorage.getItem(fullKey) === '1') return false;
+        localStorage.setItem(fullKey, '1');
+        sessionStorage.setItem(fullKey, '1');
+      } catch {}
       return true;
     };
     const getCookieValue = (name) =>
