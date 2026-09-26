@@ -48,15 +48,11 @@
   // opens the dashboard. Alert transitions are deduplicated in the install's KV.
   //
   // Released 2026-08-29 to free a slot on the account's 5-cron Workers Free
-  // cap, handed to permatamall (which had none and had live orders stuck
-  // undispatched). This store has traffic too, so its scheduled maintenance
-  // (AutoLaris payment expiry, provider callback purge, outbox drains, health
-  // check) is now dormant until the account upgrades to Workers Paid or
-  // another slot frees up. An explicit empty array — not just removing this
-  // block — is required so `wrangler deploy` actually clears the schedule
-  // already registered on Cloudflare, rather than leaving it untouched.
+  // cap for permatamall, and restored 2026-09-26 when the account accepted it
+  // again. `wrangler triggers deploy` reads the BUILT config
+  // (dist/server/wrangler.json), so a cron change needs `npm run build` first.
   "triggers": {
-    "crons": []
+    "crons": ["7 * * * *"]
   },
 
 

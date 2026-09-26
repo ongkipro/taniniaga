@@ -501,6 +501,21 @@ Treat this file as history, not as a specification. Current system state is owne
 
 ## Chronological Progress Log
 
+### 2026-09-26 — Hourly cron restored, D1 logo, product `90d5c5a`
+
+- **The hourly cron is back** (`7 * * * *`). It was released on 2026-08-29 for
+  permatamall; the account accepted it again today, so AutoLaris expiry, the
+  outbox drains and the alert evaluation run once more. The first attempt
+  reported success while changing nothing — `wrangler triggers deploy` reads
+  `dist/server/wrangler.json`, which still held the old empty schedule — and
+  only a rebuild made it take.
+- **`stores.logo` in D1** now points at `/images/taniniaga-logo.webp`. The
+  previous value, for rollback, was
+  `/assets/uploads/2026-08-21/b6c94e27-0fae-4da4-a38b-c39aefb27576.webp`.
+- **Merged AdsBookCMS `90d5c5a`**: an alert names its store and renders in
+  Slack / Google Chat / Discord webhooks. `OPS_ALERT_WEBHOOK_URL` is still unset
+  here, so the panel reads `alerting: not-configured` until one is provided.
+
 ### 2026-09-26 — Store favicon and logo assets
 
 The browser tab, the admin and `/hello` still wore the product's neutral
