@@ -501,6 +501,29 @@ Treat this file as history, not as a specification. Current system state is owne
 
 ## Chronological Progress Log
 
+### 2026-09-26 — Store favicon and logo assets
+
+The browser tab, the admin and `/hello` still wore the product's neutral
+emblem, and the logo fallback was the product wordmark. The store already had
+an identity — a green rounded tile with a white sprout, "Tani Niaga" in two
+greens — uploaded once as a 510×140 WebP. The mark was redrawn from it as
+vector and every surface now derives from that one source:
+
+- `public/favicon.ico` (16/32/48), `public/favicon.png` (32),
+  `public/favicon-192.png` (full-bleed square, so iOS and Android round it
+  without black corners), `public/images/logo.svg` (admin and login tab).
+- `public/images/taniniaga-logo.svg` is the vector master of the horizontal
+  logo; `taniniaga-logo.webp` (256 px high) is its raster for
+  `PUBLIC_SITE_LOGO`, the fallback when the D1 `stores.logo` is blank.
+- `PUBLIC_SITE_THEME_COLOR` `#111111` → `#ffffff`: the page begins with a white
+  bar, and the mobile browser chrome was painted black above it.
+
+The favicons are product-owned paths (`docs/UPDATE-PATH-OWNERSHIP.md`); a
+product merge that changes one will conflict here, and the store's copy wins.
+
+**Evidence.** 778 tests (777 passed, 1 intentional install skip), `astro check`
+0 errors / 0 warnings / 0 hints, build passed.
+
 ### 2026-09-26 — Merge the product line (AdsBookCMS `fc4015f`)
 
 Brought this install forward fourteen commits from `product/main` with no

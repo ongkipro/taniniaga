@@ -1,19 +1,9 @@
-<!--
-  The product favicon, used by every admin page and the login screen.
-
-  It previously spelled out the reference store's name in two 62px words, so
-  every install shipped a browser tab wearing someone else's brand — the same
-  defect as the login-screen artwork, on a surface nobody thought to look at.
-  It was also 960x240, which a square favicon slot letterboxes into an
-  illegible sliver.
-
-  Now: the emblem only, square, no wording. A merchant who wants their own mark
-  replaces this file; nothing here claims to be theirs in the meantime.
--->
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <rect width="256" height="256" fill="#111111"/>
-  <rect x="32" y="32" width="192" height="192" fill="none" stroke="#C5A880" stroke-width="8"/>
-  <rect x="80" y="80" width="96" height="24" fill="#C5A880"/>
-  <rect x="80" y="116" width="96" height="24" fill="#F8F7F4"/>
-  <rect x="80" y="152" width="56" height="24" fill="#C5A880"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Tani Niaga</title>
+  <rect width="512" height="512" rx="112" fill="#1BA44B"/>
+  <g fill="#FFFFFF">
+    <path d="M244 352C158 352 88 290 80 184c102-8 174 52 176 152z"/>
+    <path d="M268 352c86 0 156-62 164-168-102-8-174 52-176 152z"/>
+    <rect x="240" y="320" width="32" height="104" rx="16"/>
+  </g>
 </svg>
