@@ -1,0 +1,720 @@
+/*
+ * Route-specific styles for LP-01: Anti-Layu Mulsa Panas (BENSU).
+ *
+ * Rules:
+ *  - Type ramp: 10, 11, 12, 13, 14, 15, 16, 18, 20, 24, 28 px only.
+ *  - Weights: 400, 600, 700 only (Inter 3 faces).
+ *  - Single 480 px column owned by BaseLayout.
+ *  - Scoped prefix: .alm-
+ */
+
+/* Top Alert Bar */
+.alm-topbar {
+  display: block;
+  padding: 8px 16px;
+  background: #18181b;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* Hero Section */
+.alm-hero {
+  padding: 24px 16px 28px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.alm-tag {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #f4f4f5;
+  color: #3f3f46;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.alm-pretitle {
+  margin: 0 0 6px;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.alm-headline {
+  margin: 0;
+  color: #111111;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.alm-subheadline {
+  margin: 12px 0 0;
+  color: #3f3f46;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.alm-hero-card {
+  margin-top: 18px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.alm-hero-image {
+  display: block;
+  width: calc(100% + 32px);
+  max-width: calc(100% + 32px);
+  margin-left: -16px;
+  margin-right: -16px;
+  height: auto;
+  border-radius: 0;
+  background: #f4f4f5;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.alm-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.alm-price {
+  color: #15803d;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.alm-price-was {
+  color: #a1a1aa;
+  font-size: 14px;
+  text-decoration: line-through;
+}
+
+.alm-badge {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.alm-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #52525b;
+  font-size: 12px;
+}
+
+.alm-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+/* Primary CTA Button */
+.alm-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: 18px;
+  padding-inline: 20px;
+  border-radius: 12px;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  text-wrap: balance;
+  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.25);
+  transition: background 0.15s ease;
+}
+
+.alm-cta:hover {
+  background: #166534;
+}
+
+.alm-note {
+  margin: 10px 0 0;
+  color: #71717a;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Split Visual Comparison */
+.alm-split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.alm-split-card {
+  padding: 10px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.alm-split-card--bad {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.alm-split-card--good {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.alm-split-img {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.alm-split-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.alm-split-badge--bad {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.alm-split-badge--good {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.alm-split-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.alm-split-card--bad .alm-split-title {
+  color: #991b1b;
+}
+
+.alm-split-card--good .alm-split-title {
+  color: #166534;
+}
+
+.alm-split-desc {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #52525b;
+}
+
+/* Reusable Content Block */
+.alm-block {
+  padding: 24px 16px;
+  border-top: 1px solid #e4e4e7;
+  background: #ffffff;
+}
+
+.alm-block--tint {
+  background: #f8f7f4;
+}
+
+.alm-block-header {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.alm-block-tag {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.alm-h2 {
+  margin: 0;
+  color: #111111;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.alm-desc {
+  margin: 6px 0 0;
+  color: #52525b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Banner Image Block */
+.alm-feature-banner {
+  margin-bottom: 14px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e4e4e7;
+  background: #ffffff;
+}
+
+.alm-feature-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.alm-feature-caption {
+  padding: 10px 14px;
+  background: #fafafa;
+  color: #3f3f46;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* Image Grid for Multi-Photo Sections */
+.alm-image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.alm-image-card {
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.alm-image-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.alm-image-label {
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #27272a;
+  text-align: center;
+  background: #fafafa;
+  line-height: 1.35;
+}
+
+/* Overclaim Highlights */
+.alm-overclaim-box {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.alm-overclaim-title {
+  margin: 0;
+  color: #166534;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.alm-overclaim-desc {
+  margin: 6px 0 0;
+  color: #15803d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Hard Problem Cards */
+.alm-problem-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alm-problem-card {
+  padding: 14px 16px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.alm-problem-head {
+  margin-bottom: 4px;
+}
+
+.alm-problem-title {
+  margin: 0;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.alm-problem-body {
+  margin: 0;
+  color: #52525b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Solution Grid */
+.alm-solution-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alm-solution-card {
+  padding: 14px 16px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.alm-solution-title {
+  margin: 0 0 4px;
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.alm-solution-body {
+  margin: 0;
+  color: #52525b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Claim Cards */
+.alm-claim-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alm-claim-card {
+  padding: 14px 16px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.alm-claim-icon {
+  font-size: 18px;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.alm-claim-content h3 {
+  margin: 0;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.alm-claim-content p {
+  margin: 4px 0 0;
+  color: #52525b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Protocol / Steps */
+.alm-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alm-step-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.alm-step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.alm-step-body h4 {
+  margin: 0;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.alm-step-body p {
+  margin: 4px 0 0;
+  color: #52525b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Testimonials */
+.alm-reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alm-review-card {
+  padding: 14px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.alm-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.alm-review-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #bbf7d0;
+  flex-shrink: 0;
+}
+
+.alm-review-meta {
+  flex-grow: 1;
+}
+
+.alm-review-author {
+  color: #111111;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.alm-review-crop {
+  display: inline-block;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.alm-review-card blockquote {
+  margin: 0;
+  color: #27272a;
+  font-size: 13px;
+  line-height: 1.6;
+  font-style: normal;
+}
+
+.alm-review-location {
+  margin-top: 8px;
+  color: #71717a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Packages / Offers */
+.alm-packages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alm-package-card {
+  position: relative;
+  padding: 16px;
+  border: 2px solid #e4e4e7;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.alm-package-card--highlight {
+  border-color: #15803d;
+  background: #f0fdf4;
+}
+
+.alm-package-badge {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.alm-package-title {
+  margin: 0;
+  color: #111111;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.alm-package-desc {
+  margin: 4px 0 10px;
+  color: #52525b;
+  font-size: 12px;
+}
+
+.alm-package-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.alm-package-price {
+  color: #15803d;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.alm-package-was {
+  color: #a1a1aa;
+  font-size: 12px;
+  text-decoration: line-through;
+}
+
+/* COD Assurance Card */
+.alm-cod-box {
+  padding: 14px 16px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #fafafa;
+  margin-top: 14px;
+}
+
+.alm-cod-text h4 {
+  margin: 0;
+  color: #111111;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.alm-cod-text p {
+  margin: 4px 0 0;
+  color: #52525b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* AdsBook CMS Form Section Palette Overrides */
+[data-canonical-order-form],
+[data-hybrid-form-root],
+[data-middle-form-root] {
+  --sf-accent: #15803d;
+  --sf-accent-strong: #166534;
+  --sf-accent-soft: #f0fdf4;
+  --sf-accent-ring: rgba(21, 128, 61, 0.25);
+}
+
+/* Mobile Sticky Bar */
+.alm-sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid #e4e4e7;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.alm-sticky-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.alm-sticky-label {
+  color: #71717a;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.alm-sticky-price {
+  color: #15803d;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.alm-sticky-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}

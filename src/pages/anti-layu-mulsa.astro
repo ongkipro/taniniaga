@@ -1,0 +1,445 @@
+---
+/**
+ * Native Landing Page: LP-01 Anti-Layu Mulsa Panas (BENSU)
+ *
+ * Spesifikasi: docs/spec/10-BRUTAL-OVERCLAIM-LANDING-PAGES-CATALOG.md
+ * Master Product: bensu-pupuk-cair-organik
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import RatingStars from '../components/storefront/shared/RatingStars.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/landing.css';
+import '../styles/landing-pages/anti-layu-mulsa.css';
+
+export const prerender = false;
+
+const SLUG = 'anti-layu-mulsa';
+
+const product = await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik');
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const rupiah = (value: number) =>
+  `Rp${Math.round(Number(value) || 0).toLocaleString('id-ID')}`;
+
+const variant500 = product.variants.find((v) => v.label.toLowerCase().includes('500')) ?? product.variants[0];
+const variant1L = product.variants.find((v) => v.label.toLowerCase().includes('1')) ?? product.variants[1];
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+const comparePrice = cheapest?.comparePrice || product.comparePrice || 198000;
+const discount = comparePrice > price ? Math.round((1 - price / comparePrice) * 100) : 34;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/anti-layu-mulsa/hero-problem.webp';
+---
+
+<BaseLayout
+  title={`Solusi Bibit Anti-Layu di Bedengan Mulsa Panas | ${Astro.locals.tenant.name}`}
+  description="Cara mudah agar bibit cabai, tomat, dan sayuran tetap segar dan tegak di bedengan mulsa terik sejak hari pertama tanpa perlu menyulam ulang."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={false}
+>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector=""
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName}
+    price={price}
+  />
+
+  <!-- Top Alert Bar -->
+  <div class="alm-topbar">
+    <span>WASPADA CUACA TERIK: Suhu mulsa bedengan bisa tembus 38°C. Lindungi bibit Anda agar tidak layu dan mati.</span>
+  </div>
+
+  <!-- Hero Section -->
+  <header class="alm-hero">
+    <span class="alm-tag">Perawatan Bibit Pindah Tanam</span>
+    <p class="alm-pretitle">KAPOK BIBIT BARU TANAM MATI KARENA KEPANASAN?</p>
+    <h1 class="alm-headline">RAHASIA BIBIT TETAP SEGAR & TEGAK DI BEDENGAN MULSA PANAS SEJAK HARI PERTAMA!</h1>
+    <p class="alm-subheadline">
+      Cukup celupkan baki semai selama 15 menit ke larutan BENSU sebelum ditanam ke bedengan. Nutrisi alaminya menjaga daun tetap segar dan tidak cepat kering. Bibit langsung tegak berdiri, tidak lemas, dan cepat berakar kuat!
+    </p>
+
+    <div class="alm-hero-card">
+      <img
+        class="alm-hero-image"
+        src={heroImage}
+        alt="Bibit cabai layu terpanggang di atas bedengan mulsa panas terik"
+        width="480"
+        height="360"
+        loading="eager"
+        fetchpriority="high"
+      />
+
+      <div class="alm-price-row">
+        <span class="alm-price">{rupiah(price)}</span>
+        <span class="alm-price-was">{rupiah(comparePrice)}</span>
+        <span class="alm-badge">Hemat {discount}%</span>
+      </div>
+
+      <div class="alm-trust-row">
+        <span class="alm-trust-badge">
+          <RatingStars rating={4.9} starClass="h-[13px] w-[13px]" label="Rating 4.9 dari 5" />
+          <span>4.9 / 5</span>
+        </span>
+        <span>·</span>
+        <span>1.200+ Petani Sudah Pakai</span>
+        <span>·</span>
+        <span>Bisa Bayar di Tempat (COD)</span>
+      </div>
+
+      <a class="alm-cta" href="#checkout-form">
+        PESAN BENSU SEKARANG (BISA COD)
+      </a>
+      <p class="alm-note">Garansi buka paket terlebih dahulu. Bayar tunai ke kurir saat barang sampai di rumah.</p>
+    </div>
+  </header>
+
+  <!-- Split Comparison Proof -->
+  <section class="alm-block">
+    <div class="alm-block-header">
+      <span class="alm-block-tag">Perbandingan Nyata di Lahan</span>
+      <h2 class="alm-h2">Lihat Bedanya Setelah 24 Jam Pindah Tanam</h2>
+      <p class="alm-desc">Dokumentasi langsung dari kebun petani saat cuaca sedang panas terik.</p>
+    </div>
+
+    <div class="alm-split-grid">
+      <div class="alm-split-card alm-split-card--bad">
+        <img
+          class="alm-split-img"
+          src="/images/landing/anti-layu-mulsa/kondisi-layu.webp"
+          alt="Kondisi bibit layu tanpa BENSU"
+          width="240"
+          height="160"
+          loading="lazy"
+        />
+        <span class="alm-split-badge alm-split-badge--bad">Tanpa BENSU</span>
+        <h3 class="alm-split-title">Lemas & Daun Gosong</h3>
+        <p class="alm-split-desc">Daun lemas terkulai di plastik mulsa yang panas. Banyak bibit mati dan harus keluar uang lagi buat beli benih sulaman.</p>
+      </div>
+
+      <div class="alm-split-card alm-split-card--good">
+        <img
+          class="alm-split-img"
+          src="/images/landing/anti-layu-mulsa/kondisi-tegap.webp"
+          alt="Kondisi bibit tegap pakai BENSU"
+          width="240"
+          height="160"
+          loading="lazy"
+        />
+        <span class="alm-split-badge alm-split-badge--good">Dengan BENSU</span>
+        <h3 class="alm-split-title">100% Berdiri Tegak & Segar</h3>
+        <p class="alm-split-desc">Daun tetap kaku dan segar mengkilap menantang terik matahari. Tanaman tidak stres dan langsung cepat menancap ke tanah.</p>
+      </div>
+    </div>
+
+    <div class="alm-overclaim-box">
+      <h3 class="alm-overclaim-title">100% Bibit Hidup Tegap, Nol Biaya Sulam!</h3>
+      <p class="alm-overclaim-desc">Modal benih mahal aman seutuhnya. Anda tidak perlu buang waktu dan biaya untuk menyulam bibit yang mati kepanasan.</p>
+    </div>
+  </section>
+
+  <!-- Section: Root Explosion Proof -->
+  <section class="alm-block alm-block--tint">
+    <div class="alm-block-header">
+      <span class="alm-block-tag">Kekuatan Perakaran</span>
+      <h2 class="alm-h2">48 Jam Akar Meledak Menembus Tanah!</h2>
+      <p class="alm-desc">Serabut bulu akar putih baru cepat tumbuh aktif mencengkeram tanah bedengan.</p>
+    </div>
+
+    <div class="alm-feature-banner">
+      <img
+        src="/images/landing/anti-layu-mulsa/akar-ledak.webp"
+        alt="Foto bukti perakaran bibit cabai meledak lebat dengan pupuk Bensu"
+        width="480"
+        height="270"
+        loading="lazy"
+      />
+      <div class="alm-feature-caption">
+        Dokumentasi Lapangan: Ledakan bulu akar putih aktif mencengkeram tanah dalam tempo 48 jam setelah pindah tanam.
+      </div>
+    </div>
+
+    <p class="alm-desc" style="text-align: center; margin-top: 8px;">
+      Nutrisi organik alami BENSU langsung diserap sel tanaman. Akar tidak koma, daun tidak rontok, dan bibit langsung rakus menyerap makanan dari tanah.
+    </p>
+  </section>
+
+  <!-- Section: SOP Protocol -->
+  <section class="alm-block">
+    <div class="alm-block-header">
+      <span class="alm-block-tag">Cara Pakai Sangat Mudah</span>
+      <h2 class="alm-h2">Cuma 15 Menit Celup Baki Semai Sebelum Tanam</h2>
+      <p class="alm-desc">Sangat praktis, cukup siapkan ember air sebelum bibit ditancapkan ke bedengan:</p>
+    </div>
+
+    <div class="alm-feature-banner">
+      <img
+        src="/images/landing/anti-layu-mulsa/demo-celup.webp"
+        alt="Foto aplikasi celup baki tray semai ke larutan pupuk Bensu"
+        width="480"
+        height="270"
+        loading="lazy"
+      />
+      <div class="alm-feature-caption">
+        Dokumentasi Aplikasi: Celupkan bagian bawah baki semai selama 10–15 menit sampai air larutan meresap ke media perakaran.
+      </div>
+    </div>
+
+    <div class="alm-steps">
+      <div class="alm-step-item">
+        <span class="alm-step-num">1</span>
+        <div class="alm-step-body">
+          <h4>Campurkan BENSU ke Air</h4>
+          <p>Tuang 2–3 tutup botol BENSU ke dalam 1 ember air (sekitar 16 Liter). Aduk merata.</p>
+        </div>
+      </div>
+
+      <div class="alm-step-item">
+        <span class="alm-step-num">2</span>
+        <div class="alm-step-body">
+          <h4>Celupkan Baki Semai</h4>
+          <p>Rendam bagian bawah baki semai selama 10–15 menit hingga media tanah basah meresap ke perakaran.</p>
+        </div>
+      </div>
+
+      <div class="alm-step-item">
+        <span class="alm-step-num">3</span>
+        <div class="alm-step-body">
+          <h4>Tancapkan ke Bedengan Mulsa</h4>
+          <p>Tanam bibit seperti biasa. Sisa air celupan bisa langsung disiramkan ke lubang tanam.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Uniform Field Proof -->
+  <section class="alm-block alm-block--tint">
+    <div class="alm-block-header">
+      <span class="alm-block-tag">Bukti Hasil di Lahan</span>
+      <h2 class="alm-h2">Kebun Rapi Serempak, Tanaman Tumbuh Seragam!</h2>
+      <p class="alm-desc">Bibit cabai berdiri tegak serentak di sepanjang bedengan mulsa perak.</p>
+    </div>
+
+    <div class="alm-feature-banner">
+      <img
+        src="/images/landing/anti-layu-mulsa/hero.webp"
+        alt="Foto hamparan tanaman cabai di atas bedengan mulsa rapi dan serempak"
+        width="480"
+        height="270"
+        loading="lazy"
+      />
+      <div class="alm-feature-caption">
+        Hasil Nyata di Kebun: Hamparan bedengan mulsa berdiri hijau tegap merata tanpa ada tanaman yang kerdil atau mogok tumbuh.
+      </div>
+    </div>
+
+    <div class="alm-overclaim-box">
+      <h3 class="alm-overclaim-title">Tahan Sengatan Terik Mulsa Hingga 38°C!</h3>
+      <p class="alm-overclaim-desc">Formula dingin dari ekstrak alga laut mengunci cairan daun sehingga tidak lemas dan tidak gosong menempel di plastik.</p>
+    </div>
+  </section>
+
+  <!-- Section: Harvest Proof (Dual Photo) -->
+  <section class="alm-block">
+    <div class="alm-block-header">
+      <span class="alm-block-tag">Hasil Panen Melimpah</span>
+      <h2 class="alm-h2">Awal yang Sehat Menghasilkan Panen Berbobot!</h2>
+      <p class="alm-desc">Tanaman yang tidak pernah stres sejak bibit akan menghasilkan buah lebat berkualitas tinggi.</p>
+    </div>
+
+    <div class="alm-image-grid">
+      <div class="alm-image-card">
+        <img
+          src="/images/landing/anti-layu-mulsa/cabai-panen.webp"
+          alt="Kebun cabai berbuah lebat di lahan mulsa"
+          width="240"
+          height="180"
+          loading="lazy"
+        />
+        <div class="alm-image-label">Pohon Rindang & Berbuah Rapat</div>
+      </div>
+
+      <div class="alm-image-card">
+        <img
+          src="/images/landing/anti-layu-mulsa/panen-jumbo.webp"
+          alt="Petani panen cabai merah jumbo berkualitas"
+          width="240"
+          height="180"
+          loading="lazy"
+        />
+        <div class="alm-image-label">Buah Merah Mengkilap & Berbobot</div>
+      </div>
+    </div>
+
+    <div class="alm-overclaim-box">
+      <h3 class="alm-overclaim-title">Panen Terus Mengalir, Bebas Pohon Loyo!</h3>
+      <p class="alm-overclaim-desc">Batang kuat dan perakaran dalam menopang beban buah yang lebat hingga petikan panen terakhir.</p>
+    </div>
+  </section>
+
+  <!-- Section: Testimoni Petani -->
+  <section class="alm-block alm-block--tint">
+    <div class="alm-block-header">
+      <span class="alm-block-tag">Cerita Petani</span>
+      <h2 class="alm-h2">Pengalaman Nyata Petani di Lapangan</h2>
+      <p class="alm-desc">Hasil nyata dari para petani cabai dan tomat yang sudah membuktikannya langsung:</p>
+    </div>
+
+    <div class="alm-reviews">
+      <div class="alm-review-card">
+        <div class="alm-review-header">
+          <img
+            class="alm-review-avatar"
+            src="/images/landing/anti-layu-mulsa/testi-mastur.webp"
+            alt="Pak Haji Mastur Efendi"
+            width="44"
+            height="44"
+            loading="lazy"
+          />
+          <div class="alm-review-meta">
+            <div class="alm-review-author">Pak Haji Mastur Efendi (49 th)</div>
+            <span class="alm-review-crop">Cabai Rawit Kaliber · 5.000 Pohon</span>
+          </div>
+          <RatingStars rating={5} starClass="h-[12px] w-[12px]" label="Rating 5 dari 5" />
+        </div>
+        <blockquote>
+          "Kemarin saya tanam 5.000 bibit cabai rawit Kaliber di lahan mulsa pas cuaca panas terik. Baki semai saya celup dulu pakai larutan BENSU 15 menit sebelum ditanam. Hasilnya luar biasa, bibit langsung tegak berdiri semua tanpa ada yang layu kepanasan. Cuma mati belasan batang gara-gara dimakan jangkrik. Mantap betul!"
+        </blockquote>
+        <div class="alm-review-location">Poktan Sumber Makmur, Desa Karanganyar, Kec. Wongsorejo, Banyuwangi</div>
+      </div>
+
+      <div class="alm-review-card">
+        <div class="alm-review-header">
+          <img
+            class="alm-review-avatar"
+            src="/images/landing/anti-layu-mulsa/testi-nyoman.webp"
+            alt="Pak Nyoman Suardana"
+            width="44"
+            height="44"
+            loading="lazy"
+          />
+          <div class="alm-review-meta">
+            <div class="alm-review-author">Pak Nyoman Suardana (42 th)</div>
+            <span class="alm-review-crop">Tomat Servo F1 · 4.000 Pohon</span>
+          </div>
+          <RatingStars rating={5} starClass="h-[12px] w-[12px]" label="Rating 5 dari 5" />
+        </div>
+        <blockquote>
+          "Tanam 4.000 pohon tomat Servo di bedengan mulsa pas siang terik. Biasanya tanaman stres dulu berhari-hari. Tapi pas dicelup BENSU, tanaman tetap segar dan tidak ada yang lemas. Umur 12 hari daunnya sudah mekar hijau lebar dan serempak."
+        </blockquote>
+        <div class="alm-review-location">Poktan Rinjani Hijau, Desa Sembalun Bumbung, Kec. Sembalun, Lombok Timur</div>
+      </div>
+
+      <div class="alm-review-card">
+        <div class="alm-review-header">
+          <img
+            class="alm-review-avatar"
+            src="/images/landing/anti-layu-mulsa/testi-sukardi.webp"
+            alt="Pak Sukardi"
+            width="44"
+            height="44"
+            loading="lazy"
+          />
+          <div class="alm-review-meta">
+            <div class="alm-review-author">Pak Sukardi (44 th)</div>
+            <span class="alm-review-crop">Cabai Rawit Ori 212 · 3.500 Pohon</span>
+          </div>
+          <RatingStars rating={5} starClass="h-[12px] w-[12px]" label="Rating 5 dari 5" />
+        </div>
+        <blockquote>
+          "Biasanya kalau pindah tanam cabai Ori 212, sulaman bisa sampai 20%. Kemarin saya coba celup larutan BENSU, hasilnya praktis tidak ada yang mati layu. Bener-bener menghemat biaya bibit dan tenaga kerja."
+        </blockquote>
+        <div class="alm-review-location">Poktan Tani Maju, Desa Tulungrejo, Kec. Pare, Kediri</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Packages & Offers -->
+  <section class="alm-block">
+    <div class="alm-block-header">
+      <span class="alm-block-tag">Pilihan Paket Sesuai Kebutuhan</span>
+      <h2 class="alm-h2">Pilih Ukuran yang Pas untuk Lahan Anda</h2>
+      <p class="alm-desc">Produk 100% original bersegel resmi dari Tani Niaga. Bisa Bayar di Tempat (COD) saat barang sampai di rumah.</p>
+    </div>
+
+    <div class="alm-packages">
+      <div class="alm-package-card">
+        <h3 class="alm-package-title">Paket {variant500?.label ?? '500ml'} — Cocok untuk Lahan Sedang</h3>
+        <p class="alm-package-desc">Cukup untuk perendaman baki semai hingga 2.500 bibit tanaman.</p>
+        <div class="alm-package-price-wrap">
+          <span class="alm-package-price">{variant500 ? rupiah(variant500.price) : 'Rp 130.000'}</span>
+          {variant500?.comparePrice && <span class="alm-package-was">{rupiah(variant500.comparePrice)}</span>}
+        </div>
+      </div>
+
+      <div class="alm-package-card alm-package-card--highlight">
+        <span class="alm-package-badge">Paling Banyak Dipilih</span>
+        <h3 class="alm-package-title">Paket {variant1L?.label ?? '1 Liter'} — Rekomendasi Lahan Luas</h3>
+        <p class="alm-package-desc">Cukup untuk celup baki semai sekaligus kocor awal tanaman di lahan 1 hektar.</p>
+        <div class="alm-package-price-wrap">
+          <span class="alm-package-price">{variant1L ? rupiah(variant1L.price) : 'Rp 215.000'}</span>
+          {variant1L?.comparePrice && <span class="alm-package-was">{rupiah(variant1L.comparePrice)}</span>}
+        </div>
+      </div>
+    </div>
+
+    <div class="alm-cod-box">
+      <div class="alm-cod-text">
+        <h4>Jaminan Bayar di Tempat (COD) Tanpa Rasa Was-was</h4>
+        <p>Pesanan dikirim langsung ke alamat rumah Anda. Paket boleh dibuka dan dicek segel botolnya di depan kurir, baru bayar tunai di tempat.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Checkout Form Section (Native AdsBook CMS) -->
+  <div id="checkout-form" class="scroll-mt-8 border-t border-[#e4e4e7] bg-white pt-4 pb-12">
+    <GeoIpResolvedForm productSlug={product.slug} mode="hybrid" embedded={true} />
+  </div>
+
+  <!-- Mobile Sticky Bottom Bar -->
+  <div class="alm-sticky-bar">
+    <div class="alm-sticky-info">
+      <span class="alm-sticky-label">Pupuk Cair BENSU Organik</span>
+      <span class="alm-sticky-price">Mulai {rupiah(price)}</span>
+    </div>
+    <a class="alm-sticky-btn" href="#checkout-form">
+      Pesan Sekarang (COD)
+    </a>
+  </div>
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</BaseLayout>

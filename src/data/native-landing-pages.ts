@@ -35,11 +35,18 @@ export type NativeLandingPage = {
 };
 
 export const nativeLandingPages: NativeLandingPage[] = [
-  // Example, and the only entry that ships with the product:
-  // {
-  //   slug: 'promo-lebaran',
-  //   title: 'Promo Lebaran',
-  //   productSlug: 'pupuk-organik-cair',
-  //   description: 'Landing khusus kampanye Lebaran.',
-  // },
+  {
+    slug: 'anti-layu-mulsa',
+    title: 'Anti-Layu Mulsa Panas — 100% Bibit Hidup Tegap',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Protokol celup baki semai pelindung bibit dari panas mulsa & anti-stres pindah tanam.',
+    isActive: true,
+  },
+  {
+    slug: 'bangkitkan-tanaman-mandek',
+    title: 'Bangkitkan Tanaman Mandek — Panic Recovery 72 Jam',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Solusi darurat tanaman kerdil, macet tumbuh, dan kaget cuaca pasca hujan atau kemarau.',
+    isActive: true,
+  },
 ];
