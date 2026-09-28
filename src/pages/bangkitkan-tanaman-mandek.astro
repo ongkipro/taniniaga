@@ -8,10 +8,11 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
-import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import FormHybridContent from '../components/storefront/forms/FormHybridContent.astro';
+import LandingPagesSection from '../components/storefront/home/LandingPagesSection.astro';
 import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
 import { getStorefrontProduct } from '../lib/catalog';
-import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { listPublicLandingPages, nativeLandingCanonicalPath } from '../lib/landing-pages';
 import { defaultCatalogContentId } from '../lib/catalog-feed';
 import { recentOrderCount } from '../lib/social-proof';
 import { getRuntimeEnv } from '../lib/env';
@@ -31,6 +32,16 @@ const socialProofOrders = await recentOrderCount(
 
 const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
 const price = cheapest?.price ?? product.price;
+
+const rawPages = await listPublicLandingPages(Astro.locals);
+const otherPages = rawPages
+  .filter((p) => p.slug !== SLUG)
+  .map((p) => ({
+    title: p.title,
+    excerpt: p.excerpt,
+    href: p.href,
+    crop: 'Solusi Pertanian',
+  }));
 
 const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
 const heroImage = '/images/landing/bangkitkan-tanaman-mandek/hero-problem.webp';
@@ -53,7 +64,7 @@ const heroImage = '/images/landing/bangkitkan-tanaman-mandek/hero-problem.webp';
   <MetaLandingTracker
     slug={SLUG}
     contentId={defaultCatalogContentId(product)}
-    contentName={product.contentName}
+    contentName={product.contentName || product.productName}
     price={price}
   />
 
@@ -443,16 +454,34 @@ const heroImage = '/images/landing/bangkitkan-tanaman-mandek/hero-problem.webp';
       </div>
     </section>
 
-    <!-- 8. CHECKOUT FORM SECTION: AdsBook CMS GeoIpResolvedForm (Paten) -->
+    <!-- 8. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
     <section id="checkout-form" class="scroll-mt-8 bg-white py-12">
       <div class="px-5 pb-6 text-center">
         <h2 class="mx-auto max-w-[340px] text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
           Form Pemesanan <span class="hl-brush">Paket Pemulih</span>
         </h2>
+        <p class="mx-auto mt-2 max-w-[340px] text-[14px] text-slate-600">
+          Isi alamat pengiriman di bawah untuk menerima paket langsung di rumah.
+        </p>
       </div>
 
-      <GeoIpResolvedForm productSlug={product.slug} mode="hybrid" embedded={true} />
+      <FormHybridContent productSlug={product.slug} embedded={true} />
     </section>
+
+    <!-- 9. LIST HALAMAN SOLUSI PERTANIAN LAINNYA -->
+    {
+      otherPages.length > 0 && (
+        <LandingPagesSection
+          pages={otherPages}
+          heading={{
+            eyebrow: 'Halaman Solusi',
+            title: 'Solusi Pertanian Pilihan',
+            description: 'Pilihan formula dan panduan terbaik untuk berbagai fase tanaman Anda.',
+          }}
+          limit={5}
+        />
+      )
+    }
   </main>
 
   <script slot="head" is:inline>
