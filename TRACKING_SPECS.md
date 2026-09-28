@@ -1,6 +1,6 @@
 # AdsBookCMS Meta Pixel, CAPI, GTM, and Google Ads Specification
 
-> Verified against disk: 2026-09-26 @ `fc4015f` + working tree (Events Manager plugins observed live)
+> Verified against disk: 2026-09-28 @ `2a04340` + working tree (traffic permissions observed live)
 
 This document owns the technical tracking contract for AdsBookCMS-rendered and headless storefronts. It covers event semantics, identity, browser/server boundaries, deduplication, durable delivery, store configuration, and verification. It does not claim attribution certainty, legal compliance, consent applicability, or live provider acceptance.
 
@@ -97,6 +97,17 @@ install on 2026-09-26 and neither is visible in this repository:
   store's own CAPI already is that leg (§6, §11); leave the Gateway attached only
   if someone set it up on purpose, and then only with the same `event_id`
   deduplication in mind.
+- **Traffic permissions** — a per-pixel allow or block list of domains. A
+  domain outside it gets
+  `[Meta pixel] <id> is unavailable on this website due to it's traffic permission settings`
+  in the console, and fbevents then sends **no browser event at all**: no
+  `facebook.com/tr` request leaves the page, while the stub, the init and this
+  code's own `/api/meta-event` calls all look normal. CAPI is not subject to it,
+  so the outbox keeps showing `sent` and the panel stays healthy — half the
+  signal is gone and nothing in the store says so. Found on a live install on
+  2026-09-28 for its own domain. The fix is in Events Manager (the pixel's
+  Settings → Traffic permissions); after a new domain goes live, open it once
+  with the console showing and confirm a `facebook.com/tr` request leaves.
 
 ## 4. Canonical Event Semantics
 
@@ -140,6 +151,14 @@ The contract that replaces it:
 - **Nothing else calls `fbq('init')`.** `meta-identity.test.ts` scans the thanks
   tracker's source (comments stripped) and fails if one reappears;
   `meta-purchase-dedup.test.ts` fails if the tracker issues one at runtime.
+- **The bootstrap keeps its hooks.** Every caller reaches
+  `__PS_META_INIT__` and `__PS_LOAD_META_PIXEL__` through `?.`, so a bootstrap
+  rewritten without them still inits once, still fires `PageView`, and drops the
+  Purchase's matching in silence — an install shipped exactly that rewrite on
+  2026-08-28 to load the library sooner. `meta-identity.test.ts` runs the real
+  bootstrap and fails unless both hooks exist, an awaiting page is not init'd
+  early, and a second `__PS_META_INIT__` is refused. Loading sooner is a change
+  to the deferral inside this contract, never a replacement of it.
 - **A form page cannot upgrade its matching.** The pixel has already initialised
   by the time a buyer types anything, so `AddToCart` and `InitiateCheckout`
   carry `external_id` on the browser leg and the full identity on the CAPI leg,
