@@ -1,4 +1,7 @@
 ---
+export const prerender = false;
+return Astro.rewrite('/bangkitkan-tanaman-mandek');
+
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CompactMarketHome from '../components/storefront/templates/CompactMarketHome.astro';
 import { getStorefrontProducts } from '../lib/catalog';
