@@ -120,6 +120,13 @@ export const nativeLandingPages: NativeLandingPage[] = [
     description: 'Cuci racun asam tanah & pirit besi pasca hujan atau jerami mentah, daun merah karat pulih hijau royo-royo dan anakan meledak 40+ batang.',
     isActive: true,
   },
+  {
+    slug: 'penakluk-sawit-ganoderma',
+    title: 'Aussie — Penakluk Ganoderma & Penyelamat Sawit Kuning',
+    productSlug: 'aussie-pupuk-cair-organik',
+    description: 'Hentikan pembusukan batang Ganoderma & pulihkan daun kuning sengkleh, pupus baru membuka tegap dan TBS kembali berbobot lebat.',
+    isActive: true,
+  },
 ];
 
 /**
