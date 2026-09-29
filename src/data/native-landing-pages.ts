@@ -106,6 +106,13 @@ export const nativeLandingPages: NativeLandingPage[] = [
     description: 'Hentikan serangan jamur Fusarium tanah becek, tegakkan daun kaku jegrik dan cetak umbi merah merona super jumbo.',
     isActive: true,
   },
+  {
+    slug: 'perisai-kebal-jamur',
+    title: 'Kojien — Perisai Sel Baja Kebal Jamur & Virus Tanaman',
+    productSlug: 'kojien',
+    description: 'Teknologi Immune Cellactivator Thailand: lapiskan dinding sel dengan Bio-Silika OSA & Sulfur aktif, 99% spora jamur bulai, moler, dan patek gagal tembus.',
+    isActive: true,
+  },
 ];
 
 /**
