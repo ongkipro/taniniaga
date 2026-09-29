@@ -8,7 +8,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
-import FormHybridContent from '../components/storefront/forms/FormHybridContent.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
 import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
 import { getStorefrontProduct } from '../lib/catalog';
 import { nativeLandingCanonicalPath } from '../lib/landing-pages';
@@ -450,7 +450,7 @@ const heroImage = '/images/landing/perisai-kebal-jamur/hero-problem.webp';
         </p>
       </div>
 
-      <FormHybridContent productSlug={product.slug} embedded={true} />
+      <GeoIpResolvedForm productSlug={product.slug} mode="hybrid" embedded={true} />
     </section>
   </main>
 
