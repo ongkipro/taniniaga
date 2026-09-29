@@ -49,6 +49,62 @@ export const nativeLandingPages: NativeLandingPage[] = [
     description: 'Solusi darurat tanaman kerdil, macet tumbuh, dan kaget cuaca pasca hujan atau kemarau.',
     isActive: true,
   },
+  {
+    slug: 'pertolongan-keracunan-obat',
+    title: 'Pertolongan Keracunan Obat & Overdosis Pestisida',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Solusi cepat daun keriting gosong melepuh overdosis racun kimia, netralkan racun & picu tunas baru dalam 4 hari.',
+    isActive: true,
+  },
+  {
+    slug: 'pengunci-bunga-anti-rontok',
+    title: 'Pengunci Bunga & Pencegah Rontok Pentil Buah',
+    productSlug: 'saratoga-serum-tanaman-premium',
+    description: 'Kunci tangkai bunga dan pentil buah agar tidak rontok kena cuaca ekstrem, 95% sukses jadi buah bernas.',
+    isActive: true,
+  },
+  {
+    slug: 'maraton-panen-cabai',
+    title: 'Maraton Panen 25-30 Kali Petikan Tanpa Afkir',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Formula re-start pertumbuhan agar panen cabai terus mengalir bertingkat tembus 25-30 kali petikan tanpa afkir.',
+    isActive: true,
+  },
+  {
+    slug: 'perisai-anti-bulai',
+    title: 'Perisai Anti-Bulai Daun Putih Jagung Hibrida',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Bentengi daun jagung muda dari spora jamur bulai, daun tegap kaku hijau pekat dan tongkol padat berisi rekor 9.8 ton/Ha.',
+    isActive: true,
+  },
+  {
+    slug: 'batang-baja-anti-rebah',
+    title: 'Batang Baja Anti-Rebah Padi Sawah & Jagung',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Bikin batang padi dan jagung sekeras kawat tahan badai rendeng, batang tegak lurus sampai panen bebas busuk lumpur.',
+    isActive: true,
+  },
+  {
+    slug: 'benteng-anti-patek',
+    title: 'Benteng Anti-Patek Buah Cabai Lonyot',
+    productSlug: 'saratoga-serum-tanaman-premium',
+    description: 'Bikin kulit buah cabai liat sekeras perisai baja, jamur antraknosa rontok gagal tembus dan 98% petikan lolos Grade A.',
+    isActive: true,
+  },
+  {
+    slug: 'juara-gabah-bernas',
+    title: 'Rahasia Gabah Bernas Padi Sawah Sampai Pangkal',
+    productSlug: 'saratoga-serum-tanaman-premium',
+    description: 'Daun bendera tegak mengawal pengisian susu gabah, bulir padat sampai pangkal malai dan ubinan tembus rekor 9 ton/Ha.',
+    isActive: true,
+  },
+  {
+    slug: 'penyelamat-bawang-moler',
+    title: 'Penyelamat Bawang Merah Moler Inul & Umbi Jumbo',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Hentikan serangan jamur Fusarium tanah becek, tegakkan daun kaku jegrik dan cetak umbi merah merona super jumbo.',
+    isActive: true,
+  },
 ];
 
 /**

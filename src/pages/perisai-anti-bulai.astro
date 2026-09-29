@@ -1,0 +1,455 @@
+---
+/**
+ * Native Landing Page: LP-04 Perisai Anti-Bulai Daun Putih Jagung Hibrida (BENSU)
+ *
+ * Master Product: bensu-pupuk-cair-organik
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md & docs/spec/10-BRUTAL-OVERCLAIM-LANDING-PAGES-CATALOG.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import FormHybridContent from '../components/storefront/forms/FormHybridContent.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/perisai-anti-bulai.css';
+
+export const prerender = false;
+
+const SLUG = 'perisai-anti-bulai';
+
+const product = await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik');
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/perisai-anti-bulai/hero-bulai.webp';
+---
+
+<BaseLayout
+  title={`Perisai Anti-Bulai Daun Putih Jagung Hibrida: Bebas Bulai 99% | ${Astro.locals.tenant.name}`}
+  description="Bentengi daun jagung hibrida dari jamur bulai daun putih. Tanaman jagung tumbuh tegap hijau pekat, tongkol padat berisi rekor 9.8 ton/Ha."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={false}
+>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector=""
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName || product.productName}
+    price={price}
+  />
+
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white text-slate-950">
+    <!-- 1. HERO SECTION -->
+    <section class="bg-white pb-8 text-center">
+      <div class="px-5 pt-8">
+        <h1 class="mx-auto max-w-[440px] text-[clamp(28px,7.8vw,34px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+          <span class="block text-red-600 mb-1.5 tracking-tight">WASPADA SPORA BULAI!</span>
+          Kunci Dinding Sel Daun Jagung: Jamur Bulai <span class="hl-brush">GAGAL TEMBUS 99%</span>
+        </h1>
+        <p class="mx-auto mt-4 max-w-[400px] text-[15.5px] font-medium leading-relaxed text-slate-700">
+          Obat biasa bikin jamur kebal! Bentengi daun jagung dengan nutrisi seluler aktif: spora bulai patah gagal tembus, jagung tumbuh tegap hijau pekat!
+        </p>
+      </div>
+
+      <div class="mt-6">
+        <div class="relative overflow-hidden bg-slate-950 aspect-[3/2]">
+          <img
+            src={heroImage}
+            alt="Dokumentasi tanaman jagung bebas bulai daun hijau pekat tegap kaku sehabis semprot BENSU"
+            class="h-full w-full object-cover"
+            width="1376"
+            height="768"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="absolute bottom-0 left-0 right-0 bg-slate-950/80 px-4 py-2.5 text-center backdrop-blur-sm">
+            <p class="text-[12.5px] font-bold text-[#BBF7D0]">
+              99% Bebas Bulai: Daun berdiri tegap 45°, tongkol isi padat kuning mengkilap!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 text-[12px] font-semibold text-slate-700">
+          <span>Formula Dingin Bioaktif</span>
+          <span class="text-slate-300">•</span>
+          <span>Bisa COD (Bayar di Tempat)</span>
+          <span class="text-slate-300">•</span>
+          <span>Garansi Kebal Bulai</span>
+        </div>
+
+        <div class="mt-5 mx-5 text-left border-l-2 border-emerald-600 pl-4 bg-emerald-50/40 py-2.5 pr-3 rounded-r">
+          <p class="text-[14.5px] font-bold text-slate-950">Jangan tunggu daun jagung muda memutih bergaris klorotik.</p>
+          <p class="text-[13px] leading-relaxed text-slate-600 mt-1">
+            Spora bulai menembus kutikula daun tipis di umur 10–25 HST. Perkuat dinding sel sejak awal agar haustorium jamur patah dan jagung selamat tanpa kerdil mandul.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. HARD PROBLEM SECTION -->
+    <section class="bg-red-50/30 px-5 py-10">
+      <h2 class="text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+        Kenapa Jamur Bulai Bisa <span class="hl-brush-red">Menghancurkan 1 Kebun</span> Jagung?
+      </h2>
+      <p class="text-[15px] leading-relaxed text-slate-600 mt-3 mb-6">
+        Penyakit bulai adalah momok terbesar petani jagung. Sekali spora masuk, kerugian bisa mencapai 100%:
+      </p>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-[15.5px] font-bold text-slate-900">1. Spora Bulai Menyerang dalam 48 Jam Pasca Hujan</h3>
+          <p class="text-[14px] text-slate-600 mt-0.5 leading-relaxed">Embun malam dan rintik hujan membawa spora jamur Peronosclerospora maydis masuk ke stomata daun jagung muda yang masih rapuh.</p>
+        </div>
+
+        <div>
+          <h3 class="text-[15.5px] font-bold text-slate-900">2. Daun Putih Bergaris & Tanaman Kerdil Mandul</h3>
+          <p class="text-[14px] text-slate-600 mt-0.5 leading-relaxed">Hifa jamur menjalar ke dalam berkas pembuluh tanaman. Daun berubah putih bergaris-garis, tanaman kerdil, dan tidak mau mengeluarkan tongkol.</p>
+        </div>
+
+        <div>
+          <h3 class="text-[15.5px] font-bold text-slate-900">3. Fungisida Kimia Sering Gagal Tembus</h3>
+          <p class="text-[14px] text-slate-600 mt-0.5 leading-relaxed">Jamur yang sudah masuk berkas pembuluh kebal terhadap semprotan kimia luar. Petani rugi modal benih jutaan dan ongkos traktor sia-sia.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PHYSICAL COMPARISON SECTION -->
+    <section class="bg-white px-5 py-10">
+      <h2 class="text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+        Bedanya Nyata: <span class="hl-brush-red">Bulai Putih Kerdil</span> vs <span class="hl-brush">Jagung Tegap Hijau</span>
+      </h2>
+      <p class="text-[15px] leading-relaxed text-slate-600 mt-3 mb-6">
+        Tanpa benteng seluler, jagung muda gampang terserang bulai. Tapi dengan nutrisi pelindung, daun berdiri tegak dan kebal spora:
+      </p>
+
+      <div class="grid grid-cols-2 gap-3.5">
+        <div class="relative overflow-hidden bg-slate-50/60 rounded-lg border border-slate-100 shadow-sm">
+          <img
+            src="/images/landing/perisai-anti-bulai/kondisi-bulai.webp"
+            alt="Kondisi jagung kerdil daun putih bergaris kena jamur bulai"
+            class="aspect-[3/2] w-full object-cover"
+            width="480"
+            height="320"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+            Kena Bulai
+          </div>
+          <div class="p-3">
+            <h3 class="text-[13px] font-bold text-slate-900">Daun Putih Klorotik</h3>
+            <p class="text-[11.5px] text-slate-500 mt-0.5 leading-relaxed">
+              Tanaman kerdil, daun pucat bergaris, tongkol tidak keluar sama sekali.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative overflow-hidden bg-slate-50/60 rounded-lg border border-slate-100 shadow-sm">
+          <img
+            src="/images/landing/perisai-anti-bulai/kondisi-sehat.webp"
+            alt="Kondisi tanaman jagung hijau pekat tegap kaku bebas bulai"
+            class="aspect-[3/2] w-full object-cover"
+            width="480"
+            height="320"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+            Bebas Bulai
+          </div>
+          <div class="p-3">
+            <h3 class="text-[13px] font-bold text-emerald-800">Daun Kaku 45°</h3>
+            <p class="text-[11.5px] text-slate-600 mt-0.5 leading-relaxed">
+              Daun hijau royo-royo tegap berdiri, fotosintesis maksimal, tongkol isi padat.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PRODUCT SPECIFICATION & KNOWLEDGE -->
+    <section class="bg-white px-5 py-10">
+      <div class="-mx-5 mb-8">
+        <img
+          src="/images/landing/perisai-anti-bulai/bensu-hero.webp"
+          alt="Botol Pupuk Organik Cair BENSU di Kebun Jagung Hibrida Subur"
+          class="aspect-[16/9] w-full object-cover"
+          width="1376"
+          height="768"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <h2 class="text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+        BENSU — Nutrisi Seluler <span class="hl-brush">Pelindung Daun Jagung</span>
+      </h2>
+      <p class="text-[15px] leading-relaxed text-slate-600 mt-3 mb-6">
+        BENSU bekerja mempertebal dinding sel epidermis daun jagung muda, merangsang pembentukan fitoaleksin antibodi alami tanaman, serta mengokohkan perakaran dan diameter batang bawah agar tanaman kebal serangan jamur tular udara.
+      </p>
+
+      <div class="mt-8 space-y-5">
+        <div class="border-l-2 border-emerald-600 pl-4 py-1">
+          <h3 class="text-[15.5px] font-bold text-slate-900">99% Bebas Penyakit Bulai Daun Putih</h3>
+          <p class="text-[14px] text-slate-600 mt-1 leading-relaxed">
+            Dinding sel daun yang tebal dan liat membuat jarum penembus spora jamur bulai patah gagal tembus sejak awal.
+          </p>
+        </div>
+
+        <div class="border-l-2 border-emerald-600 pl-4 py-1">
+          <h3 class="text-[15.5px] font-bold text-slate-900">Daun Tegap Kaku Berdiri 45°</h3>
+          <p class="text-[14px] text-slate-600 mt-1 leading-relaxed">
+            Intersepsi sinar matahari naik 25%, daun bertekstur liat kasar membuat hama ulat grayak enggan memakan daun.
+          </p>
+        </div>
+
+        <div class="border-l-2 border-emerald-600 pl-4 py-1">
+          <h3 class="text-[15.5px] font-bold text-slate-900">Tongkol Panjang Berisi Sampai Rambut</h3>
+          <p class="text-[14px] text-slate-600 mt-1 leading-relaxed">
+            Biji jagung kuning padat berbobot penuh sampai pucuk tongkol tanpa ada yang ompong atau kerdil.
+          </p>
+        </div>
+      </div>
+
+      <div class="-mx-5 mt-8 relative">
+        <img
+          src="/images/landing/perisai-anti-bulai/daun-silika.webp"
+          alt="Foto makro daun jagung tegap kaku berpori sehat menyerap fotosintesis"
+          class="aspect-[16/9] w-full object-cover"
+          width="1200"
+          height="896"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900/90 py-2.5 px-4 text-center">
+          <p class="text-[12px] font-bold text-[#BBF7D0]">
+            Hasil Nyata: Daun jagung tegap berdiri kaku, hijau pekat dan kebal dari jamur bulai.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. HOW IT WORKS / CARA APLIKASI LAHAN -->
+    <section class="bg-emerald-50/20 px-5 py-10">
+      <h2 class="text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+        Sederhana & <span class="hl-brush">Cepat Dipraktekkan</span> di Ladang
+      </h2>
+      <p class="text-[15px] leading-relaxed text-slate-600 mt-3 mb-6">
+        Cukup semprot rutin di waktu pagi saat tanaman jagung masih muda:
+      </p>
+
+      <div class="-mx-5 mb-8 mt-2">
+        <img
+          src="/images/landing/perisai-anti-bulai/semprot-jagung.webp"
+          alt="Petani menyemprot kabut tipis di kebun jagung pagi hari"
+          class="aspect-[16/9] w-full object-cover"
+          width="1376"
+          height="768"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="relative border-l-2 border-emerald-100/80 pl-7 space-y-4 ml-2 mt-6">
+        <div class="relative bg-white p-4 rounded-xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+          <span class="absolute -left-[41px] top-4 flex h-7 w-7 items-center justify-center rounded-full bg-[#14532D] text-white text-[12px] font-bold ring-4 ring-white shadow-sm shadow-emerald-200">
+            1
+          </span>
+          <h3 class="text-[15px] font-bold text-slate-900">Perendaman Benih (Opsional)</h3>
+          <p class="text-[13.5px] text-slate-600 mt-1.5 leading-relaxed">
+            Campurkan 1 tutup botol BENSU ke air rendaman benih sebelum ditanam untuk memacu perakaran awal yang kokoh.
+          </p>
+        </div>
+
+        <div class="relative bg-white p-4 rounded-xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+          <span class="absolute -left-[41px] top-4 flex h-7 w-7 items-center justify-center rounded-full bg-[#14532D] text-white text-[12px] font-bold ring-4 ring-white shadow-sm shadow-emerald-200">
+            2
+          </span>
+          <h3 class="text-[15px] font-bold text-slate-900">Semprot Umur 15 HST</h3>
+          <p class="text-[13.5px] text-slate-600 mt-1.5 leading-relaxed">
+            Semprotkan kabut halus dosis 2-3 tutup botol per tangki saat jagung umur 15 hari untuk mengunci dinding sel daun.
+          </p>
+        </div>
+
+        <div class="relative bg-white p-4 rounded-xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+          <span class="absolute -left-[41px] top-4 flex h-7 w-7 items-center justify-center rounded-full bg-[#14532D] text-white text-[12px] font-bold ring-4 ring-white shadow-sm shadow-emerald-200">
+            3
+          </span>
+          <h3 class="text-[15px] font-bold text-slate-900">Ulangi Umur 30 HST</h3>
+          <p class="text-[13.5px] text-slate-600 mt-1.5 leading-relaxed">
+            Semprot susulan saat fase pembentukan batang agar diameter batang kokoh dan daun bendera hijau tegap sampai panen.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. TESTIMONIALS SECTION -->
+    <section class="bg-white px-5 py-10">
+      <h2 class="text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+        Kisah Nyata Petani: <span class="hl-brush">Panen Jagung Rekor</span>
+      </h2>
+      <p class="text-[15px] leading-relaxed text-slate-600 mt-3 mb-8">
+        Lebih dari 1.300 petani jagung hibrida membuktikan sendiri tanamannya hijau tegap bebas bulai sampai panen:
+      </p>
+
+      <div class="space-y-8">
+        <div class="space-y-3">
+          <div>
+            <h3 class="text-[16px] font-bold text-slate-900">Pak Joko Prayitno (47 th)</h3>
+            <p class="text-[12px] text-slate-500 mt-0.5">Poktan Subur Makmur, Desa Sumberagung, Plumpang, Tuban</p>
+            <p class="text-[12px] font-semibold text-emerald-800 mt-1">Jagung NK 212 Sumo 1.5 Ha • Kebun Tetangga 40% Kena Bulai</p>
+          </div>
+
+          <div class="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-slate-100">
+            <img
+              src="/images/landing/perisai-anti-bulai/testi-joko.webp"
+              alt="Dokumentasi kebun jagung Pak Joko Prayitno panen rekor di Tuban"
+              class="h-full w-full object-cover"
+              width="1376"
+              height="768"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <p class="border-l-2 border-emerald-600/30 pl-3 text-[14.5px] leading-relaxed text-slate-700 italic">
+            "Tanam 1.5 Ha NK 212 Sumo. Kebun tetangga sebelah hampir 40% daunnya putih kena bulai. Kebun saya yang disemprot BENSU sejak umur 15 HST <strong class="box-decoration-clone bg-emerald-100 px-1.5 pb-0.5 text-emerald-800 font-semibold">daunnya hijau pekat tegap kaku, nol bulai sampai panen!</strong> Timbangan pipil tembus rekor 9.8 ton/Ha."
+          </p>
+
+          <div class="pt-4 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <h3 class="text-[16px] font-bold text-slate-900">Pak H. Jayadi (51 th)</h3>
+            <p class="text-[12px] text-slate-500 mt-0.5">Poktan Tani Jaya, Desa Wirosari, Grobogan</p>
+            <p class="text-[12px] font-semibold text-emerald-800 mt-1">Pioneer P27 Gajah 1 Ha • Batang Besar & Tongkol Padat</p>
+          </div>
+
+          <div class="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-slate-100">
+            <img
+              src="/images/landing/perisai-anti-bulai/testi-jayadi.webp"
+              alt="Dokumentasi tanaman jagung Pak H. Jayadi kokoh dan lebat di Grobogan"
+              class="h-full w-full object-cover"
+              width="1376"
+              height="768"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <p class="border-l-2 border-emerald-600/30 pl-3 text-[14.5px] leading-relaxed text-slate-700 italic">
+            "Batang jagungnya besar kokoh berkayu, daun berdiri tegak jegrik, <strong class="box-decoration-clone bg-emerald-100 px-1.5 pb-0.5 text-emerald-800 font-semibold">tongkol isi padat kuning mengkilap sampai pucuk rambut</strong> tanpa ada yang kopong."
+          </p>
+
+          <div class="pt-4 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <h3 class="text-[16px] font-bold text-slate-900">Pak Syamsul Arifin (45 th)</h3>
+            <p class="text-[12px] text-slate-500 mt-0.5">Poktan So Ino, Desa Madaprama, Woja, Dompu, NTB</p>
+            <p class="text-[12px] font-semibold text-emerald-800 mt-1">BISI 18 Lahan Tadah Hujan • Tahan Terik Panas</p>
+          </div>
+
+          <div class="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-slate-100">
+            <img
+              src="/images/landing/perisai-anti-bulai/testi-syamsul.webp"
+              alt="Dokumentasi tanaman jagung Pak Syamsul Arifin tahan kering di Dompu NTB"
+              class="h-full w-full object-cover"
+              width="1376"
+              height="768"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <p class="border-l-2 border-emerald-600/30 pl-3 text-[14.5px] leading-relaxed text-slate-700 italic">
+            "Lahan tadah hujan di Dompu. Tanaman tahan terik panas dan ulat grayak karena daun keras terlindungi, <strong class="box-decoration-clone bg-emerald-100 px-1.5 pb-0.5 text-emerald-800 font-semibold">tongkol berbobot berat saat ditimbang di truk</strong>."
+          </p>
+        </div>
+      </div>
+
+      <div class="-mx-5 mt-10 relative">
+        <img
+          src="/images/landing/perisai-anti-bulai/kebun-jagung.webp"
+          alt="Foto panorama hamparan kebun jagung subur hijau royo-royo siap panen raya"
+          class="aspect-[16/9] w-full object-cover"
+          width="1376"
+          height="768"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900/90 py-2.5 px-4 text-center">
+          <p class="text-[12px] font-bold text-[#BBF7D0]">
+            Kebun Jagung Juara: Tanaman tegap kokoh, daun hijau royo-royo bebas bulai sampai panen raya.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 overflow-hidden rounded-xl border border-slate-100 bg-slate-50/50 shadow-sm">
+        <img
+          src="/images/landing/perisai-anti-bulai/panen-tongkol.webp"
+          alt="Foto tongkol jagung besar padat berbiji kuning mengkilap"
+          class="aspect-[16/9] w-full object-cover"
+          width="1376"
+          height="768"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="p-3 text-center">
+          <p class="text-[13px] font-semibold text-slate-800">
+            Hasil Akhir: Tongkol panjang besar dan padat terisi sampai ke ujung rambut tongkol.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CHECKOUT FORM SECTION -->
+    <section id="checkout-form" class="scroll-mt-8 bg-white py-12">
+      <div class="px-5 pb-6 text-center">
+        <h2 class="mx-auto max-w-[340px] text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Juara Jagung</span>
+        </h2>
+        <p class="mx-auto mt-2 max-w-[340px] text-[14px] text-slate-600">
+          Isi alamat pengiriman di bawah untuk menerima paket langsung di rumah.
+        </p>
+      </div>
+
+      <FormHybridContent productSlug={product.slug} embedded={true} />
+    </section>
+  </main>
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</BaseLayout>
