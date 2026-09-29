@@ -501,6 +501,18 @@ Treat this file as history, not as a specification. Current system state is owne
 
 ## Chronological Progress Log
 
+### 2026-09-29 — Merge the product line (AdsBookCMS `660647e`)
+
+- The hourly cron re-syncs the native register, so the ten landing pages added
+  here reach the home list and sitemap without anyone opening the admin list,
+  and the re-sync no longer moves `lastmod` when nothing changed.
+- The hourly AutoLaris Advice run checks pending and recently expired
+  instructions, newest first, instead of the same 25 oldest.
+- The admin landing catalog marks which page serves as a product page.
+- `src/lib/landing-pages.ts` is the product's again: two slugs had been added to
+  its reserved list by hand, which the native register already reserves.
+- Live D1 exported first to `~/backups/taniniaga/`; no migration in this merge.
+
 ### 2026-09-26 — Hourly cron restored, D1 logo, product `90d5c5a`
 
 - **The hourly cron is back** (`7 * * * *`). It was released on 2026-08-29 for
@@ -6213,3 +6225,35 @@ on the site because of its traffic permission settings, and made no
 healthy, because CAPI is not subject to that list. TRACKING_SPECS §3 now names
 the symptom and the one check that catches it after a domain goes live. The fix
 belongs to Events Manager, not to this repository.
+
+## 2026-09-28 — Native pages reach the sitemap without an operator
+
+The native register reached `landing_pages` only when someone opened the
+landing-page list, so eleven pages deployed to carukesi stayed out of its
+sitemap — and could not take a product page — until an operator happened to.
+The hourly cron now runs the same re-sync. It first had to stop writing when
+nothing changed: every run bumped `updated_at` on every native row, and that
+column is the sitemap's `lastmod`, so crawlers were told each page had changed
+whenever the list was opened. The upsert now writes only a real difference.
+
+**Evidence.** New test: an unchanged re-sync leaves `updated_at` alone and a
+changed description moves it; dropping the upsert's `WHERE` fails it. 783 tests.
+
+## 2026-09-29 — The hourly Advice run could never reach a new payment
+
+The run asked AutoLaris about the 25 **oldest** pending-or-expired QRIS/VA
+instructions, with no age bound. An instruction nobody pays stays eligible
+forever, so on zvarashop — 96 eligible, none ever paid — the window sat on the
+same August rows every hour and nothing created after 11 September was asked
+about. A buyer who paid and closed the payment page before it polled would never
+have been marked paid; the order would not have been released and its Purchase
+would never have reached Meta. The live run confirmed the shape: `checked: 25`,
+all `pending`, all from 28 Aug–11 Sep.
+
+The selection now takes every pending instruction plus those expired within the
+last 24 hours, newest first, still 25 a run. Older expiries are left to the
+audited manual reconciliation in `/admin/payments`.
+
+**Evidence.** New test on a real SQLite: thirty long-expired rows, one expired
+two hours ago, one pending — the run returns the pending and the recent one and
+none of the thirty; restoring the old query fails it. 784 tests.
