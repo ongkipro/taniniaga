@@ -113,6 +113,13 @@ export const nativeLandingPages: NativeLandingPage[] = [
     description: 'Teknologi Immune Cellactivator Thailand: lapiskan dinding sel dengan Bio-Silika OSA & Sulfur aktif, 99% spora jamur bulai, moler, dan patek gagal tembus.',
     isActive: true,
   },
+  {
+    slug: 'penyembuh-asem-aseman',
+    title: 'Penyelamat Padi Asem-Aseman & Booster 40+ Anakan',
+    productSlug: 'bensu-taniniaga',
+    description: 'Cuci racun asam tanah & pirit besi pasca hujan atau jerami mentah, daun merah karat pulih hijau royo-royo dan anakan meledak 40+ batang.',
+    isActive: true,
+  },
 ];
 
 /**
