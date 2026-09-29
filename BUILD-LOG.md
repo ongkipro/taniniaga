@@ -501,6 +501,16 @@ Treat this file as history, not as a specification. Current system state is owne
 
 ## Chronological Progress Log
 
+### 2026-09-29 — Landing images sized for the page
+
+The native landing images weighed 23.7 MB across 111 files, most of them
+1376×768 at 300–375 KB, heroes included — the LCP element on every landing. The
+page column is 480 px, so each was resized to at most 960 px wide (2× for
+retina) and re-encoded as WebP (q74, effort 6): 100 files changed, 9.7 MB in
+all, 59% less; `anti-layu-mulsa/hero.webp` 328 → 112 KB. Paths and names are
+unchanged, so no page or D1 row moved. The originals are kept outside the repo
+at `~/backups/taniniaga/images-landing-original-2026-09-29/`.
+
 ### 2026-09-29 — Merge the product line (AdsBookCMS `660647e`)
 
 - The hourly cron re-syncs the native register, so the ten landing pages added
