@@ -197,16 +197,34 @@ const heroImage = '/images/landing/penakluk-sawit-ganoderma/hero-problem.webp';
     <!-- 5. PRODUCT SPECIFICATION & KNOWLEDGE (Solusi Produk AUSSIE) -->
     <section class="bg-white px-5 py-10">
       <!-- Fullwidth Product Banner -->
-      <div class="-mx-5 mb-8">
+      <div class="-mx-5 mb-6 overflow-hidden bg-slate-100">
         <img
           src="/images/landing/penakluk-sawit-ganoderma/aussie-hero.webp"
-          alt="Botol Nutrisi Fungisida Organik AUSSIE di Lahan Perkebunan Kelapa Sawit"
-          class="aspect-[16/9] w-full object-cover"
+          alt="Botol Nutrisi Fungisida Organik AUSSIE Asli Dipegang Petani di Kebun Sawit"
+          class="aspect-[4/5] w-full object-cover object-top"
           width="960"
-          height="536"
+          height="1200"
           loading="lazy"
           decoding="async"
         />
+      </div>
+
+      <div class="mb-6 flex items-center gap-3.5 rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
+        <img
+          src={product.heroImage}
+          alt="Foto Botol Resmi AUSSIE Segel Hologram"
+          class="h-16 w-16 shrink-0 rounded-lg object-contain bg-white border border-emerald-100 p-0.5 shadow-sm"
+          width="64"
+          height="64"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="min-w-0">
+          <p class="text-[12.5px] font-bold text-emerald-950">Kemasan Segel Resmi Berhologram</p>
+          <p class="text-[11px] text-emerald-800 leading-snug mt-0.5">
+            Tersedia varian 500ml & 1 Liter dengan tutup segel hologram anti-pemalsuan dan QR Code resmi.
+          </p>
+        </div>
       </div>
 
       <h2 class="text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
@@ -427,9 +445,9 @@ const heroImage = '/images/landing/penakluk-sawit-ganoderma/hero-problem.webp';
         <img
           src="/images/landing/penakluk-sawit-ganoderma/panen-tbs-jumbo.webp"
           alt="Foto hasil panen tandan buah segar kelapa sawit super jumbo"
-          class="aspect-[16/9] w-full object-cover"
+          class="aspect-[4/5] w-full object-cover object-center"
           width="960"
-          height="536"
+          height="1200"
           loading="lazy"
           decoding="async"
         />
