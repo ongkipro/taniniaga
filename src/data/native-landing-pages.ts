@@ -127,6 +127,13 @@ export const nativeLandingPages: NativeLandingPage[] = [
     description: 'Hentikan pembusukan batang Ganoderma & pulihkan daun kuning sengkleh, pupus baru membuka tegap dan TBS kembali berbobot lebat.',
     isActive: true,
   },
+  {
+    slug: 'booster-anggrek-aglonema-monstera',
+    title: 'Saratoga — Booster Anggrek, Aglonema & Monstera',
+    productSlug: 'saratoga-serum-tanaman-premium',
+    description: 'Picu spike anggrek mekar serempak hingga 3 bulan, cetak daun aglonema merah merona tebal, dan pacu fenestrasi monstera robek raksasa.',
+    isActive: true,
+  },
 ];
 
 /**
