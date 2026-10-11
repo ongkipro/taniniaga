@@ -461,7 +461,7 @@
 ## 5. Implementasi & Persistensi File
 
 Seluruh 10 spesifikasi landing page brutal overclaim di atas telah tervalidasi 100% bebas gimmick (nol kaos, nol topi, nol bebas ongkir), tervalidasi dengan data agroklimat dan biokimia produk master, serta tersimpan di:
-- **Dokumentasi Repositori:** [`docs/spec/10-BRUTAL-OVERCLAIM-LANDING-PAGES-CATALOG.md`](file:///Users/feriromansyah/Projects/agrimarket/docs/spec/10-BRUTAL-OVERCLAIM-LANDING-PAGES-CATALOG.md)
-- **Komponen Aplikasi Interaktif:** [`src/features/landing/landing-page.tsx`](file:///Users/feriromansyah/Projects/agrimarket/src/features/landing/landing-page.tsx)
-- **Halaman Standalone HTML:** [`public/landing/index.html`](file:///Users/feriromansyah/Projects/agrimarket/public/landing/index.html)
+- **Dokumentasi Repositori:** [`docs/spec/10-BRUTAL-OVERCLAIM-LANDING-PAGES-CATALOG.md`](../../docs/spec/10-BRUTAL-OVERCLAIM-LANDING-PAGES-CATALOG.md)
+- **Komponen Aplikasi Interaktif:** `src/features/landing/landing-page.tsx` (agrimarket repository, not in this install)
+- **Halaman Standalone HTML:** [`public/landing/index.html`](../../public/landing/index.html)
 - **Staging Ref:** `~/Documents/work/prd/agrimarket/10-BRUTAL-OVERCLAIM-LANDING-PAGES-CATALOG.md`
