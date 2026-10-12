@@ -45,9 +45,10 @@ const heroImage = '/images/landing/maraton-panen-cabai/hero-maraton.webp';
   hideHeader={true}
   hideFooter={false}
 >
+  <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
   <SocialProofToast
     orderCount={socialProofOrders}
-    heroSelector=""
+    heroSelector="[data-landing-hero]"
     formSelector="#checkout-form"
   />
   <MetaLandingTracker
