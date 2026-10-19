@@ -137,6 +137,14 @@ export const nativeLandingPages: NativeLandingPage[] = [
     description: 'Picu spike anggrek mekar serempak hingga 3 bulan, cetak daun aglonema merah merona tebal, dan pacu fenestrasi monstera robek raksasa.',
     isActive: true,
   },
+  {
+    slug: 'bibit-sawit-busuk-kuning',
+    title: 'Aussie — Penyelamat Bibit Sawit Busuk Kuning, Layu & Tumbang',
+    productSlug: 'aussie-pupuk-cair-organik',
+    description: 'Hentikan bercak kuning Curvularia, busuk pupus tombak, dan layu stres pindah tanam. 99% bibit sawit hidup tegap berbonggol kokoh bebas tumbang.',
+    image: '/images/landing/bibit-sawit-busuk-kuning/hero-problem.webp',
+    isActive: true,
+  },
 ];
 
 /**
