@@ -45,7 +45,7 @@ const heroImage = '/images/landing/bibit-sawit-busuk-kuning/hero-problem.webp';
   preloadImages={heroImage}
   canonical={canonical}
   hideHeader={true}
-  hideFooter={false}
+  hideFooter={true}
 >
   <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
   <SocialProofToast
@@ -184,12 +184,12 @@ const heroImage = '/images/landing/bibit-sawit-busuk-kuning/hero-problem.webp';
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-3">
-        <div class="relative overflow-hidden bg-slate-50 rounded-xl border border-slate-100 shadow-sm">
+      <div class="grid grid-cols-2 items-stretch gap-3">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
           <img
             src="/images/landing/bibit-sawit-busuk-kuning/kondisi-rusak.webp"
             alt="Kondisi bibit kelapa sawit busuk kuning bercak Curvularia layu dan busuk pupus"
-            class="aspect-[16/9] w-full object-cover"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
             width="960"
             height="536"
             loading="lazy"
@@ -198,19 +198,19 @@ const heroImage = '/images/landing/bibit-sawit-busuk-kuning/hero-problem.webp';
           <div class="absolute left-2 top-2 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
             Tanpa AUSSIE
           </div>
-          <div class="p-2.5">
-            <h3 class="text-[12.5px] font-bold text-slate-900">Busuk & Roboh</h3>
-            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">
+          <div class="flex flex-1 flex-col justify-center p-3">
+            <h3 class="text-[12.5px] font-bold leading-tight text-slate-900">Busuk & Roboh</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-500">
               Daun gosong, pucuk busuk patah, mati satu per satu.
             </p>
           </div>
         </div>
 
-        <div class="relative overflow-hidden bg-emerald-50/40 rounded-xl border border-emerald-100 shadow-sm">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
           <img
             src="/images/landing/bibit-sawit-busuk-kuning/kondisi-pulih.webp"
             alt="Kondisi bibit kelapa sawit pulih sehat hijau pekat pupus tegap dan bonggol kokoh"
-            class="aspect-[16/9] w-full object-cover"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
             width="960"
             height="536"
             loading="lazy"
@@ -219,9 +219,9 @@ const heroImage = '/images/landing/bibit-sawit-busuk-kuning/hero-problem.webp';
           <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-bold text-white">
             Pakai AUSSIE
           </div>
-          <div class="p-2.5">
-            <h3 class="text-[12.5px] font-bold text-emerald-900">99% Hidup Tegap</h3>
-            <p class="text-[11px] text-slate-600 mt-0.5 leading-snug">
+          <div class="flex flex-1 flex-col justify-center p-3">
+            <h3 class="text-[12.5px] font-bold leading-tight text-emerald-900">99% Hidup Tegap</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-600">
               Tombak baru mekar mulus, daun hijau gelap berlapis lilin.
             </p>
           </div>
@@ -388,28 +388,28 @@ const heroImage = '/images/landing/bibit-sawit-busuk-kuning/hero-problem.webp';
         />
       </div>
 
-      <div class="grid grid-cols-3 gap-2.5 text-center">
-        <div class="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
-          <span class="mx-auto flex h-6 w-6 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">1</span>
-          <h3 class="mt-2 text-[12.5px] font-bold text-slate-900">Takaran</h3>
+      <div class="grid grid-cols-3 items-stretch gap-2.5 text-center">
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">1</span>
+          <h3 class="mt-2 text-[12px] font-bold leading-tight text-slate-900">Takaran</h3>
           <p class="mt-1 text-[11px] leading-snug text-slate-600">
-            <strong>3–4 tutup (50 ml)</strong> per tangki 16L air bersih.
+            <strong>3–4 tutup (50 ml)</strong> per tangki 16L air.
           </p>
         </div>
 
-        <div class="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
-          <span class="mx-auto flex h-6 w-6 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">2</span>
-          <h3 class="mt-2 text-[12.5px] font-bold text-slate-900">Semprot & Kocor</h3>
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">2</span>
+          <h3 class="mt-2 text-[12px] font-bold leading-tight text-slate-900">Aplikasi</h3>
           <p class="mt-1 text-[11px] leading-snug text-slate-600">
-            Semprot corong pupus & kocor <strong>200 ml/polibag</strong> (1L di TBM).
+            Semprot pupus & kocor <strong>200 ml/polibag</strong>.
           </p>
         </div>
 
-        <div class="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
-          <span class="mx-auto flex h-6 w-6 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">3</span>
-          <h3 class="mt-2 text-[12.5px] font-bold text-slate-900">Interval</h3>
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">3</span>
+          <h3 class="mt-2 text-[12px] font-bold leading-tight text-slate-900">Interval</h3>
           <p class="mt-1 text-[11px] leading-snug text-slate-600">
-            Ulangi tiap <strong>10–14 hari</strong> (cukup 2–3 kali aplikasi).
+            Ulangi tiap <strong>10–14 hari</strong> (cukup 2–3 kali).
           </p>
         </div>
       </div>
@@ -507,50 +507,50 @@ const heroImage = '/images/landing/bibit-sawit-busuk-kuning/hero-problem.webp';
         </div>
       </div>
 
-      <!-- 2-Card Final Overclaim Showcase: Buah Pasir Melingkar & Bonggol Gajah -->
-      <div class="mt-5 grid grid-cols-2 gap-3">
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <!-- 2-Card Final Overclaim Showcase: Presisi Simetris (Identical 3:2 Aspect & Equal Flex Height) -->
+      <div class="mt-5 grid grid-cols-2 items-stretch gap-3">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <img
             src="/images/landing/bibit-sawit-busuk-kuning/overclaim-tbm-buah-pasir.webp"
             alt="Sawit muda TBM berbonggol besar dengan tandan buah segar perdana melingkar penuh"
-            class="aspect-[3/2] w-full object-cover"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
             width="960"
             height="644"
             loading="lazy"
             decoding="async"
           />
-          <div class="p-2.5 text-center">
-            <p class="text-[11.5px] font-bold text-slate-900">Panen Perdana Melingkar</p>
-            <p class="text-[10.5px] text-slate-500 mt-0.5">Buah pasir padat mengelilingi pangkal</p>
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[12px] font-bold leading-tight text-slate-900">Panen Perdana Lebat</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-500">Buah pasir padat melingkar penuh</p>
           </div>
         </div>
 
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <img
             src="/images/landing/bibit-sawit-busuk-kuning/bonggol-kokoh-tbm.webp"
             alt="Foto bonggol kelapa sawit muda kokoh berbuah pasir perdana lebat sehabis perawatan AUSSIE"
-            class="aspect-[3/2] w-full object-cover object-center"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
             width="960"
-            height="1200"
+            height="644"
             loading="lazy"
             decoding="async"
           />
-          <div class="p-2.5 text-center">
-            <p class="text-[11.5px] font-bold text-slate-900">Bonggol Gajah Anti-Roboh</p>
-            <p class="text-[10.5px] text-slate-500 mt-0.5">Pangkal batang kekar & pelepah tegap</p>
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[12px] font-bold leading-tight text-slate-900">Bonggol Gajah Kokoh</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-500">Pangkal batang kekar anti-roboh</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- 7. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
-    <section id="checkout-form" class="scroll-mt-8 bg-white py-10">
-      <div class="px-5 pb-5 text-center">
-        <h2 class="mx-auto max-w-[340px] text-[clamp(24px,7vw,29px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
-          Form Pemesanan <span class="hl-brush">Paket Penyelamat Bibit</span>
+    <section id="checkout-form" class="scroll-mt-8 bg-white py-12">
+      <div class="px-5 pb-6 text-center">
+        <h2 class="mx-auto max-w-[340px] text-[clamp(26px,7.2vw,30px)] font-extrabold leading-[1.15] tracking-tight text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Penyelamat Sawit</span>
         </h2>
-        <p class="mx-auto mt-1.5 max-w-[320px] text-[13px] text-slate-600">
-          Garansi produk asli berhologram. Bayar di tempat saat paket sampai (COD).
+        <p class="mx-auto mt-2 max-w-[340px] text-[14px] text-slate-600">
+          Isi alamat pengiriman di bawah untuk menerima paket langsung di rumah. Bayar saat barang sampai (COD).
         </p>
       </div>
 
