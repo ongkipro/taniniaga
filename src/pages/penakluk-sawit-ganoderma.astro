@@ -11,6 +11,7 @@ import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTra
 import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
 import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
 import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
 import { nativeLandingCanonicalPath } from '../lib/landing-pages';
 import { defaultCatalogContentId } from '../lib/catalog-feed';
 import { recentOrderCount } from '../lib/social-proof';
@@ -33,6 +34,7 @@ const socialProofOrders = await recentOrderCount(
 
 const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
 const price = cheapest?.price ?? product.price;
+const comparePrice = cheapest?.comparePrice ?? product.comparePrice ?? 0;
 
 const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
 const heroImage = '/images/landing/penakluk-sawit-ganoderma/hero-problem.webp';
@@ -60,7 +62,7 @@ const heroImage = '/images/landing/penakluk-sawit-ganoderma/hero-problem.webp';
     price={price}
   />
 
-  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white text-slate-950">
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white pb-24 text-slate-950">
     <!-- 1. HERO SECTION (High-Impact Mobile First-Fold / Stop Scrolling Hook) -->
     <section class="bg-white pb-8 text-center">
       <div class="px-5 pt-8">
@@ -473,6 +475,40 @@ const heroImage = '/images/landing/penakluk-sawit-ganoderma/hero-problem.webp';
 
       <GeoIpResolvedForm productSlug={product.slug} mode="hybrid" embedded={true} />
     </section>
+
+    <!-- Floating Bottom CTA Bar (Auto-hides while checkout form is in view) -->
+    <div
+      id="lp-floating-bar"
+      class="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[480px] items-center justify-between gap-3 border-t border-slate-200/90 bg-white/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(15,23,42,0.1)] backdrop-blur-md transition-all duration-300"
+    >
+      <div class="min-w-0">
+        <p class="truncate text-[11px] font-semibold text-emerald-800">
+          AUSSIE {cheapest?.label ?? '500ml'} • Bisa COD
+        </p>
+        <div class="mt-0.5 flex items-baseline gap-1.5">
+          <span class="text-[18px] font-bold leading-none tracking-tight text-slate-950">
+            {formatIdr(price)}
+          </span>
+          {
+            comparePrice > price && (
+              <span class="text-[12px] font-normal text-slate-400 line-through">
+                {formatIdr(comparePrice)}
+              </span>
+            )
+          }
+        </div>
+      </div>
+      <a
+        href="#checkout-form"
+        class="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#15803d] px-5 text-[13px] font-bold text-white shadow-[0_4px_12px_rgba(21,128,61,0.28)] transition-colors hover:bg-[#166534] active:scale-[0.98]"
+      >
+        <span>Pesan Sekarang (COD)</span>
+        <svg aria-hidden="true" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
   </main>
 
   <script slot="head" is:inline>
@@ -487,5 +523,35 @@ const heroImage = '/images/landing/penakluk-sawit-ganoderma/hero-problem.webp';
         .getElementById('checkout-form')
         ?.scrollIntoView({ behavior: 'smooth' });
     });
+
+    function initLpFloatingBar() {
+      const bar = document.getElementById('lp-floating-bar');
+      const form = document.getElementById('checkout-form');
+      if (!bar || !form || !('IntersectionObserver' in window)) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              bar.style.transform = 'translateY(100%)';
+              bar.style.opacity = '0';
+              bar.style.pointerEvents = 'none';
+            } else {
+              bar.style.transform = 'translateY(0)';
+              bar.style.opacity = '1';
+              bar.style.pointerEvents = 'auto';
+            }
+          });
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(form);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLpFloatingBar);
+    } else {
+      initLpFloatingBar();
+    }
   </script>
 </BaseLayout>
