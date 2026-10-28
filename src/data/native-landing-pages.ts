@@ -228,6 +228,38 @@ export const nativeLandingPages: NativeLandingPage[] = [
     image: '/images/landing/booster-bunga-buah-tahunan/hero-problem.webp',
     isActive: true,
   },
+  {
+    slug: 'penyelamat-tanaman-jutaan-salah-rawat',
+    title: 'Saratoga - Penyelamat Tanaman Hias Jutaan Rupiah Mati Salah Rawat',
+    productSlug: 'saratoga-serum-tanaman-premium',
+    description: 'Selamatkan koleksi tanaman hias bernilai jutaan (Aglonema Sultan, Monstera Variegata, Anggrek, Anthurium) yang hampir mati akibat salah media, overwatering, dan stres pindah pot.',
+    image: '/images/landing/penyelamat-tanaman-jutaan-salah-rawat/hero-problem.webp',
+    isActive: true,
+  },
+  {
+    slug: 'penawar-tanaman-hias-keracunan-pupuk',
+    title: 'Saratoga - Penawar Stres Tanaman Hias Keracunan Pupuk & Obat Kimia',
+    productSlug: 'saratoga-serum-tanaman-premium',
+    description: 'Pertolongan pertama detoksifikasi tanaman hias yang gosong pinggir daun, melepuh, dan akar terbakar akibat overdosis pupuk NPK kimia maupun pestisida panas.',
+    image: '/images/landing/penawar-tanaman-hias-keracunan-pupuk/hero-problem.webp',
+    isActive: true,
+  },
+  {
+    slug: 'solusi-tanaman-hias-mati-layu-mendadak',
+    title: 'Saratoga - Pertolongan Darurat Tanaman Hias Mati Layu Mendadak',
+    productSlug: 'saratoga-serum-tanaman-premium',
+    description: 'Atasi sekarang tanaman hias koleksi yang mendadak terkulai layu semalam dan tangkai bawah lonyot berair agar pulih tegak segar dan tidak rugi jutaan rupiah.',
+    image: '/images/landing/solusi-tanaman-hias-mati-layu-mendadak/hero-problem.webp',
+    isActive: true,
+  },
+  {
+    slug: 'booster-jagung-kuning-kerdil-tongkol-jumbo',
+    title: 'Bensu - Solusi Jagung Kuning Kerdil & Booster Tongkol Bernas Full Ujung',
+    productSlug: 'bensu-pupuk-cair-organik',
+    description: 'Buka kunci hara tanah asam penyebab jagung muda kuning kerdil, hijaukan daun lebar dalam 7 hari, dan isi tongkol jagung hibrida padat bernas penuh sampai ujung.',
+    image: '/images/landing/booster-jagung-kuning-kerdil-tongkol-jumbo/hero-problem.webp',
+    isActive: true,
+  },
 ];
 
 /**

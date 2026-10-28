@@ -1,0 +1,642 @@
+---
+/**
+ * Native Landing Page: Penawar Tanaman Hias Keracunan Pupuk & Obat Kimia (SARATOGA)
+ *
+ * Visual-First Clean Direct-Response LP (High Overclaim Visuals, Concise Copy)
+ * Master Product: saratoga-serum-tanaman-premium (ID: 50510)
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/penawar-tanaman-hias-keracunan-pupuk.css';
+
+export const prerender = false;
+
+const SLUG = 'penawar-tanaman-hias-keracunan-pupuk';
+
+const product =
+  (await getStorefrontProduct(Astro.locals, 'saratoga-serum-tanaman-premium')) ??
+  (await getStorefrontProduct(Astro.locals, '50510'));
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+const comparePrice = cheapest?.comparePrice ?? product.comparePrice ?? 0;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/penawar-tanaman-hias-keracunan-pupuk/hero-problem.webp';
+---
+
+<BaseLayout
+  title={`Penawar Tanaman Hias Keracunan Pupuk & Obat Kimia: Saratoga - ${Astro.locals.tenant.name}`}
+  description="Pertolongan pertama detoksifikasi tanaman hias koleksi (Aglonema, Monstera, Anthurium, Anggrek) yang gosong pinggir daun, melepuh kaku, dan akar terbakar akibat overdosis pupuk NPK atau pestisida panas."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={true}
+>
+  <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector="[data-landing-hero]"
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName || product.productName}
+    price={price}
+  />
+
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white pb-24 text-slate-950">
+    <!-- 1. HERO SECTION (Clean, Punchy, Visual-First) -->
+    <section class="bg-white pb-6 text-center">
+      <div class="px-5 pt-7">
+        <h1 class="mx-auto max-w-[440px] text-[28px] font-bold leading-[1.15] tracking-tight text-slate-950">
+          <span class="block text-red-600 mb-1.5 tracking-tight text-[18px]">PERTOLONGAN PERTAMA TANAMAN HIAS KERACUNAN!</span>
+          Daun Gosong Pinggir, Melepuh & Akar Terbakar Pupuk/Obat Dijamin <span class="hl-brush">PULIH SEGAR & PECAH DAUN BARU</span>!
+        </h1>
+        <p class="mx-auto mt-3 max-w-[390px] text-[14px] font-normal leading-snug text-slate-700">
+          Cukup bilas kocor media & semprot kabut <strong class="text-slate-950 font-bold">SARATOGA</strong>, endapan garam pupuk NPK dan residu pestisida panas langsung dinetralkan, stomata bernapas lagi dalam 48 jam, dan tombak daun baru keluar mulus!
+        </p>
+      </div>
+
+      <div class="mt-5">
+        <div class="relative overflow-hidden bg-slate-950 aspect-[3/2]">
+          <img
+            src={heroImage}
+            alt="Perbandingan tanaman hias Monstera dan Aglonema yang gosong keracunan pupuk vs pulih segar berdaun mulus setelah detoksifikasi SARATOGA"
+            class="h-full w-full object-cover"
+            width="960"
+            height="644"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="absolute bottom-0 left-0 right-0 bg-slate-950/85 px-4 py-2 text-center backdrop-blur-sm">
+            <p class="text-[12px] font-bold text-[#BBF7D0]">
+              Detoks 48 Jam: Pinggiran daun gosong berhenti menjalar, akar putih aktif & tombak daun baru mulus!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-3.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 text-[11px] font-semibold text-slate-700">
+          <span>Bio-Active L-Amino Chelator</span>
+          <span class="text-slate-300">•</span>
+          <span>Bisa COD (Bayar di Tempat)</span>
+          <span class="text-slate-300">•</span>
+          <span>Bersih Tanpa Bau Amis</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VISUAL PROBLEM SECTION (2 Gejala Mematikan dengan Bukti Foto) -->
+    <section class="bg-red-50/35 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.15] tracking-tight text-slate-950">
+        2 Keracunan Fatal <span class="hl-brush-red">Koleksi Tanaman Hias di Pot</span>
+      </h2>
+      <p class="text-[14px] text-slate-600 mt-2 mb-5">
+        Kenapa salah takar sedikit saja langsung membuat koleksi kesayangan gosong dan macet berbulan-bulan:
+      </p>
+
+      <div class="space-y-4">
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/gejala-1.webp"
+              alt="Butiran pupuk NPK kimia menumpuk di media pot menyebabkan pinggiran daun aglonema dan philodendron gosong cokelat"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+              1. Overdosis Pupuk NPK di Pot (Root Burn)
+            </span>
+          </div>
+          <div class="p-3.5">
+            <h3 class="text-[14px] font-bold text-slate-950">Kerak Garam Asam Membakar Akar & Pinggir Daun Gosong</h3>
+            <p class="text-[12px] text-slate-600 mt-1 leading-snug">
+              Endapan pupuk kimia menarik cairan sel keluar dari akar (plasmolisis), membuat ujung akar menghitam dan tepi daun kering seperti terbakar.
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/gejala-2.webp"
+              alt="Daun Anthurium dan Anggrek melepuh kuning kecokelatan kaku akibat semprotan pestisida dan fungisida panas"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+              2. Overdosis Insektisida / Fungisida & ZPT Keras
+            </span>
+          </div>
+          <div class="p-3.5">
+            <h3 class="text-[14px] font-bold text-slate-950">Daun Melepuh Kuning Kaku, Stomata Mengunci & Tunas Macet</h3>
+            <p class="text-[12px] text-slate-600 mt-1 leading-snug">
+              Pelarut minyak pestisida (EC) dan ZPT berlebih mengikis lilin daun hingga melepuh kuning serta mengunci tombak pucuk baru.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VISUAL RECOVERY TIMELINE & COMPARISON (Full Visual Overclaim) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.15] tracking-tight text-slate-950">
+        Transformasi Nyata: <span class="hl-brush-red">Gosong Keracunan</span> Jadi <span class="hl-brush">Daun Baru Mulus</span>
+      </h2>
+
+      <!-- 3-Stage Visual Progression Banner -->
+      <div class="-mx-5 mt-4 mb-5 relative bg-slate-950">
+        <img
+          src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/overclaim-timeline.webp"
+          alt="Tahapan detoksifikasi tanaman hias dari Hari 0 gosong melepuh hingga Hari 3 berhenti menjalar dan Hari 14 pecah daun baru mulus"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="grid grid-cols-3 bg-slate-950 text-center text-[11px] font-bold py-2 px-2 border-t border-slate-800">
+          <span class="text-red-400">Hari 0: Daun Gosong</span>
+          <span class="text-amber-300">Hari 3: Racun Netral</span>
+          <span class="text-emerald-400">Hari 14: Daun Mulus</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 items-stretch gap-3">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+          <img
+            src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/kondisi-rusak.webp"
+            alt="Kondisi tanaman hias keracunan pupuk dengan pinggiran daun gosong kering dan akar busuk menghitam"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+            Dibiarkan / Air Biasa
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3">
+            <h3 class="text-[12px] font-bold leading-tight text-slate-900">Gosong Menjalar</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-500">
+              Luka bakar merembet ke tengah daun, akar menghitam & pucuk mati.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
+          <img
+            src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/kondisi-pulih.webp"
+            alt="Koleksi tanaman hias Aglonema, Monstera, dan Anthurium pulih segar mendorong daun baru mulus dan akar putih sehat"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-bold text-white">
+            Detoks SARATOGA
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3">
+            <h3 class="text-[12px] font-bold leading-tight text-emerald-900">Pecah Daun Mulus</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-600">
+              Gosong berhenti total, akar putih aktif & tombak daun baru membuka.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PRODUCT & 3 BRUTAL VISUAL OVERCLAIMS -->
+    <section class="bg-slate-50/70 px-5 py-8">
+      <!-- Authentic Bottle Surrounded by Ornamental Plants -->
+      <div class="-mx-5 mb-5 overflow-hidden bg-slate-100">
+        <img
+          src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/saratoga-hero.webp"
+          alt="Botol Serum Tanaman Premium SARATOGA Asli Dikelilingi Tanaman Hias Koleksi Segar"
+          class="aspect-[4/5] w-full object-cover object-top"
+          width="896"
+          height="1200"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Compact Official Hologram Badge -->
+      <div class="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-white p-2.5 shadow-sm">
+        <img
+          src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/saratoga-hero.webp"
+          alt="Foto Botol Resmi SARATOGA Segel Hologram Anti-Pemalsuan"
+          class="h-14 w-14 shrink-0 rounded-lg object-cover object-center bg-emerald-50/50 border border-emerald-100 p-0.5"
+          width="56"
+          height="56"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="min-w-0">
+          <p class="text-[12px] font-bold text-emerald-950">SARATOGA Original, Segel Hologram Resmi</p>
+          <p class="text-[11px] text-slate-600 leading-tight mt-0.5">
+            Khelator Asam Amino L-Bebas + Anti-Stres Fitotoksik + Mikro Chelate (500ml & 1L).
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-[24px] font-bold leading-[1.15] tracking-tight text-slate-950">
+        3 Efek <span class="hl-brush">Detoksifikasi SARATOGA</span> pada Tanaman Keracunan
+      </h2>
+      <p class="text-[14px] text-slate-600 mt-1.5 mb-5">
+        Mengikat dan meluruhkan racun kimia di akar maupun daun tanpa menguras energi tanaman:
+      </p>
+
+      <!-- 3 Big Visual Overclaim Cards -->
+      <div class="space-y-5">
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/overclaim-1.webp"
+              alt="Pencucian kerak garam pupuk NPK pada media tanam pot dan pemulihan ujung akar putih sehat"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-3.5 pb-2.5 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-bold text-white">
+                EFEK 1 • LURUHKAN KERAK GARAM PUPUK
+              </span>
+              <h3 class="text-[15px] font-bold text-white mt-1">
+                Khelasi & Bilas Endapan NPK Pembakar Akar di Dalam Pot!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3 text-[12px] text-slate-600 leading-snug">
+            Gugus L-Amino Acid mengikat ion garam asam yang mencekik perakaran sehingga tekanan osmotik pulih dan akar kembali menyerap air.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/overclaim-2.webp"
+              alt="Permukaan daun tanaman hias kembali segar lentur berembun dan stomata membuka setelah detoksifikasi"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-3.5 pb-2.5 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-bold text-white">
+                EFEK 2 • BUKA STOMATA DALAM 48 JAM
+              </span>
+              <h3 class="text-[15px] font-bold text-white mt-1">
+                Hentikan Rambatan Tip Burn & Pulihkan Daun Kaku Melepuh!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3 text-[12px] text-slate-600 leading-snug">
+            L-Proline & L-Glycine menetralkan radikal bebas bekas semprotan pestisida panas dan membuka kembali stomata daun yang terkunci.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/overclaim-3.webp"
+              alt="Tombak daun baru Monstera dan Aglonema merah membuka lebar mulus bebas gosong"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-3.5 pb-2.5 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-bold text-white">
+                EFEK 3 • DORONG TOMBAK DAUN BARU
+              </span>
+              <h3 class="text-[15px] font-bold text-white mt-1">
+                Pecahkan Pucuk Macet Jadi Daun Baru Lebar Mulus Mengilap!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3 text-[12px] text-slate-600 leading-snug">
+            Trace element chelate memicu pembelahan sel meristem pucuk sehingga tombak daun baru melesat keluar tanpa keriting atau cacat.
+          </p>
+        </div>
+      </div>
+
+      <!-- Macro Detail Proof -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/tunas-spike.webp"
+          alt="Foto makro tombak daun baru Monstera hijau mulus dan tunas merah Aglonema segar berembun setelah pulih dari keracunan"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900 py-2 px-4 text-center">
+          <p class="text-[11px] font-bold text-[#BBF7D0]">
+            Bukti Pemulihan: Tombak daun baru Monstera & tunas merah Aglonema keluar mulus 100% bebas gosong!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ULTRA-CLEAN SOP (Gambar + 3 Baris Praktis) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.15] tracking-tight text-slate-950">
+        SOP Pertolongan Pertama <span class="hl-brush">Super Praktis</span>
+      </h2>
+
+      <div class="-mx-5 my-4">
+        <img
+          src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/aplikasi-hias.webp"
+          alt="Penghobi tanaman hias membilas media pot dan menyemprotkan kabut halus SARATOGA pada Aglonema dan Monstera di teras rumah"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="grid grid-cols-3 items-stretch gap-2.5 text-center">
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">1</span>
+          <h3 class="mt-2 text-[12px] font-bold leading-tight text-slate-900">Bilas & Takar</h3>
+          <p class="mt-1 text-[11px] leading-snug text-slate-600">
+            Bilas pot dengan air, larutkan <strong>15 ml SARATOGA / 2L air</strong>.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">2</span>
+          <h3 class="mt-2 text-[12px] font-bold leading-tight text-slate-900">Aplikasi</h3>
+          <p class="mt-1 text-[11px] leading-snug text-slate-600">
+            <strong>Kabut daun</strong> & kocor 200 ml ke akar di tempat teduh.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[11px] font-bold text-white">3</span>
+          <h3 class="mt-2 text-[12px] font-bold leading-tight text-slate-900">Interval</h3>
+          <p class="mt-1 text-[11px] leading-snug text-slate-600">
+            Ulangi <strong>tiap 3–4 hari (3x)</strong> sampai pucuk baru pecah.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VISUAL TESTIMONIALS & OVERCLAIM SHOWCASE GALLERY -->
+    <section class="bg-slate-50/60 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.15] tracking-tight text-slate-950">
+        Bukti Kolektor: <span class="hl-brush">Selamat dari Gosong Pupuk & Obat</span>
+      </h2>
+
+      <div class="mt-5 space-y-5">
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/testi-1.webp"
+            alt="Ibu Rina di teras rumahnya di Surabaya memegang pot Aglonema Pride of Sumatra dan Red Stardust yang kembali segar berdaun mulus"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[14px] font-bold text-slate-950">Ibu Rina, Rungkut, Surabaya</h3>
+              <span class="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-900">Pulih dari Overdosis NPK</span>
+            </div>
+            <p class="mt-1.5 text-[12px] leading-snug text-slate-700 italic">
+              "Salah kasih NPK biru sesendok penuh, pinggiran daun Pride of Sumatra langsung gosong kering. <strong class="bg-emerald-100 px-1 text-emerald-900 not-italic">Diflushing & kocor SARATOGA 3 kali, gosongnya berhenti total dan keluar 2 daun baru mulus!</strong>"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/testi-2.webp"
+            alt="Mas Hendra di kebun rumahnya di Yogyakarta memegang Philodendron dan Anthurium Kuping Gajah berdaun tebal beludru mulus"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[14px] font-bold text-slate-950">Mas Hendra, Sleman, Yogyakarta</h3>
+              <span class="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-900">Bebas Gosong Obat Kutu</span>
+            </div>
+            <p class="mt-1.5 text-[12px] leading-snug text-slate-700 italic">
+              "Anthurium Kuping Gajah & Philodendron melepuh kuning habis semprot obat kutu siang hari. <strong class="bg-emerald-100 px-1 text-emerald-900 not-italic">Disemprot kabut SARATOGA pagi hari, daun kembali segar lentur dan tombak pucuknya langsung pecah!</strong>"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/testi-3.webp"
+            alt="Ibu Hj. Kartika di Semarang memegang pot Anggrek Dendrobium dan Phalaenopsis yang kembali subur berbunga setelah detoks SARATOGA"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[14px] font-bold text-slate-950">Ibu Hj. Kartika, Semarang</h3>
+              <span class="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-900">Akar Anggrek Aktif Lagi</span>
+            </div>
+            <p class="mt-1.5 text-[12px] leading-snug text-slate-700 italic">
+              "Akar anggrek sempat mengering hitam karena kebanyakan vitamin kimia. <strong class="bg-emerald-100 px-1 text-emerald-900 not-italic">Diterapi kabut SARATOGA tiap 4 hari, ujung akar hijau muncul lagi dan sekarang bunganya mekar awet!</strong>"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullwidth Overclaim Panorama -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/hamparan-hias.webp"
+          alt="Foto panorama teras taman hias semi-indoor asri penuh koleksi Aglonema, Monstera, Philodendron, dan Anggrek sehat berkilau"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-950 py-2 px-4 text-center">
+          <p class="text-[11px] font-bold text-[#BBF7D0]">
+            Wajib Sedia di Rak Teras: P3K Penyelamat Keracunan Pupuk/Obat sekaligus Booster Nutrisi Rutin!
+          </p>
+        </div>
+      </div>
+
+      <!-- 2-Card Final Overclaim Showcase -->
+      <div class="mt-5 grid grid-cols-2 items-stretch gap-3">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/trio-juara.webp"
+            alt="Close-up tekstur daun Monstera hijau mengilap, Aglonema merah merona, dan Anthurium Crystallinum tebal bebas luka bakar kimia"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[12px] font-bold leading-tight text-slate-900">Bebas Tip Burn</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-500">Pinggiran daun utuh mengilap</p>
+          </div>
+        </div>
+
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src="/images/landing/penawar-tanaman-hias-keracunan-pupuk/panen-2.webp"
+            alt="Koleksi Philodendron Florida Beauty dan Anthurium Crystallinum berdaun tebal beludru mulus dengan akar putih sehat"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[12px] font-bold leading-tight text-slate-900">Tombak Pucuk Mulus</h3>
+            <p class="mt-1 text-[11px] leading-snug text-slate-500">Daun baru lebar tanpa cacat</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
+    <section id="checkout-form" class="scroll-mt-8 bg-white py-12">
+      <div class="px-5 pb-6 text-center">
+        <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-900">
+          Garansi Produk Asli {product.productName}
+        </span>
+        <h2 class="mx-auto mt-2 max-w-[340px] text-[24px] font-bold leading-[1.15] tracking-tight text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Detoks & Nutrisi SARATOGA</span>
+        </h2>
+        <p class="mx-auto mt-2 max-w-[340px] text-[14px] text-slate-600">
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
+        </p>
+      </div>
+
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        selectedVariantId={cheapest?.id}
+        mode="hybrid"
+        embedded={true}
+      />
+    </section>
+
+    <!-- Floating Bottom CTA Bar (Auto-hides while checkout form is in view) -->
+    <div
+      id="lp-floating-bar"
+      class="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[480px] items-center justify-between gap-3 border-t border-slate-200/90 bg-white/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(15,23,42,0.1)] backdrop-blur-md transition-all duration-300"
+    >
+      <div class="min-w-0">
+        <p class="truncate text-[11px] font-semibold text-emerald-800">
+          SARATOGA {cheapest?.label ?? '500ml'} • Bisa COD
+        </p>
+        <div class="mt-0.5 flex items-baseline gap-1.5">
+          <span class="text-[18px] font-bold leading-none tracking-tight text-slate-950">
+            {formatIdr(price)}
+          </span>
+          {
+            comparePrice > price && (
+              <span class="text-[12px] font-normal text-slate-400 line-through">
+                {formatIdr(comparePrice)}
+              </span>
+            )
+          }
+        </div>
+      </div>
+      <a
+        href="#checkout-form"
+        class="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#15803d] px-5 text-[13px] font-bold text-white shadow-[0_4px_12px_rgba(21,128,61,0.28)] transition-colors hover:bg-[#166534] active:scale-[0.98]"
+      >
+        <span>Pesan Sekarang (COD)</span>
+        <svg aria-hidden="true" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </main>
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    function initLpFloatingBar() {
+      const bar = document.getElementById('lp-floating-bar');
+      const form = document.getElementById('checkout-form');
+      if (!bar || !form || !('IntersectionObserver' in window)) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              bar.style.transform = 'translateY(100%)';
+              bar.style.opacity = '0';
+              bar.style.pointerEvents = 'none';
+            } else {
+              bar.style.transform = 'translateY(0)';
+              bar.style.opacity = '1';
+              bar.style.pointerEvents = 'auto';
+            }
+          });
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(form);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLpFloatingBar);
+    } else {
+      initLpFloatingBar();
+    }
+  </script>
+</BaseLayout>
