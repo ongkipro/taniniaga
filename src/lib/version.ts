@@ -8,7 +8,8 @@ export type CmsVersionInfo = {
 };
 
 export const CMS_VERSION: CmsVersionInfo = {
-  version: "1.7.13",
+  version: "1.7.14",
+  // 1.7.14: the Kelola plugin settings page can send orders older than the 24 h retry window ("Kirim order lama").
   // 1.7.13: "Transfer Diterima" on a manual-transfer order marks it paid and sends its Meta Purchase from the server.
   // 1.7.12: a native landing page can declare canonicalSlug and leaves the sitemap; legal page titles name the store once.
   // 1.7.11: Smart Placement in the template; the catalogue is read once per request; product pages make six sequential D1 reads, not nine; shipping-quote type narrowing restored.
@@ -46,6 +47,6 @@ export const CMS_VERSION: CmsVersionInfo = {
   // mobile order button, deploy builds before upload (BUILD-LOG 2026-10-11).
   releaseTag: "2026.10-plugins",
   coreEngine: "Astro 7 SSR + Cloudflare Workers",
-  schemaVersion: 67,
+  schemaVersion: 78,
   lastUpdated: "2026-10-21",
 };
