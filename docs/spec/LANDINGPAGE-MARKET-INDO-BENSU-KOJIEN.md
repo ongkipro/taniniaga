@@ -77,7 +77,7 @@ graph TD
 
 ## 4. Implementasi Teknis & Validasi Akses
 
-1. **File Produksi HTML:** Berada di [`public/landing/index.html`](../../public/landing/index.html).
+1. **File Produksi HTML:** `public/landing/index.html` (purwarupa awal telah dihapus; digantikan oleh native Astro routes di `src/pages/`).
 2. **Akses URL Lokal:** Dapat langsung dibuka melalui Vite dev server di rute `http://localhost:5173/landing/`.
 3. **Fitur Interaktif Terpasang:**
    - Real-time countdown timer kuota promo.

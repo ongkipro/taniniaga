@@ -90,3 +90,28 @@ test("a request reads the catalogue from D1 once, however many components ask", 
   await getStorefrontProducts({ runtimeEnv: { OMS_DB: database } } as never);
   assert.equal(reads, 4, "the next request reads again, so an admin edit shows");
 });
+
+test("catalogue D1 variant query orders variants by price ascending so newly added smaller sizes lead", async () => {
+  const { getStorefrontProducts } = await import("./catalog.ts");
+  const queries: string[] = [];
+  const statement = {
+    bind: () => statement,
+    all: async () => ({ results: [] }),
+  };
+  const database = {
+    prepare: (sql: string) => {
+      queries.push(sql);
+      return statement;
+    },
+    batch: async () => [{ results: [] }, { results: [] }],
+  };
+  await getStorefrontProducts({ runtimeEnv: { OMS_DB: database } } as never);
+  assert.ok(
+    queries.some((sql) =>
+      /FROM\s+product_variants[\s\S]*ORDER\s+BY\s+product_id\s+ASC,\s*price\s+ASC,\s*id\s+ASC/i.test(
+        sql,
+      ),
+    ),
+    "variant query must order by product_id ASC, price ASC, id ASC",
+  );
+});

@@ -135,7 +135,7 @@ export const nativeLandingPages: NativeLandingPage[] = [
   {
     slug: 'penyembuh-asem-aseman',
     title: 'Penyelamat Padi Asem-Aseman & Booster 40+ Anakan',
-    productSlug: 'bensu-taniniaga',
+    productSlug: 'bensu-pupuk-cair-organik',
     description: 'Cuci racun asam tanah & pirit besi pasca hujan atau jerami mentah, daun merah karat pulih hijau royo-royo dan anakan meledak 40+ batang.',
     image: '/images/landing/penyembuh-asem-aseman/hero-problem.webp',
     isActive: true,

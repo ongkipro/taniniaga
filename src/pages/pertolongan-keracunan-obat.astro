@@ -99,7 +99,7 @@ const heroImage = '/images/landing/pertolongan-keracunan-obat/hero-problem.webp'
           <span class="text-slate-300">•</span>
           <span>Bisa COD (Bayar di Tempat)</span>
           <span class="text-slate-300">•</span>
-          <span>Rp4.000/Tangki</span>
+          <span>Hemat ~Rp6.000/Tangki</span>
         </div>
       </div>
     </section>
@@ -260,7 +260,7 @@ const heroImage = '/images/landing/pertolongan-keracunan-obat/hero-problem.webp'
         <div class="min-w-0">
           <p class="text-[12px] font-bold text-emerald-950">BENSU Original, Segel Hologram Resmi</p>
           <p class="text-[11px] text-slate-600 leading-tight mt-0.5">
-            L-Amino Acid Bebas + Fulvic Chelate Detoks + Bio-Stimulan Sel (500ml & 1L).
+            L-Amino Acid Bebas + Fulvic Chelate Detoks + Bio-Stimulan Sel (500ml, 1L & 2L).
           </p>
         </div>
       </div>
@@ -555,7 +555,6 @@ const heroImage = '/images/landing/pertolongan-keracunan-obat/hero-problem.webp'
 
       <GeoIpResolvedForm
         productSlug={product.slug}
-        selectedVariantId={cheapest?.id}
         mode="hybrid"
         embedded={true}
       />
@@ -568,15 +567,16 @@ const heroImage = '/images/landing/pertolongan-keracunan-obat/hero-problem.webp'
     >
       <div class="min-w-0">
         <p class="truncate text-[11px] font-semibold text-emerald-800">
-          BENSU {cheapest?.label ?? '500ml'} • Bisa COD
+          BENSU {cheapest?.label ?? '500ml'}–2L
         </p>
         <div class="mt-0.5 flex items-baseline gap-1.5">
+          <span class="text-[11px] font-medium text-slate-500">Mulai</span>
           <span class="text-[18px] font-bold leading-none tracking-tight text-slate-950">
             {formatIdr(price)}
           </span>
           {
             comparePrice > price && (
-              <span class="text-[12px] font-normal text-slate-400 line-through">
+              <span class="hidden min-[440px]:inline text-[12px] font-normal text-slate-400 line-through">
                 {formatIdr(comparePrice)}
               </span>
             )

@@ -11,6 +11,7 @@ import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTra
 import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
 import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
 import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
 import { nativeLandingCanonicalPath } from '../lib/landing-pages';
 import { defaultCatalogContentId } from '../lib/catalog-feed';
 import { recentOrderCount } from '../lib/social-proof';
@@ -22,7 +23,9 @@ export const prerender = false;
 
 const SLUG = 'penyelamat-bawang-moler';
 
-const product = await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik');
+const product =
+  (await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik')) ??
+  (await getStorefrontProduct(Astro.locals, '21329'));
 if (!product) return Astro.rewrite('/404');
 
 const socialProofOrders = await recentOrderCount(
@@ -447,11 +450,15 @@ const heroImage = '/images/landing/penyelamat-bawang-moler/hero-bawang.webp';
           Form Pemesanan <span class="hl-brush">Paket Penyelamat Bawang</span>
         </h2>
         <p class="mx-auto mt-2 max-w-[340px] text-[14px] text-slate-600">
-          Isi alamat pengiriman di bawah untuk menerima paket langsung di rumah.
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
         </p>
       </div>
 
-      <GeoIpResolvedForm productSlug={product.slug} mode="hybrid" embedded={true} />
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        mode="hybrid"
+        embedded={true}
+      />
     </section>
   </main>
 

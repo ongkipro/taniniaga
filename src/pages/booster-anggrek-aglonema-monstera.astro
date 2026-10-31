@@ -231,7 +231,7 @@ const heroImage = '/images/landing/booster-anggrek-aglonema-monstera/hero-proble
         <div class="min-w-0">
           <p class="text-[12.5px] font-bold text-emerald-950">Kemasan Segel Resmi Berhologram</p>
           <p class="text-[11px] text-emerald-800 leading-snug mt-0.5">
-            Tersedia varian 500ml & 1 Liter dengan formula bersih Jepang tanpa bau amis dan segel hologram original.
+            Tersedia varian 250ml, 500ml, 1 Liter & 2 Liter dengan formula bersih Jepang tanpa bau amis dan segel hologram original.
           </p>
         </div>
       </div>
@@ -475,11 +475,15 @@ const heroImage = '/images/landing/booster-anggrek-aglonema-monstera/hero-proble
           Form Pemesanan <span class="hl-brush">Paket Nutrisi SARATOGA</span>
         </h2>
         <p class="mx-auto mt-2 max-w-[340px] text-[14px] text-slate-600">
-          Isi alamat pengiriman di bawah untuk menerima paket langsung di rumah. Bayar saat barang sampai (COD).
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
         </p>
       </div>
 
-      <GeoIpResolvedForm productSlug={product.slug} mode="hybrid" embedded={true} />
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        mode="hybrid"
+        embedded={true}
+      />
     </section>
 
     <!-- Floating Bottom CTA Bar (Auto-hides while checkout form is in view) -->
@@ -489,15 +493,16 @@ const heroImage = '/images/landing/booster-anggrek-aglonema-monstera/hero-proble
     >
       <div class="min-w-0">
         <p class="truncate text-[11px] font-semibold text-emerald-800">
-          SARATOGA {cheapest?.label ?? '500ml'} • Bisa COD
+          SARATOGA {cheapest?.label ?? '250ml'}–2L
         </p>
         <div class="mt-0.5 flex items-baseline gap-1.5">
+          <span class="text-[11px] font-medium text-slate-500">Mulai</span>
           <span class="text-[18px] font-bold leading-none tracking-tight text-slate-950">
             {formatIdr(price)}
           </span>
           {
             comparePrice > price && (
-              <span class="text-[12px] font-normal text-slate-400 line-through">
+              <span class="hidden min-[440px]:inline text-[12px] font-normal text-slate-400 line-through">
                 {formatIdr(comparePrice)}
               </span>
             )

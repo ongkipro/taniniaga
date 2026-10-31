@@ -14,14 +14,137 @@ export function parseFormMode(value: unknown): FormMode | null {
   return null;
 }
 
+const RE_250ML = /(?<![\d.,])250\s*ml\b/i;
+const RE_500ML = /(?<![\d.,])500\s*ml\b/i;
+const RE_1L = /(?<![\d.,])1\s*(?:liter|l)\b/i;
+const RE_2L = /(?<![\d.,])2\s*(?:liter|l)\b/i;
+
+type ScopedBrand = "bensu" | "saratoga" | null;
+
+function resolveScopedBrand(
+  product: Pick<Product, "slug" | "variants"> & { productId?: string | number },
+): ScopedBrand {
+  const pid = String(product.productId ?? "").trim();
+  const slug = String(product.slug ?? "").trim();
+  if (pid === "21329" || pid === "44363" || /^bensu(?:-|$)/i.test(slug)) {
+    return "bensu";
+  }
+  if (pid === "50510" || /^saratoga(?:-|$)/i.test(slug)) {
+    return "saratoga";
+  }
+  return null;
+}
+
 export function resolveFormVariant(
   product: Product,
   key?: string,
 ): ProductVariant | undefined {
-  if (!key) return product.variants[0];
+  if (!key || !key.trim()) return resolvePreferredFormVariant(product);
 
   const normalized = key.trim();
   return product.variants.find((variant) => variant.id === normalized);
+}
+
+/**
+ * Resolves the active checkout form variant:
+ * - Explicit `key` (canonical D1 variant ID) wins when matched.
+ * - Bensu & Saratoga default to 500ml (`PALING LARIS`) so COD shipping stays
+ *   accessible while 250ml serves as a low-friction trial and 1L / 2L as bulk.
+ * - All other products (Kojien, Aussie, etc.) preserve upstream `variants[0]`.
+ */
+export function resolvePreferredFormVariant(
+  product: Product,
+  key?: string,
+): ProductVariant | undefined {
+  if (key?.trim()) {
+    const matched = resolveFormVariant(product, key);
+    if (matched) return matched;
+  }
+
+  if (resolveScopedBrand(product)) {
+    return (
+      product.variants.find((variant) => RE_500ML.test(variant.label)) ??
+      product.variants[0]
+    );
+  }
+
+  return product.variants[0];
+}
+
+export type VariantPresentationMeta = {
+  badge?: string;
+  badgeTone?: "popular" | "bulk";
+  dosageNote?: string;
+};
+
+export function getVariantPresentationMeta(
+  product: Pick<Product, "slug" | "variants"> & { productId?: string | number },
+  variant: ProductVariant,
+): VariantPresentationMeta {
+  const brand = resolveScopedBrand(product);
+  if (!brand) return {};
+
+  const label = variant.label || "";
+  const compareSavings =
+    (variant.comparePrice ?? variant.price) > variant.price
+      ? (variant.comparePrice ?? variant.price) - variant.price
+      : 0;
+  const savingsText =
+    compareSavings > 0
+      ? ` • HEMAT Rp ${Math.round(compareSavings).toLocaleString("id-ID")}`
+      : "";
+
+  if (RE_250ML.test(label)) {
+    return {
+      badge: `PAKET HEMAT COBA${savingsText}`,
+      badgeTone: "bulk",
+      dosageNote: "Kemasan Coba Awal (Praktis untuk Koleksi & Uji Coba)",
+    };
+  }
+
+  if (RE_500ML.test(label)) {
+    return {
+      badge: `PALING LARIS${savingsText}`,
+      badgeTone: "popular",
+      dosageNote:
+        brand === "saratoga"
+          ? "Paket Hemat Rutin (Cukup 16–20 Aplikasi / Tangki)"
+          : "Paket Hemat Awal (Cukup 16–20 Tangki Semprot)",
+    };
+  }
+
+  if (RE_1L.test(label)) {
+    return {
+      badge: `LEBIH HEMAT${savingsText}`,
+      badgeTone: "bulk",
+      dosageNote:
+        brand === "saratoga"
+          ? "Kemasan 1 Liter (Lebih Hemat 35–40 Aplikasi / Tangki)"
+          : "Lebih Hemat untuk 1 Musim (Cukup 35–40 Tangki Semprot)",
+    };
+  }
+
+  if (RE_2L.test(label)) {
+    const oneLiter = product.variants.find((v) => RE_1L.test(v.label));
+    const extraDiscount =
+      oneLiter && oneLiter.price * 2 > variant.price
+        ? oneLiter.price * 2 - variant.price
+        : 0;
+    const discountSuffix =
+      extraDiscount > 0
+        ? ` • DISKON Rp ${Math.round(extraDiscount).toLocaleString("id-ID")}`
+        : savingsText;
+    return {
+      badge: `${brand === "saratoga" ? "PAKET GROSIR 2L" : "PAKET 1 HEKTAR"}${discountSuffix}`,
+      badgeTone: "bulk",
+      dosageNote:
+        brand === "saratoga"
+          ? "2 Botol × 1 Liter (Stok Hemat Kebun & Koleksi Besar)"
+          : "2 Botol × 1 Liter (Stok Aman 70–80 Tangki Semprot)",
+    };
+  }
+
+  return {};
 }
 
 export function buildFormUrl(

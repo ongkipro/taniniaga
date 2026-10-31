@@ -24,7 +24,9 @@ export const prerender = false;
 
 const SLUG = 'anti-layu-mulsa';
 
-const product = await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik');
+const product =
+  (await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik')) ??
+  (await getStorefrontProduct(Astro.locals, '21329'));
 if (!product) return Astro.rewrite('/404');
 
 const socialProofOrders = await recentOrderCount(
@@ -34,13 +36,14 @@ const socialProofOrders = await recentOrderCount(
 const rupiah = (value: number) =>
   `Rp${Math.round(Number(value) || 0).toLocaleString('id-ID')}`;
 
-const variant500 = product.variants.find((v) => v.label.toLowerCase().includes('500')) ?? product.variants[0];
-const variant1L = product.variants.find((v) => v.label.toLowerCase().includes('1')) ?? product.variants[1];
+const variant500 = product.variants.find((v) => /(?<![\d.,])500\s*ml\b/i.test(v.label));
+const variant1L = product.variants.find((v) => /(?<![\d.,])1\s*(?:liter|l)\b/i.test(v.label));
+const variant2L = product.variants.find((v) => /(?<![\d.,])2\s*(?:liter|l)\b/i.test(v.label));
 
 const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
 const price = cheapest?.price ?? product.price;
-const comparePrice = cheapest?.comparePrice || product.comparePrice || 198000;
-const discount = comparePrice > price ? Math.round((1 - price / comparePrice) * 100) : 34;
+const comparePrice = cheapest?.comparePrice ?? product.comparePrice ?? 0;
+const discount = comparePrice > price ? Math.round((1 - price / comparePrice) * 100) : 0;
 
 const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
 const heroImage = '/images/landing/anti-layu-mulsa/hero-problem.webp';
@@ -95,8 +98,8 @@ const heroImage = '/images/landing/anti-layu-mulsa/hero-problem.webp';
 
       <div class="alm-price-row">
         <span class="alm-price">{rupiah(price)}</span>
-        <span class="alm-price-was">{rupiah(comparePrice)}</span>
-        <span class="alm-badge">Hemat {discount}%</span>
+        {comparePrice > price && <span class="alm-price-was">{rupiah(comparePrice)}</span>}
+        {discount > 0 && <span class="alm-badge">Hemat {discount}%</span>}
       </div>
 
       <div class="alm-trust-row">
@@ -386,22 +389,31 @@ const heroImage = '/images/landing/anti-layu-mulsa/hero-problem.webp';
     </div>
 
     <div class="alm-packages">
-      <div class="alm-package-card">
+      <div class="alm-package-card alm-package-card--highlight">
+        <span class="alm-package-badge">Paling Laris</span>
         <h3 class="alm-package-title">Paket {variant500?.label ?? '500ml'} — Cocok untuk Lahan Sedang</h3>
-        <p class="alm-package-desc">Cukup untuk perendaman baki semai hingga 2.500 bibit tanaman.</p>
+        <p class="alm-package-desc">Cukup untuk perendaman baki semai hingga 2.500 bibit tanaman (16–20 tangki semprot).</p>
         <div class="alm-package-price-wrap">
-          <span class="alm-package-price">{variant500 ? rupiah(variant500.price) : 'Rp 130.000'}</span>
+          <span class="alm-package-price">{variant500 ? rupiah(variant500.price) : 'Rp135.000'}</span>
           {variant500?.comparePrice && <span class="alm-package-was">{rupiah(variant500.comparePrice)}</span>}
         </div>
       </div>
 
-      <div class="alm-package-card alm-package-card--highlight">
-        <span class="alm-package-badge">Paling Banyak Dipilih</span>
+      <div class="alm-package-card">
         <h3 class="alm-package-title">Paket {variant1L?.label ?? '1 Liter'} — Rekomendasi Lahan Luas</h3>
-        <p class="alm-package-desc">Cukup untuk celup baki semai sekaligus kocor awal tanaman di lahan 1 hektar.</p>
+        <p class="alm-package-desc">Cukup untuk celup baki semai sekaligus kocor awal tanaman (35–40 tangki semprot).</p>
         <div class="alm-package-price-wrap">
-          <span class="alm-package-price">{variant1L ? rupiah(variant1L.price) : 'Rp 215.000'}</span>
+          <span class="alm-package-price">{variant1L ? rupiah(variant1L.price) : 'Rp235.000'}</span>
           {variant1L?.comparePrice && <span class="alm-package-was">{rupiah(variant1L.comparePrice)}</span>}
+        </div>
+      </div>
+
+      <div class="alm-package-card">
+        <h3 class="alm-package-title">Paket {variant2L?.label ?? '2 Liter'} — Paket 1 Hektar (Diskon Rp10.000)</h3>
+        <p class="alm-package-desc">2 botol × 1 Liter untuk stok celup semai & perawatan rutin penuh 1 musim (70–80 tangki).</p>
+        <div class="alm-package-price-wrap">
+          <span class="alm-package-price">{variant2L ? rupiah(variant2L.price) : 'Rp460.000'}</span>
+          {variant2L?.comparePrice && <span class="alm-package-was">{rupiah(variant2L.comparePrice)}</span>}
         </div>
       </div>
     </div>
@@ -416,7 +428,11 @@ const heroImage = '/images/landing/anti-layu-mulsa/hero-problem.webp';
 
   <!-- Checkout Form Section (Native AdsBook CMS) -->
   <div id="checkout-form" class="scroll-mt-8 border-t border-[#e4e4e7] bg-white pt-4 pb-12">
-    <GeoIpResolvedForm productSlug={product.slug} mode="hybrid" embedded={true} />
+    <GeoIpResolvedForm
+      productSlug={product.slug}
+      mode="hybrid"
+      embedded={true}
+    />
   </div>
 
   <!-- Mobile Sticky Bottom Bar -->
