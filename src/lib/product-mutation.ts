@@ -12,6 +12,10 @@ export type ProductMutationPayload = {
   title?: unknown;
   slug?: unknown;
   category?: unknown;
+  brand?: unknown;
+  description?: unknown;
+  google_category_id?: unknown;
+  google_category_path?: unknown;
   is_active?: unknown;
   image_url?: unknown;
   variants?: unknown;
@@ -86,6 +90,12 @@ type ParsedProduct = {
   title: string;
   slug: string;
   category: string;
+  /** Undefined when the request did not send it: an update keeps the stored value. */
+  brand?: string | null;
+  description?: string | null;
+  /** Google product taxonomy id and path; undefined keeps the stored pair. */
+  google_category_id?: number | null;
+  google_category_path?: string | null;
   image_url: string | null;
   is_active: boolean;
   variants: ParsedVariant[];
@@ -161,6 +171,37 @@ export function parseProductMutationPayload(
   const title = capitalizeTitle(rawTitle);
   const slug = normalizeSlug(clean(body.slug, 200));
   const category = clean(body.category, 120) || "Umum";
+  // `products.brand` / `products.description` (0051) feed Google and Meta and
+  // the product page. Google caps brand at 70 and description at 5000; over a
+  // cap the item is disapproved, so the cap is applied here, at the boundary.
+  const brand = body.brand === undefined ? undefined : clean(body.brand, 70) || null;
+  const description =
+    body.description === undefined
+      ? undefined
+      : (typeof body.description === "string"
+          ? body.description.replace(/\r\n?/g, "\n").replace(/\n{3,}/g, "\n\n").trim().slice(0, 5000)
+          : "") || null;
+  // A Google taxonomy id with its path, or null to clear both. The id is not
+  // checked against the list here: the taxonomy lives in a static asset the
+  // Worker does not load, and the field is admin-only.
+  // lazy: an id outside Google's list reaches the feed and Merchant Center
+  // flags it. Upgrade path: validate against the asset via the ASSETS binding.
+  let googleCategoryId: number | null | undefined;
+  let googleCategoryPath: string | null | undefined;
+  if (body.google_category_id !== undefined) {
+    if (body.google_category_id === null || body.google_category_id === "") {
+      googleCategoryId = null;
+      googleCategoryPath = null;
+    } else {
+      const id = parseInteger(body.google_category_id);
+      const path = clean(body.google_category_path, 750);
+      if (id === null || id <= 0 || !path) {
+        return { error: "Kategori Google tidak valid. Pilih ulang dari daftar." };
+      }
+      googleCategoryId = id;
+      googleCategoryPath = path;
+    }
+  }
   const imageUrl = clean(body.image_url, 500);
   if (
     imageUrl &&
@@ -290,6 +331,11 @@ export function parseProductMutationPayload(
     title,
     slug,
     category,
+    ...(brand !== undefined ? { brand } : {}),
+    ...(description !== undefined ? { description } : {}),
+    ...(googleCategoryId !== undefined
+      ? { google_category_id: googleCategoryId, google_category_path: googleCategoryPath ?? null }
+      : {}),
     image_url: imageUrl || null,
     is_active: isActive,
     variants,

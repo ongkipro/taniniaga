@@ -7706,3 +7706,450 @@ Findings are in `docs/AUDIT-2026-10-31-ui-actions.md`; what is left is in
     when shown, and the brand box is 21/21 px.
   - Not checked: real devices, a live Mengantar or AutoLaris call, a WhatsApp
     send.
+
+### Entry 207: Shopify-theme storefront palette, login panel motion, product icon
+
+- Storefront colour follows the Shopify theme (Dawn). Dawn's home and product
+  pages were captured on 2026-10-31 as the reference (not committed: third-party
+  screenshots).
+  - The buy actions use ink `#121212` instead of blue `#2C6ECB`, including the
+    `--sf-accent` tokens (ADR-019), the sticky bar and the thanks/payment
+    actions.
+  - The neutral surface is `#F3F3F3`.
+  - A filled field and the selected variant card are grey; an empty field is
+    white.
+  - The discount pill is Dawn's sale blue `#334FB4` (7.2:1), in `rounded-full`.
+  - Checkout errors stay `#D92D20`.
+- Removed the PDP note "Ongkir dihitung otomatis…"; the order form already
+  carries the shipping cost.
+- `/hello` brand panel:
+  - A dot-grid ornament.
+  - The operator loop Iklan → Pesanan → Kirim, drawn with a pulse that lights
+    each node as it passes (4s cycle, measured at 0, 1.6 and 3.2s).
+  - All of it `aria-hidden`, and still under `prefers-reduced-motion`.
+- Product icon: an open book on an iOS-style blue squircle
+  (`images/adsbook-icon.svg`, the login tile). The same artwork is the new
+  shipped default of the merchant-replaceable tab icons (`logo.svg`,
+  `favicon.ico/png`, `favicon-192.png` full-bleed). The admin pages gain an
+  apple-touch icon. The unused `favicon-admin.svg` was deleted.
+- Verification:
+  - `npm test` 1104 pass; `npm run check` 0 errors; `npm run build` complete;
+    `docs:check` passed.
+  - Headless Chromium on `dev:local` at 390 and 1280 px: home, `/produk`, PDP,
+    order form and `/hello`. No console errors; the note is absent; the node
+    lights are measured; under reduced motion the animations are off.
+  - Not checked: real devices, an iOS home-screen install.
+
+### Entry 208: Adaptive legal pages from store settings; header, brand and card refinements
+
+- Legal pages: Kebijakan Privasi, Pengiriman & Retur, Syarat & Ketentuan and
+  Kontak (`src/data/legal.ts`).
+  - Rewritten as generic copy for any store. No city, courier, payment
+    method, return window, delivery time or legal regime is named.
+  - Filled from settings: store name, the site's host, the first CS
+    WhatsApp, and the new support email and business address.
+  - A paragraph whose value is unset is dropped. Privacy, shipping and terms
+    close with "Hubungi Kami" built from the channels that exist, or a pointer
+    to `/kontak`.
+  - Links in paragraphs (a bracketed label followed by an internal path,
+    an email, `+62…`) are parsed by
+    `src/lib/legal-links.ts`; external targets are refused.
+  - `LegalPage` is one reading column, with no box per section.
+- Settings: migration `0078_store_public_contact` (schema 79) adds
+  `stores.support_email` and `stores.business_address`, edited in
+  Pengaturan → Store. The email is checked for shape (`SUPPORT_EMAIL_PATTERN`)
+  and the address is free text; both are optional. The tagline help text no
+  longer says it shows in the header.
+- Header and brand:
+  - The "Official Store" line uses a blue badge-check (owner decision).
+  - The brand is the uploaded logo, or a text wordmark when there is none. The
+    logo is sized inline, because utility sizing rendered it 0x0.
+  - A bare package icon to `/produk`.
+  - The header is not sticky; its rule fades at both edges.
+- Product cards: the price sits under a title clamped to two lines, with no
+  reserved height. The PDP inline "Pesan sekarang" button and the shipping
+  note are gone.
+- Verification:
+  - `npm test` 1106 pass; `npm run check` 0 errors; `npm run build`
+    complete; `docs:check` passed.
+  - Headless Chromium on `dev:local` at 390 px:
+    - Email and address saved through the admin form, with the other fields
+      unchanged.
+    - The four pages render them with no placeholder left.
+    - The links are `wa.me`, `mailto:` and internal pages.
+    - The header logo and text variants were measured.
+    - No console errors.
+  - Not checked: server-side refusal of a malformed email (the browser's
+    `type=email` stopped it first), and real devices.
+
+### Entry 209: Breadcrumb on one line, never cut
+
+- `Breadcrumb.astro`:
+  - Chevrons replace `/`.
+  - The home crumb is a house icon (labelled "Beranda").
+  - The current page is semibold with `aria-current`, in an `<ol>`.
+- A long trail no longer truncates the current page (`max-w-[58%] truncate`).
+  It stays on one line, scrolls sideways with the scrollbar hidden, opens
+  scrolled to its end, and fades its left edge only while something is out of
+  view.
+- DESIGN-SYSTEM §5 corrected: the breadcrumb sets no width and no longer reads
+  the retired template.
+- Verification:
+  - `npm test` 1106 pass; `npm run check` 0 errors; `npm run build`
+    complete.
+  - Headless Chromium on `dev:local` at 320, 390 and 1280 px, PDP and
+    `/kebijakan-privasi`: one line at every width; the current page fully
+    visible; no ellipsis.
+  - At 320 px the PDP trail overflows, opens at its end, and fades.
+  - No console errors.
+
+### Entry 210: Release 1.8.0 (`2026.10-ops`)
+
+- `version.ts` and `package.json` are at 1.8.0, release tag `2026.10-ops`,
+  `lastUpdated` 2026-10-31, schema 79. This is the first release carrying
+  migrations `0067`–`0078`; 1.7.14 shipped schema 67.
+- The admin "What's new" modal has a 1.8.0 entry written from the merged PRs
+  #102–#118:
+  - Analitik and UTM.
+  - One-tap WhatsApp follow-up.
+  - The WhatsApp number rotator.
+  - Multi-warehouse.
+  - Mengantar pickup/drop-off and the unknown-outcome lock.
+  - The COD-to-transfer switch.
+  - Operational status, the ops API and the CLI.
+  - The Shopify-theme storefront.
+  - Adaptive legal pages.
+  - The product icon.
+- The status-icon and payment sentences were checked against
+  `OperationalStatus.tsx` and the attempts change before writing.
+- `RELEASE.md` §3 notes `0078`; the §4 registry is at 1.8.0.
+- Nothing is deployed by this repository. An install takes 1.8.0 through
+  `RELEASE.md` §7. `0072` (multi-warehouse) needs the row count checked on any
+  install with more than one `warehouses` row first.
+
+### Entry 211: Account menu in the top bar; sidebar product card
+
+- The top-bar account control was a link to `/admin/profile`. It now opens a
+  shadcn dropdown with:
+  - The session's username and role, plus the store.
+  - Profil & keamanan.
+  - Pengaturan toko (roles that have settings).
+  - Lihat storefront (until now only in the bar at 1280px and up).
+  - Catatan rilis.
+  - Keluar.
+- Keluar reuses the layout's `data-logout-form` handler, and the item keeps the
+  menu open while it runs. `AdminLayout` passes `adminUsername`.
+- Sidebar footer:
+  - Keluar is gone from the sidebar; the mobile Menu sheet keeps its own.
+  - The version card is the product icon, "AdsBookCMS · Catatan rilis" and a
+    blue version pill.
+  - The collapsed rail shows the product icon.
+  - Within the admin contracts: 12px type floor, no decorative motion.
+- The 1.8.0 changelog names the account menu.
+- Verification:
+  - `npm test` 1106 pass; `npm run check` 0 errors; `npm run build` complete.
+  - Headless Chromium on `dev:local`:
+    - At 1280px: the menu lists the five items under the user header.
+    - Catatan rilis opens the modal.
+    - Keluar lands on `/hello`, and `/admin/dashboard` then redirects there.
+    - At 900px: the rail icon opens the changelog.
+    - At 390px: the Menu sheet still has Keluar.
+    - No console errors.
+
+### Entry 212: Flat product icon and favicons
+
+- The gradient squircle with a line-icon book is replaced by a flat mark, one
+  `#2563EB` rounded square:
+  - A solid white open book: the order book, with a gap at the spine so it
+    reads as a book at 16px.
+  - An up-right arrow cut into the right page: the ad becoming a sale.
+- Chosen over two drafts (an order sheet with a flow arrow, too generic; three
+  joined nodes, no "book") by comparing them at 160/64/32/16px and in a dark tab.
+- Written to `images/adsbook-icon.svg` and the merchant-replaceable defaults:
+  `images/logo.svg`, `favicon.png` (32), `favicon.ico` (16+32, the 16 rendered
+  on its own) and `favicon-192.png` (full-bleed).
+- Verification: rendered at each size and opened; `/hello` and the sidebar
+  card rendered on `dev:local`; `npm test` and `npm run build` pass.
+
+### Entry 213: Old placeholder wordmark removed
+
+- Deleted `public/images/adsbook-mark.webp`, the grey "AdsBookCMS / BELUM
+  DIKONFIGURASI" wordmark that served as the default logo.
+- `DEFAULT_TENANT_LOGO` is now empty: no logo until the store uploads one.
+  - The storefront draws its text wordmark.
+  - The admin shows the store's initial.
+  - Share images (`BaseLayout`) and the /thanks image slot fall back to the
+    store's own icon `/favicon-192.png`, never an empty URL that resolves to
+    the page.
+  - A store row or env still naming the old path reads as no logo
+    (`LEGACY_PLACEHOLDER_LOGO`), so nothing points at a missing file.
+- Composed landing-page rows carry no placeholder image; the home list never
+  drew one.
+- The logo field's placeholder and help text no longer promise a product logo.
+- `UPDATE-PATH-OWNERSHIP.md` no longer lists the file.
+- Test fixtures:
+  - The never-leak catalogue test now uses the current product icon and
+    refuses both.
+  - Two fixtures use a neutral sample path.
+- `tenant.test.ts` covers the legacy path.
+- Verification: `npm test`, `npm run check`, `npm run build`, `docs:check`;
+  `dev:local` rendered the header, the home `og:image` and /hello.
+
+### Entry 214: Login tip-jar QRIS
+
+- Source: the owner's QRIS print (ONGKI COLLECTION, NMID ID1021107138476),
+  downloaded from the owner's Drive link into the scratchpad. It was checked to
+  be a JPEG, and its code was decoded with `jsqr` (scratch install, not a
+  project dependency): payload `000201010211…` (static QRIS) containing the
+  NMID and the merchant name.
+- Asset: the code alone, cropped to the detected module bounds, thresholded to
+  clean black and white, and padded with a white quiet zone. Saved as
+  `public/images/qris-dukung-adsbookcms.webp` (lossless, 560px, 2.3 KB); it
+  decodes after conversion.
+- `/hello` desktop panel:
+  - The code is centred in a white card with a pulsing "scan me" corner frame
+    outside it.
+  - "Dukung AdsBookCMS / CMS-nya gratis. Server-nya juga gratis. / Yang belum
+    gratis cuma kopi developernya. Tau kan QRIS ini buat apa? Hehehe." and the
+    merchant's name.
+  - It replaces the Iklan › Pesanan › Kirim flow.
+  - The image is lazy (phones never fetch it). The frame stops under reduced
+    motion.
+- Every install shows this on its admin login. It is the product author's,
+  not a store's.
+- Verification:
+  - Headless Chromium at 1024x768, 1280x900 and 1440x900: no panel overflow;
+    the QR decodes from the page screenshot at 1024 and 1280 with the same
+    payload; the phone fetches no QRIS; no console errors.
+  - `npm test`, `npm run check` and `npm run build` pass.
+
+### Entry 215: Login page fits one screen
+
+- `/hello` is exactly one viewport tall on phone and desktop. Each column is
+  `100dvh`, and the page itself never scrolls.
+  - The form column centres the form and pins a short footer: "Lupa password?
+    Minta owner mereset di Pengaturan › Akses Pengguna." and the version.
+    Self-service reset stays out of scope per PRD-ADMIN-LOGIN.
+  - The brand column spaces logo, tip jar and a compact "Operator Workspace"
+    caption. The 36px heading that competed with the tip jar is gone.
+  - The QR scales as `clamp(8.5rem, 24vh, 14rem)`.
+- Header:
+  - A store chip "Admin · <store>" and "Masuk ke dashboard".
+  - On a phone, the product icon and the whole header are centred.
+- Fields have placeholders ("Username Anda", "Masukkan password") and a
+  brand-blue focus ring; the button is brand blue and reads "Masuk".
+- Phones no longer get a floating card on grey; the form sits on white.
+- Verification:
+  - Headless Chromium at 1440x900, 1280x800, 1366x768, 1024x768, 390x844,
+    375x667 and 360x640.
+  - At every size: no page scroll, no clipped column, button and footer in
+    view, no console errors.
+  - The QR decodes from the 1366x768 render.
+  - `npm test`, `npm run check` and `npm run build` pass.
+
+### Entry 216: Login cleaned up
+
+- The desktop brand column holds only the tip jar.
+  - The logo row and the "Operator Workspace" caption are gone.
+  - The QR card's blue glow became a plain hairline.
+- The form column carries the brand on every screen: icon and "AdsBookCMS",
+  "Masuk ke dashboard", then "Kelola konten, pesanan, dan pengiriman <store>."
+  This replaces the green-dot store chip, which read as a fake online status.
+- Copy is a joke, not a plea (owner): "CMS gratis. Server gratis. /
+  Satu-satunya yang nggak gratis cuma kopi developernya. Hehehe." and the
+  merchant's name. "Seikhlasnya" and "Dukung AdsBookCMS" are removed.
+- Verification:
+  - Headless Chromium at the seven sizes of Entry 215: no scroll, no
+    clipping, no console errors.
+  - The QR decodes from the 1366x768 render.
+  - `npm test`, `npm run check` and `npm run build` pass.
+- The footer keeps only the version; the reset hint is removed (owner).
+
+### Entry 217: Login tip jar, emphasis and motion
+
+- The title reads "CMS GRATIS. / Server GRATIS." on two lines. Each GRATIS
+  gets a brand-blue highlighter stroke drawn left to right, the second 0.45s
+  after the first, held, then redrawn on a 7s cycle.
+- The background moves outward from the code, not as decorative blobs: three
+  rings leave the card every 1.4s, scale to 1.55 and fade. They sit behind the
+  opaque white card, so the code is never covered.
+- Under reduced motion there are no rings and the highlights show fully.
+- Verification:
+  - Headless Chromium at 1366x768: the QR decodes from frames at 0.3, 0.9, 1.6
+    and 2.6s and from the 1024x768 render.
+  - The seven-size no-scroll check still passes.
+  - No console errors.
+
+### Entry 218: Login QR rebuilt in vector, shown larger
+
+- The QR asset was a 507px crop resized to 560px. That is a non-integer scale,
+  so module edges were uneven.
+- It is now rebuilt from the owner's Drive print:
+  - The first finder column is a 67px dark run, so the module is 9.57px.
+    That gives 53 modules, which is version 9.
+  - Each module is sampled at its centre.
+  - All three finder patterns and both timing patterns match.
+- Written as one SVG path with `crispEdges` (9.9 KB), replacing
+  `qris-dukung-adsbookcms.webp`. The pattern and mask are the print's own, and
+  the decoded payload is byte-identical to the print's.
+- Displayed at `clamp(11rem, 34vh, 18rem)`: 288px at 1280 and 1440, 261px at
+  768px tall.
+- Verification:
+  - Decodes from the 1024x768, 1366x768 and 1280x900 renders and from an
+    animation frame.
+  - The seven-size no-scroll check passes.
+  - No console errors.
+
+### Entry 219: Phone login over the owner's poster, glass card
+
+- Source: the owner's poster from a Drive link (PNG 941x1672, 2.3 MB),
+  downloaded to the scratchpad and opened. It is saved as
+  `public/images/login-bg-mobile.webp`: quality 76, 149 KB, full size.
+- Below 1024px:
+  - The poster is the form column's CSS background, so a desktop never
+    fetches it.
+  - The form sits at the bottom in a glass card (85% white, `blur(20px)
+    saturate(1.4)`, a white border, 1.5rem radius, a soft shadow), leaving the
+    poster's title and face in view on a 390x844 phone.
+  - Card text is checked against #D9D9D9 (subtitle 5.4:1, title 12.6:1). The
+    version under the card is white with a text shadow.
+- The poster ships with the product, so every install's phone login shows it.
+- Verification:
+  - Headless Chromium: the seven-size no-scroll check passes.
+  - 390x844 fetches the poster and 1366x768 does not.
+  - No console errors.
+- Above the form only "Masuk ke dashboard" remains; the AdsBookCMS row and the
+  store line were removed (owner). The version stays in the footer.
+- The heading became the product icon and "AdsBookCMS" (owner), replacing
+  "Masuk ke dashboard".
+- The heading is now a small wordmark (owner: "kecil aja, yang keren"): a 28px
+  icon; "Ads" in brand blue and "Book" in ink at 18px bold; "CMS" as a tracked
+  12px tag after a hairline. Its accessible name is "AdsBookCMS".
+
+### Entry 220: Clearer glass login card on phones
+
+- The phone card is clear glass instead of 85% white:
+  - A 62%→48% white gradient.
+  - `blur(28px) saturate(1.7)`.
+  - A white border with an inset top highlight, 1.75rem radius.
+- Labels and the CMS tag are slate-900, checked against #8C8C8C (the darkest
+  the blurred poster makes the card): 5.3:1. A first cut used slate-800 for the
+  tag, which measures 4.35:1 and fails AA; the 4.7:1 first written here was
+  wrong.
+- Fields stay 92% white, so typed text never sits on the image.
+- Verification: the seven-size no-scroll check passes; no console errors.
+
+### Entry 221: Login tip-jar copy
+
+- The body reads "Kopi developernya yang belum. Boleh dong ditraktir?
+  Hehehe." (owner).
+- A short quote follows as a `figure`: "Satu kopi, satu bug minggat." —
+  pepatah developer.
+- Verification: the seven-size no-scroll check and the QR decode after the
+  change.
+- The quote is credited "by ongki.pro" (owner), replacing "pepatah developer".
+
+### Entry 222: Tests find product migrations by suffix
+
+- Found while updating zvarashop to 1.8.0. Its own catalogue migrations hold
+  0067-0079, so the product's 0067-0078 are renumbered 0080-0091 there.
+  `whatsapp-numbers.test.ts` and `manual-payment-reconciliation.test.ts`
+  opened `0067_whatsapp_numbers.sql` and `0076_payment_transaction_attempts.sql`
+  by number and failed with ENOENT (14 tests), against the rule in RELEASE.md.
+- Both now resolve the file by suffix.
+- A guard in `schema-version.test.ts` fails when any test names a product
+  migration from 0067 on by number (fixture names in `deploy-preflight.test.ts`
+  excepted). It was checked against the unfixed files: it names both.
+- Verification: `npm test`, `npm run check`, `npm run build` and
+  `docs:check` pass.
+
+### Entry 223: 1.8.1 — payment copy, an honest /thanks, a feed Merchant Center accepts
+
+Found by a simulated buyer (COD, VA BCA, manual BCA transfer) on a local store,
+and an audit of the feeds and structured data.
+
+- **/payment.** The VA or account number had the copy button beside it, so a
+  14-digit VA broke onto two lines at phone width (`8808440911 / 0437`). The
+  number now owns its card, grouped by four (`8808 4409 1104 37`, one line at
+  360 px), and a full-width copy button sits under it: check icon, inverted
+  colours, "Nomor VA Tersalin", reset after 2.4 s. The copied value is the raw
+  number. `copyText` falls back to `execCommand` where the Clipboard API is
+  missing. The VA badge said "Verifikasi Admin"; it is "Otomatis" for VA and
+  "Dicek Admin" for a manual transfer, whose holder now has its own line.
+- **/thanks.** The summary did not add up: product − discount + shipping
+  (64.000) beside a total of 70.500 or 66.132, the fee nowhere. A fee row now
+  carries it. An unpaid VA/QRIS order was shown a success check and told to
+  "Kirim Bukti"; it is now "Selesaikan pembayaran" with the payment page as the
+  main action, and only a manual transfer asks for proof. Raw `VABCA`,
+  `pending` and `6281…` are shown as words (`src/lib/payment-display.ts`).
+- **Google feed.** It priced each item from `variants[0]`, the variant entered
+  first, while the product page shows the cheapest — a price mismatch Merchant
+  Center disapproves. It now uses the cheapest variant.
+- **Catalogue fields.** The admin form had no category (hard-coded "Umum"), no
+  brand and no description, so every feed item was "Umum" with the store as its
+  brand. It now edits all three; an update that omits them keeps the stored
+  values. Feeds prefer the merchant's description; with none, the product
+  describes itself from its own name, brand, category and variants.
+- **Structured data.** Product and landing pages use one `buildProductJsonLd`
+  (one Offer per variant, the product's brand). The Organization logo is
+  omitted when unset instead of being the homepage URL; the dead SearchAction
+  and the invalid ListItem `offers` are gone. `og:type` is `product` on a
+  product page; `article:publisher` (a Facebook page field) is gone.
+- **Sitemap and robots.** `lastmod` only when real (landing `updated_at`);
+  `/tentang` listed; a noindex store submits no URLs and robots drops its
+  `Sitemap:` line. AI search and training agents are named in robots.
+- **`/llms.txt`** maps the store for AI assistants from its own catalogue; no
+  admin, API or order-status surface. `llms` is a reserved landing slug.
+- Verification: `npm test` 1121 pass, `npm run check` 0/0/0, `npm run build`;
+  /payment, /thanks (COD, unpaid VA, manual, paid) and the admin product form
+  rendered in a browser; feed, sitemap, robots, llms.txt and product JSON-LD
+  read from a running local store.
+
+### Entry 224: 1.8.2 — Google categories from Google's list, product form, login wordmark
+
+- The variant ID sat in a grey box inside the input grid, a different height
+  and shape from every field beside it, and the remove action was a red link
+  under the grid. Each variant is now a card whose header carries its number,
+  its ID as an outline badge ("Baru" before the first save) and a ghost
+  "Hapus" button. Fields sit on two rows: name and SKU, then price, compare
+  price and weight. Prices take an `Rp` addon and weight a `gram` addon
+  (`InputGroup`), and the compare-price hint shows the saving.
+- The photo field was a native file input styled through `file:` classes. It
+  is now a dashed drop zone (drag-and-drop or click) with the preview, an
+  uploading spinner, and shadcn `Button`s for "Pilih/Ganti foto" and "Hapus
+  foto"; the native input stays in the DOM, visually hidden, for keyboard and
+  screen readers. The hint states the size advice the feeds need (1:1, at
+  least 800×800 px) and fixes the "ototmatis" typo.
+- Verification: `admin-islands-render` and `admin-controls` pass; the edit
+  page rendered at 1366 and 390 px with no horizontal overflow and no console
+  error; a PNG uploaded through the hidden input came back as a WebP URL.
+- **Google product category, exact.** A product had a free-text category, and
+  the feeds sent whatever `ad-taxonomy.ts` guessed from it — often nothing, or
+  a neighbouring category. The form now picks from Google's own taxonomy
+  (`public/data/google-product-taxonomy.json`, 5,595 rows, built from Google's
+  file by `scripts/generate-google-taxonomy.mjs`), searchable in Indonesian
+  through an alias list and by id (`src/lib/google-taxonomy.ts`). Migration
+  `0079` stores the id and path on the product; both feeds send the id as
+  `google_product_category` and the path as `product_type`, and the Meta feed
+  drops the engine's `fb_product_category` guess for such a product, since
+  Meta asks for one of the two. The engine stays the fallback. Google
+  publishes no id-ID list (that URL answers 404). The list ships as a static
+  asset, not a D1 table: identical for every install, and seeding ~5,600 rows
+  would cost every install writes.
+- The store-facing category label follows the first Google pick and stays
+  editable; brand shows the store name as its default.
+- **Login.** The AdsBookCMS wordmark on `/hello` links to the store's homepage,
+  on phones and desktops, with a visible focus ring.
+- **Automatic, then manual.** The form picks a Google category by itself from
+  the product's name and store label (`suggestGoogleCategories`: the keyword
+  engine's confident rule first, then a taxonomy search, with Indonesian
+  phrases such as "minyak kemiri" and "pasta gigi" mapped before single
+  words), marks it "Otomatis", and re-picks while the name changes. The other
+  suggestions are one-click chips (`Button` `size="sm"`); a pick or a clear
+  in the combobox makes it "Manual" and it is never overwritten. A saved
+  category loads as manual.
+- **robots.txt.** AI training crawlers are no longer named with `Allow: /`.
+  Cloudflare's managed robots.txt, on for the fleet's zones, already prepends a
+  `Disallow: /` group for each of them, so the file stated both. Search
+  engines and AI answer agents stay named; training crawlers fall to `*`,
+  which still allows them where the zone has no managed file.
