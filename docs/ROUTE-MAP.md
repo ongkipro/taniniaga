@@ -276,7 +276,7 @@ is either transitive (imported by another lib) or dead, and only reading tells w
 | `catalog` | 2 | `product_variants` `products` | ✓ | `/` `/404` `/anti-layu-mulsa` `/bangkitkan-tanaman-mandek` `/batang-baja-anti-rebah` `/benteng-anti-patek` `/benteng-lodoh-umbi-kentang` `/bibit-sawit-busuk-kuning` `/booster-anggrek-aglonema-monstera` `/booster-bunga-buah-tahunan` `/booster-jagung-kuning-kerdil-tongkol-jumbo` `/booster-manis-brix-anti-pecah` `/booster-umbi-bawang-anti-pucuk-kuning` `/juara-gabah-bernas` `/llms.txt` `/maraton-panen-cabai` `/penakluk-sawit-ganoderma` `/penawar-tanaman-hias-keracunan-pupuk` `/pengunci-bunga-anti-rontok` `/penyelamat-bawang-moler` `/penyelamat-layu-mendadak` `/penyelamat-tanaman-jutaan-salah-rawat` `/penyelamat-tomat-busuk-pantat-rontok` `/penyembuh-asem-aseman` `/perisai-anti-bulai` `/perisai-kebal-jamur` `/perisai-keriting-thrips-kutu-kebul` `/perisai-kresek-potong-leher-padi` `/pertolongan-keracunan-obat` `/produk` `/produk/[slug]` `/solusi-tanaman-hias-mati-layu-mendadak` `/thanks` `/sitemap` `/[slug]` `/contoh-landing` `/embed/form` `/full-form` `/geoipform` `/hybrid-form` `/middle-form` `/feed/google-catalog.xml` `/feed/meta-catalog.xml` `/sitemap.xml` `/api/form-config` `/api/v1/products` `/api/v1/products/[slug]` `/admin/ads/utm` |
 | `checkout-navigation` | 2 | — | ✓ | — |
 | `click-ids` | 17 | — | ✓ | `/api/meta-event` `/api/submit-middle-order` `/api/submit-order` `/api/v1/checkout` `/api/v1/tracking/events` |
-| `client-image` | 8 | — | ✓ | — |
+| `client-image` | 9 | — | ✓ | — |
 | `cn` | 1 | — | ✓ | — |
 | `courier-names` | 2 | — | ✓ | — |
 | `courier-rules` | 3 | — | ✓ | `/api/submit-order` `/api/admin/abandoned-orders` `/api/admin/orders/[id]` |
