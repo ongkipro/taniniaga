@@ -1,6 +1,6 @@
 # BUILD LOG: AdsBookCMS
 
-> Verified against disk: 2026-11-02 @ `0b6a44d` (Entry 239; earlier entries retain their historical evidence)
+> Verified against disk: 2026-11-02 @ `43c6cb3` (Entry 244; earlier entries retain their historical evidence)
 
 Author & Curator: **[ongki.pro](https://ongki.pro)**
 
@@ -500,121 +500,6 @@ Treat this file as history, not as a specification. Current system state is owne
 ---
 
 ## Chronological Progress Log
-
-### 2026-09-29 — Landing images sized for the page
-
-The native landing images weighed 23.7 MB across 111 files, most of them
-1376×768 at 300–375 KB, heroes included — the LCP element on every landing. The
-page column is 480 px, so each was resized to at most 960 px wide (2× for
-retina) and re-encoded as WebP (q74, effort 6): 100 files changed, 9.7 MB in
-all, 59% less; `anti-layu-mulsa/hero.webp` 328 → 112 KB. Paths and names are
-unchanged, so no page or D1 row moved. The originals are kept outside the repo
-at `~/backups/taniniaga/images-landing-original-2026-09-29/`.
-
-### 2026-09-29 — Merge the product line (AdsBookCMS `660647e`)
-
-- The hourly cron re-syncs the native register, so the ten landing pages added
-  here reach the home list and sitemap without anyone opening the admin list,
-  and the re-sync no longer moves `lastmod` when nothing changed.
-- The hourly AutoLaris Advice run checks pending and recently expired
-  instructions, newest first, instead of the same 25 oldest.
-- The admin landing catalog marks which page serves as a product page.
-- `src/lib/landing-pages.ts` is the product's again: two slugs had been added to
-  its reserved list by hand, which the native register already reserves.
-- Live D1 exported first to `~/backups/taniniaga/`; no migration in this merge.
-
-### 2026-09-26 — Hourly cron restored, D1 logo, product `90d5c5a`
-
-- **The hourly cron is back** (`7 * * * *`). It was released on 2026-08-29 for
-  permatamall; the account accepted it again today, so AutoLaris expiry, the
-  outbox drains and the alert evaluation run once more. The first attempt
-  reported success while changing nothing — `wrangler triggers deploy` reads
-  `dist/server/wrangler.json`, which still held the old empty schedule — and
-  only a rebuild made it take.
-- **`stores.logo` in D1** now points at `/images/taniniaga-logo.webp`. The
-  previous value, for rollback, was
-  `/assets/uploads/2026-08-21/b6c94e27-0fae-4da4-a38b-c39aefb27576.webp`.
-- **Merged AdsBookCMS `90d5c5a`**: an alert names its store and renders in
-  Slack / Google Chat / Discord webhooks. `OPS_ALERT_WEBHOOK_URL` is still unset
-  here, so the panel reads `alerting: not-configured` until one is provided.
-
-### 2026-09-26 — Store favicon and logo assets
-
-The browser tab, the admin and `/hello` still wore the product's neutral
-emblem, and the logo fallback was the product wordmark. The store already had
-an identity — a green rounded tile with a white sprout, "Tani Niaga" in two
-greens — uploaded once as a 510×140 WebP. The mark was redrawn from it as
-vector and every surface now derives from that one source:
-
-- `public/favicon.ico` (16/32/48), `public/favicon.png` (32),
-  `public/favicon-192.png` (full-bleed square, so iOS and Android round it
-  without black corners), `public/images/logo.svg` (admin and login tab).
-- `public/images/taniniaga-logo.svg` is the vector master of the horizontal
-  logo; `taniniaga-logo.webp` (256 px high) is its raster for
-  `PUBLIC_SITE_LOGO`, the fallback when the D1 `stores.logo` is blank.
-- `PUBLIC_SITE_THEME_COLOR` `#111111` → `#ffffff`: the page begins with a white
-  bar, and the mobile browser chrome was painted black above it.
-
-The favicons are product-owned paths (`docs/UPDATE-PATH-OWNERSHIP.md`); a
-product merge that changes one will conflict here, and the store's copy wins.
-
-**Evidence.** 778 tests (777 passed, 1 intentional install skip), `astro check`
-0 errors / 0 warnings / 0 hints, build passed.
-
-### 2026-09-26 — Merge the product line (AdsBookCMS `fc4015f`)
-
-Brought this install forward fourteen commits from `product/main` with no
-conflicts. This install's `wrangler.jsonc` was kept byte-for-byte: the product
-file is now the one-click template (all-zero ids, no `routes`,
-`workers_dev: true`), and taking it would have pointed this Worker at an empty
-database. The product's own `BUILD-LOG` carries the detail; what arrived here:
-
-- **Migrations `0056`–`0059`, all additive.** Ninja is disabled rather than
-  deleted (Mengantar retired it from the public API), the CAPI outbox now
-  deduplicates on `event_name` + `event_id` so a forged funnel event can no
-  longer swallow a real Purchase, `install_secrets` exists for ADR-026 (unused
-  here: this Worker has its own `AUTH_SECRET`, which wins), and SPX is offered
-  through Mengantar.
-- **Funnel events survive a browser that cannot hash**, Mengantar's Pos COD
-  refusal is recognised and no longer offered, and AutoLaris stops discarding
-  settlement evidence.
-- **Admin UI on one control contract**: every dropdown on shadcn, one page
-  width, the rate checker rebuilt, and shadcn confirmations.
-
-**Evidence.** 778 tests (777 passed, 1 intentional install skip), `astro check`
-0 errors / 0 warnings / 0 hints, build passed. Live D1 exported before deploy
-(ledger at `0055`, 127 orders, 3 products).
-
-### 2026-09-09 — Merge the product line (AdsBookCMS `9d537fb`)
-
-Brought this install forward thirteen commits from `product/main`, cleanly and
-with no conflicts. The product's own `BUILD-LOG` carries the detail; what
-arrived here, and why each mattered:
-
-- **`country` now reaches the Conversions API leg.** It was validated, hashed,
-  sent by the `/thanks` browser leg and forwarded by the headless route — and
-  dropped by `/api/meta-event`, which carries every first-party PageView,
-  ViewContent and `/thanks` Purchase, so the two legs of one order described the
-  buyer with different key sets.
-- **A Pixel ID is verified against Meta on save.** `^\d{5,25}$` accepts a
-  Business Manager ID; when one was saved into that field on a sibling install
-  both legs died silently for two days.
-- **Outbox rows are claimed before they are sent**, so two overlapping drains
-  cannot transmit the same row twice, and a terminated outage can be requeued
-  once by an operator after the destination is proven live.
-- **A committed order can no longer lose its own confirmation.**
-  `sessionStorage.setItem` sat outside the try/catch and after the order reached
-  D1; a browser that refuses storage stranded the buyer with a real order behind
-  them and fired neither Purchase leg. Both forms now carry the locator in the
-  URL fragment so `/thanks` can recover.
-- **The honeypot no longer names itself** on the public checkout endpoints, the
-  catalog feeds clamp `title`/`description` to what each platform accepts, the
-  Google feed stops claiming an MPN from the merchant-editable `sku`, and the
-  operational panel reports both a stalled queue and whether alerting can reach
-  anyone at all.
-
-**Evidence.** 681 tests (680 passed, 1 intentional skip), `astro check` clean,
-build passed, route map regenerated.
 
 ### Entry 01: Core Architecture & Setup
 
@@ -8508,3 +8393,59 @@ confirmation and status markers take `var(--sf-accent)` / `--sf-accent-strong` i
 tokens, so the rest look unchanged. `payment-accent.test.ts` guards it at source. TRK-1 is
 closed on the nine-install `fbp` measurement; EMQ-1 records the Events Manager read Paduka
 deferred.
+
+### Entry 240: 1.8.9 rolled out to the fleet
+
+Eleven of twelve installs (skincarebpom excluded by instruction) run 1.8.9; `fleet:status`
+clean, synced, 0 behind. Per-install Worker ids and the conflict notes are in the agents'
+reports, summarised in `docs/FLEET.md` ("Rollout of 1.8.9"). Evidence for the visible
+change: with a VA state placed in `sessionStorage`, "Salin Nomor VA" computes
+`rgb(0,43,73)` on numaskin, `rgb(27,94,32)` on beranda-tani and `rgb(18,18,18)` on
+zvara, and the three renders were opened and compared. revenleather keeps its own
+themed page, so two of the product's payment-accent tests are skipped there. Not verified:
+a payment with a real provider payload.
+
+### Entry 241: released as 1.9.0, CTA blue by default
+
+No migration, 1167 tests, check 0/0/0. `form-hybrid.css` token defaults: accent `#2563eb`,
+strong `#1d4ed8`, soft `#eff6ff`, ring `rgba(37,99,235,.28)`. Seven hard-coded ink buttons
+(sticky "Pesan sekarang" in `produk/[slug].astro`, three in `thanks.astro`, `404`,
+`testimoni`, `landing-page/index`) now use `var(--sf-accent, #2563EB)`/`--sf-accent-strong`
+with a blue fallback because those pages sit outside the form root that defines the tokens.
+Proof: the local build rendered through Playwright (390 px) shows the buttons, the selected
+variant card, the order summary and the payment CTA in `rgb(37,99,235)`, no page error.
+Admin screens and install-owned native landing pages are untouched. Decision and rejected
+alternatives: ADR-019 amendment 2026-11-02. Not rolled out: Paduka decides when.
+
+### Entry 242: 1.9.1, the default CTA is orange, not blue
+
+Entry 241's blue (1.9.0) was replaced before any store received it: Paduka asked for orange
+or red. Measured against white text: `#c2410c` 5.18:1 (chosen, hover `#9a3412` 7.31:1),
+`#dc2626` 4.83:1 but the checkout error colour is `#d92d20`, `#f97316` 2.8:1 and `#ea580c`
+3.6:1 (below AA). Same tokens and the same seven call-site fallbacks as 1.9.0, new values;
+ADR-019's amendment rewritten to the final choice, with the rejected options. The discount
+pill stays `#334FB4`. 1167 tests, check 0/0/0.
+
+### Entry 243: 1.9.2, form states under the orange accent
+
+Found on the live zvara canary (1.9.1): with the filled-field tint following `--sf-accent-soft`
+the name and phone fields turned peach beside their green tick, and the focused field's orange
+frame looked like the red error frame. `form-hybrid.css`: filled and valid fields take
+`--sf-surface-alt` (neutral), and a new `--sf-focus-frame: #1a1a1a` is the frame while typing,
+with `--sf-accent-ring` kept as the ring. The selected variant card, bullets, summary tint and
+the buttons keep the accent. 1167 tests. The zvara native landing page's own hero button
+(`bg-stone-950`, amber text) is that page's design and stays.
+
+### Entry 244: 1.9.2 rolled out to the fleet
+
+Eleven of twelve installs (skincarebpom excluded by instruction) run 1.9.2, canary zvara
+first. Live submit colours measured after the rollout are in `docs/FLEET.md`. What the
+rollout found: (1) revenleather's accent override sat inside the product's `form-hybrid.css`
+and was silently overwritten by the merge; restored in the install. (2) numaskin and
+beranda-tani scoped their accent to the form root, so standalone buttons would have gone
+orange; each gained a `:root` token block in its own stylesheet. (3) The first 1.9.1 canary
+showed peach filled fields and an orange focus frame that read like the red error frame;
+fixed as 1.9.2. UNIMPLEMENTED_SPECS REV-1 records the cleanup that stops the product file
+being edited per install. Process note: `pkill -f` and `pgrep -f` with a pattern matching the
+shell's own command line killed the calling shell twice (once in this session, once in an
+agent); stop servers by PID.
