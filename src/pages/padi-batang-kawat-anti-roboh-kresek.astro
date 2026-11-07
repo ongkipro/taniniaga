@@ -1,0 +1,605 @@
+---
+/**
+ * Native Landing Page: Batang Sekeras Kawat Anti Roboh Hujan Angin, Bebas Kresek & Patah Leher - Kojien (KOJIEN)
+ *
+ * Visual-First Clean Direct-Response LP (High Overclaim Visuals, Concise Copy)
+ * Master Product: kojien (ID: 99118)
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import StickyLandingCtaBar from '../components/storefront/shared/StickyLandingCtaBar.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/padi-batang-kawat-anti-roboh-kresek.css';
+
+export const prerender = false;
+
+const SLUG = 'padi-batang-kawat-anti-roboh-kresek';
+
+const product =
+  (await getStorefrontProduct(Astro.locals, 'kojien')) ??
+  (await getStorefrontProduct(Astro.locals, '99118'));
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/padi-batang-kawat-anti-roboh-kresek/hero-problem.webp';
+---
+
+<BaseLayout
+  title={`Batang Sekeras Kawat Anti Roboh Hujan Angin, Bebas Kresek & Patah Leher - Kojien - ${Astro.locals.tenant.name}`}
+  description="Rahasia batang padi sekeras kawat baja, anti roboh dihajar badai hujan angin rendeng, bebas kresek hawar daun bakteri dan blas patah leher. Gabah bernas 9 Ton/Ha."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={true}
+>
+  <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector="[data-landing-hero]"
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName || product.productName}
+    price={price}
+  />
+
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white text-slate-950">
+    <!-- 1. HERO SECTION (Clean, Punchy, Visual-First) -->
+    <section class="bg-white pb-4 text-center">
+      <div class="px-5 pt-5">
+        <h1 class="mx-auto max-w-[440px] text-[28px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          <span class="block text-red-600 mb-1.5 tracking-normal text-[18px] font-extrabold uppercase">PADI SAWAH TEGAK KOKOH BEBAS REBAH & AMAN DARI BLAS POTONG LEHER!</span>
+          Batang Sekeras Kawat Anti Roboh Hujan Angin! <span class="hl-brush">Bebas Kresek & Patah Leher</span> Sampai Panen!
+        </h1>
+        <p class="mx-auto mt-3 max-w-[410px] text-[15px] font-normal leading-relaxed text-slate-700">
+          Padi rebah kena hujan angin berarti gabah busuk berlumpur dan rugi puluhan juta! KOJIEN melapisi batang jerami dan leher malai dengan nano-silika terionisasi, merubah jaringan batang sekeras kawat baja, daun bendera kaku tegak, dan malai bebas blas potong leher!
+        </p>
+      </div>
+
+      <div class="mt-5">
+        <div class="relative overflow-hidden bg-slate-950 aspect-[3/2]">
+          <img
+            src={heroImage}
+            alt="Padi sawah tegak kokoh berbatang kawat anti roboh malai bernas kuning emas"
+            class="h-full w-full object-cover"
+            width="960"
+            height="644"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="absolute bottom-0 left-0 right-0 bg-slate-950/85 px-4 py-2.5 text-center backdrop-blur-sm">
+            <p class="text-[13px] font-bold text-[#BBF7D0]">
+              Hasil Demplot Karawang & Sragen: 0% padi rebah lumpur, daun bendera tegak, tembus 8,9 Ton/Ha!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 text-[13px] font-semibold text-slate-800">
+          <span>Batang Keras Tahan Badai</span>
+          <span class="text-slate-300">•</span>
+          <span>0% Padi Rebah Berlumpur</span>
+          <span class="text-slate-300">•</span>
+          <span>Daun Bendera Kaku Tegak</span>
+          <span class="text-slate-300">•</span>
+          <span>Gabah Kuning Bernas 9 Ton/Ha</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VISUAL PROBLEM SECTION (2 Gejala Mematikan dengan Bukti Foto) -->
+    <section class="bg-red-50/35 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        2 Petaka Paling Menakutkan <span class="hl-brush-red">Petani Padi Sawah</span> Saat Menjelang Panen
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Jerami lemas dan daun layu membuat sawah rata tanah saat diterpa angin kencang:
+      </p>
+
+      <div class="space-y-4">
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-1.webp`}
+              alt="Rumpun tanaman padi roboh rata dengan tanah terendam air lumpur sawah"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              1. Padi Roboh & Gabah Berkecambah
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Batang Padi Patah Lemas Rebah Terendam Air Lumpur</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Pemupukan urea tinggi tanpa diimbangi silika membuat batang berongga tipis dan mudah patah saat malai mulai berisi berat.
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-2.webp`}
+              alt="Daun padi mengering akibat bakteri kresek dan leher malai patah menghitam"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              2. Kresek & Blas Leher Patah
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Daun Mengering Kuning (Kresek) & Cincin Malai Busuk Patah</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Gesekan antar daun saat angin memudahkan bakteri Xanthomonas dan jamur Pyricularia menginfeksi leher malai menjadi gabah hampa.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VISUAL RECOVERY TIMELINE & COMPARISON (Full Visual Overclaim) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Transformasi Nyata: <span class="hl-brush-red">Jerami Lemas Rebah</span> Jadi <span class="hl-brush">Batang Baja Silika</span>
+      </h2>
+
+      <!-- 3-Stage Visual Progression Banner -->
+      <div class="-mx-5 mt-4 mb-5 relative bg-slate-950">
+        <img
+          src={`/images/landing/${SLUG}/overclaim-timeline.webp`}
+          alt="Progres pengerasan batang padi dan daun bendera dengan Kojien"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="grid grid-cols-3 bg-slate-950 text-center text-[12px] font-bold py-2.5 px-2 border-t border-slate-800">
+          <span class="text-red-400">Anakan: Batang Memadat</span>
+          <span class="text-amber-300">Bunting: Daun Bendera Tegak</span>
+          <span class="text-emerald-400">Panen: Malai Kuning Batang Tegap</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 items-stretch gap-3">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-rusak.webp`}
+            alt="Tanaman padi tanpa Kojien roboh terendam lumpur dan malai patah leher"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Tanpa KOJIEN
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-slate-900">Rebah Lumpur & Gabah Hitam</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-600">
+              Padi roboh diterjang badai hujan, gabah membusuk dan tumbuh kecambah.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-pulih.webp`}
+            alt="Tanaman padi dengan Kojien tegak berdiri kokoh malai kuning bernas"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Pakai KOJIEN
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-emerald-900">Tegak Kokoh Batang Kawat</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-700">
+              Batang sekeras kawat tahan badai, daun bendera hijau tegak hingga panen.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PRODUCT & 3 BRUTAL VISUAL OVERCLAIMS -->
+    <section class="bg-slate-50/70 px-5 py-8">
+      <!-- Authentic Bottle Held by Farmer / Field Shot -->
+      <div class="-mx-5 mb-5 overflow-hidden bg-slate-100">
+        <img
+          src={`/images/landing/${SLUG}/kojien-hero.webp`}
+          alt="Botol resmi Kojien Pupuk Silika Organik Premium berhologram asli di kebun"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Compact Official Hologram Badge (Guaranteed local asset) -->
+      <div class="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-white p-3 shadow-sm">
+        <img
+          src={`/images/landing/${SLUG}/product-packshot.webp`}
+          alt="Foto Botol Resmi KOJIEN Segel Hologram Anti-Pemalsuan"
+          class="h-14 w-14 shrink-0 rounded-lg object-contain bg-white border border-emerald-100 p-1"
+          width="56"
+          height="56"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="min-w-0">
+          <p class="text-[13px] font-bold text-emerald-950">KOJIEN Original, Segel Hologram Resmi</p>
+          <p class="text-[12px] text-slate-600 leading-snug mt-0.5">
+            Silika Cair Bio-Aktif Larut Air 98% Khusus Tanaman Gramineae Padi (Kemasan Resmi 500ml & 1 Liter).
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        3 Keajaiban Silika <span class="hl-brush">Kojien Padi Sawah</span>
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Menjadikan tanaman padi benteng baja yang mustahil dirobohkan cuaca ekstrem:
+      </p>
+
+      <!-- 3 Big Visual Overclaim Cards -->
+      <div class="space-y-5">
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-1.webp`}
+              alt="Batang padi tebal padat berisi silika sekeras kawat"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 1 • BATANG BAJA SILIKA
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Rumpun Padi Sekeras Kawat, Kebal Dihantam Badai Hujan Rendeng!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Silika terakumulasi di lapisan sel motor dan sklerenkim batang, membuat jerami padi liat kokoh dan tidak bisa ditekuk angin.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-2.webp`}
+              alt="Daun bendera padi berdiri tegak kaku menangkap sinar matahari penuh"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 2 • DAUN BENDERA TEGAK 90°
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Daun Bendera Tegak Kaku, Bebas Gesekan Kresek Hawar Daun!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Daun bendera berdiri tegak lurus mengarah ke matahari, memaksimalkan fotosintesis dan mencegah luka gesek antar daun.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-3.webp`}
+              alt="Malai padi panjang berbobot kuning emas bernas penuh sampai pangkal"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 3 • KUNCI LEHER MALAI
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Malai Kuning Berisi Penuh, 0% Patah Leher & Bebas Gabah Hampa!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Cincin leher malai mengalami pengerasan ekstra, menyalurkan karbohidrat lancar hingga butir gabah paling ujung bernas mentes.
+          </p>
+        </div>
+      </div>
+
+      <!-- Macro Detail Proof -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/macro-proof.webp`}
+          alt="Detail makro leher malai padi yang bersih kuning mengkilap kokoh"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Cincin Leher Malai Padat Keras: Jamur blas tidak mampu menembus, gabah bernas 100%!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ULTRA-CLEAN SOP (Gambar + 3 Baris Praktis) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Cara Pakai <span class="hl-brush">Super Praktis</span>
+      </h2>
+
+      <div class="-mx-5 my-4">
+        <img
+          src={`/images/landing/${SLUG}/aplikasi-kebun.webp`}
+          alt="Aplikasi semprot kabut di lahan pertanian"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="grid grid-cols-3 items-stretch gap-2.5 text-center">
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">1</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Takaran</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Gunakan 25 ml Kojien per tangki 16 Liter.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">2</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Aplikasi</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Semprot kabut basah pada seluruh daun dan batang padi saat pagi hari.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">3</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Interval</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Aplikasi pada umur 20 HST (anakan), 45 HST (bunting), dan 65 HST (keluar malai).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VISUAL TESTIMONIALS & OVERCLAIM HARVEST GALLERY -->
+    <section class="bg-slate-50/60 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Bukti Lapangan: <span class="hl-brush">Padi Tegak Panen Melimpah 9 Ton/Ha</span>
+      </h2>
+
+      <div class="mt-5 space-y-5">
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-1.webp`}
+            alt="H. Mustofa, Rawamerta, Karawang"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">H. Mustofa, Rawamerta, Karawang</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Inpari 32 Bebas Rebah</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Padi Inpari 32 biasanya gampang rebah kalau dipupuk urea banyak. Pakai Kojien batangnya luar biasa keras, hujan badai gak ada yang roboh!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-2.webp`}
+            alt="Pak Kardi, Masaran, Sragen"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Kardi, Masaran, Sragen</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Panen Tembus 8,7 Ton/Ha</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Biasanya patah leher pas mau panen bikin gabah hampa. Semprot Kojien malai padi bersih kuning mas, panen tembus 8,7 ton!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-3.webp`}
+            alt="Mas Slamet, Paron, Ngawi"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Mas Slamet, Paron, Ngawi</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Combine Lancar Jaya</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Gak pusing lagi mikirin combine mogok gara-gara padi rebah di lumpur, batang tegak combine lancar jaya!"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullwidth Overclaim Panorama -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/hamparan-kebun.webp`}
+          alt="Hamparan kebun hasil panen melimpah"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-950 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Hamparan sawah padi menguning emas berdiri tegak lurus siap panen rekor!
+          </p>
+        </div>
+      </div>
+
+      <!-- 2-Card Final Overclaim Showcase -->
+      <div class="mt-5 grid grid-cols-2 items-stretch gap-3">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-rekor.webp`}
+            alt="Batang Kawat Baja"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Batang Kawat Baja</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Tahan badai rendeng 0% rebah</p>
+          </div>
+        </div>
+
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-2.webp`}
+            alt="Gabah Bernas Mentes"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Gabah Bernas Mentes</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Bersih kuning emas tanpa hampa</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
+    <section id="checkout-form" class="scroll-mt-4 bg-white py-10">
+      <div class="px-5 pb-5 text-center">
+        <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[12px] font-bold text-emerald-900">
+          Garansi 100% Produk Original {product.productName}
+        </span>
+        <h2 class="mx-auto mt-2 max-w-[360px] text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Kojien Padi Sawah</span>
+        </h2>
+        <p class="mx-auto mt-2 max-w-[360px] text-[15px] leading-relaxed text-slate-700">
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
+        </p>
+
+        <!-- Trust Reassurance Badges -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            🚚 Bisa COD Bayar di Tempat
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-[12px] font-semibold text-emerald-900">
+            🛡️ Segel Hologram Asli
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            📦 Privasi & Packing Aman
+          </span>
+        </div>
+      </div>
+
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        mode="hybrid"
+        embedded={true}
+      />
+
+      <div class="px-5 pt-3 pb-6 text-center">
+        <p class="text-[12px] text-slate-500 leading-snug">
+          🔒 Pemesanan aman langsung terhubung ke gudang resmi Taniniaga. CS kami akan menghubungi Anda via WhatsApp untuk konfirmasi pengiriman paket.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <StickyLandingCtaBar
+    ctaText="Pesan Sekarang — Bisa COD"
+    subText="Garansi 100% Produk Original • Bayar Saat Barang Sampai"
+    targetSelector="#checkout-form"
+    heroSelector="[data-landing-hero]"
+  />
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</BaseLayout>

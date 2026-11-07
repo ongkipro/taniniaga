@@ -1,0 +1,605 @@
+---
+/**
+ * Native Landing Page: Daun Kalis Kabut Hujan! Hentikan Busuk Daun Lodoh Hitam dalam 48 Jam - Kojien (KOJIEN)
+ *
+ * Visual-First Clean Direct-Response LP (High Overclaim Visuals, Concise Copy)
+ * Master Product: kojien (ID: 99118)
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import StickyLandingCtaBar from '../components/storefront/shared/StickyLandingCtaBar.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/anti-busuk-daun-lodoh-hujan-kabut.css';
+
+export const prerender = false;
+
+const SLUG = 'anti-busuk-daun-lodoh-hujan-kabut';
+
+const product =
+  (await getStorefrontProduct(Astro.locals, 'kojien')) ??
+  (await getStorefrontProduct(Astro.locals, '99118'));
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/anti-busuk-daun-lodoh-hujan-kabut/hero-problem.webp';
+---
+
+<BaseLayout
+  title={`Daun Kalis Kabut Hujan! Hentikan Busuk Daun Lodoh Hitam dalam 48 Jam - Kojien - ${Astro.locals.tenant.name}`}
+  description="Hentikan busuk daun hawar lodoh Phytophthora pada tanaman tomat dan kentang di musim kabut hujan dingin. Kojien jadikan daun kalis air, panen Super Grade A."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={true}
+>
+  <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector="[data-landing-hero]"
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName || product.productName}
+    price={price}
+  />
+
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white text-slate-950">
+    <!-- 1. HERO SECTION (Clean, Punchy, Visual-First) -->
+    <section class="bg-white pb-4 text-center">
+      <div class="px-5 pt-5">
+        <h1 class="mx-auto max-w-[440px] text-[28px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          <span class="block text-red-600 mb-1.5 tracking-normal text-[18px] font-extrabold uppercase">PENAKLUK HAWAR DAUN LODOH TOMAT & KENTANG DI MUSIM KABUT DINGIN!</span>
+          Daun Kalis Kabut Hujan! <span class="hl-brush">Hentikan Busuk Daun Lodoh</span> Hitam dalam 48 Jam!
+        </h1>
+        <p class="mx-auto mt-3 max-w-[410px] text-[15px] font-normal leading-relaxed text-slate-700">
+          Kabut dingin dan hujan malam adalah neraka tomat & kentang: bercak basah berminyak cepat menyebar bikin daun hitam lodoh lonyot semalam! KOJIEN melapisi permukaan daun dengan mantel silika mikro, bikin air kabut terpental dan membunuh penetrasi Phytophthora!
+        </p>
+      </div>
+
+      <div class="mt-5">
+        <div class="relative overflow-hidden bg-slate-950 aspect-[3/2]">
+          <img
+            src={heroImage}
+            alt="Daun tomat dan kentang hijau mulus bebas busuk daun lodoh hitam di musim kabut"
+            class="h-full w-full object-cover"
+            width="960"
+            height="644"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="absolute bottom-0 left-0 right-0 bg-slate-950/85 px-4 py-2.5 text-center backdrop-blur-sm">
+            <p class="text-[13px] font-bold text-[#BBF7D0]">
+              Hasil Demplot Pangalengan & Kintamani: 48 Jam luka lodoh mengering putih, daun tetap mulus!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 text-[13px] font-semibold text-slate-800">
+          <span>Mantel Silika Daun Talas</span>
+          <span class="text-slate-300">•</span>
+          <span>Stop Busuk Daun Lodoh 48 Jam</span>
+          <span class="text-slate-300">•</span>
+          <span>Daun Tetap Hijau Mulus</span>
+          <span class="text-slate-300">•</span>
+          <span>Panen Super Grade A</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VISUAL PROBLEM SECTION (2 Gejala Mematikan dengan Bukti Foto) -->
+    <section class="bg-red-50/35 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        2 Ancaman Mematikan <span class="hl-brush-red">Hawar Daun Lodoh</span> di Dataran Tinggi
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Kabut tebal bersuhu dingin (16-20°C) menjadi media paling ganas berkembangnya spora lodoh:
+      </p>
+
+      <div class="space-y-4">
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-1.webp`}
+              alt="Daun kentang dan tomat basah menghitam busuk berlendir akibat Phytophthora"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              1. Daun Hitam Lonyot (Lodoh)
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Bercak Basah Berminyak Melebar Jadi Hitam Busuk Lonyot</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Spora Phytophthora infestans berenang aktif di lapisan embun, menembus stomata dan merusak jaringan daun dalam tempo 24-36 jam.
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-2.webp`}
+              alt="Batang tomat menghitam basah dan buah tomat membusuk cokelat keras"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              2. Batang Cokelat & Buah Busuk
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Batang Utama Menghitam Kering & Buah Membusuk Keras</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Infeksi menjalar ke batang utama dan merusak buah/umbi muda, menyebabkan kebun bau busuk menyengat dan gagal panen total.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VISUAL RECOVERY TIMELINE & COMPARISON (Full Visual Overclaim) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Transformasi Nyata: <span class="hl-brush-red">Daun Lodoh Hitam</span> Jadi <span class="hl-brush">Kalis Mengkilap</span>
+      </h2>
+
+      <!-- 3-Stage Visual Progression Banner -->
+      <div class="-mx-5 mt-4 mb-5 relative bg-slate-950">
+        <img
+          src={`/images/landing/${SLUG}/overclaim-timeline.webp`}
+          alt="Progres pemulihan tanaman tomat dari serangan lodoh menjadi daun hijau bersih"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="grid grid-cols-3 bg-slate-950 text-center text-[12px] font-bold py-2.5 px-2 border-t border-slate-800">
+          <span class="text-red-400">12 Jam: Daun Kalis Bebas Embun</span>
+          <span class="text-amber-300">48 Jam: Luka Lodoh Mengering</span>
+          <span class="text-emerald-400">7 Hari: Tunas Baru Hijau Mulus</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 items-stretch gap-3">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-rusak.webp`}
+            alt="Tanaman tomat tanpa Kojien daun lodoh lonyot hitam habis"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Tanpa KOJIEN
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-slate-900">Lonyot Hitam Rusak Total</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-600">
+              Daun hancur berlendir hitam, tanaman gundul dan buah busuk gugur.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-pulih.webp`}
+            alt="Tanaman tomat dengan Kojien daun hijau mulus berbuah lebat mengilap"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Pakai KOJIEN
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-emerald-900">Daun Mulus Bebas Lodoh</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-700">
+              Daun kalis seperti daun talas, luka lama kering putih, buah mulus Grade A.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PRODUCT & 3 BRUTAL VISUAL OVERCLAIMS -->
+    <section class="bg-slate-50/70 px-5 py-8">
+      <!-- Authentic Bottle Held by Farmer / Field Shot -->
+      <div class="-mx-5 mb-5 overflow-hidden bg-slate-100">
+        <img
+          src={`/images/landing/${SLUG}/kojien-hero.webp`}
+          alt="Botol resmi Kojien Pupuk Silika Organik Premium berhologram asli di kebun"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Compact Official Hologram Badge (Guaranteed local asset) -->
+      <div class="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-white p-3 shadow-sm">
+        <img
+          src={`/images/landing/${SLUG}/product-packshot.webp`}
+          alt="Foto Botol Resmi KOJIEN Segel Hologram Anti-Pemalsuan"
+          class="h-14 w-14 shrink-0 rounded-lg object-contain bg-white border border-emerald-100 p-1"
+          width="56"
+          height="56"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="min-w-0">
+          <p class="text-[13px] font-bold text-emerald-950">KOJIEN Original, Segel Hologram Resmi</p>
+          <p class="text-[12px] text-slate-600 leading-snug mt-0.5">
+            Silika Cair Bio-Aktif Larut Air 98% + Mantel Pelindung Daun Anti-Embun Dingin (Kemasan Resmi 500ml & 1 Liter).
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        3 Benteng Proteksi <span class="hl-brush">Kojien Anti-Lodoh Kabut</span>
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Menjadikan daun tanaman tomat dan kentang anti-basah dan kebal hawar daun:
+      </p>
+
+      <!-- 3 Big Visual Overclaim Cards -->
+      <div class="space-y-5">
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-1.webp`}
+              alt="Embun kabut menggelinding jatuh dari permukaan daun tomat"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 1 • MANTEL PENOLAK AIR KABUT
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Air Embun Asam Menggelinding Jatuh Tanpa Mengendap!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Merubah tegangan permukaan daun sehingga tetesan kabut asam tidak bisa membasahi pori-pori dan langsung jatuh bergulir.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-2.webp`}
+              alt="Bercak lodoh pada daun mengering putih dan berhenti menyebar"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 2 • KERINGKAN LUKA LODOH 48 JAM
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Bercak Basah Langsung Mengering Putih & Berhenti Menyebar!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Mineral silika mengeringkan cairan sel yang terinfeksi dan membentuk jaringan kalus penutup yang mengisolasi spora.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-3.webp`}
+              alt="Panen tomat dan kentang bersih mulus super besar tanpa cacat"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 3 • BUAH MULUS GRADE A
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Tomat & Umbi Kentang Bersih Mengkilap Bebas Busuk Pantat!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Menjaga integritas kulit buah dan umbi dari serangan jamur sekunder, menghasilkan panen mulus kualitas ekspor.
+          </p>
+        </div>
+      </div>
+
+      <!-- Macro Detail Proof -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/macro-proof.webp`}
+          alt="Detail makro daun kalis menolak butiran embun kabut"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Efek Lotus Silika: Permukaan daun kalis sempurna, spora lodoh mati tanpa media air!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ULTRA-CLEAN SOP (Gambar + 3 Baris Praktis) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Cara Pakai <span class="hl-brush">Super Praktis</span>
+      </h2>
+
+      <div class="-mx-5 my-4">
+        <img
+          src={`/images/landing/${SLUG}/aplikasi-kebun.webp`}
+          alt="Aplikasi semprot kabut di lahan pertanian"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="grid grid-cols-3 items-stretch gap-2.5 text-center">
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">1</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Takaran</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Gunakan 20 ml Kojien per tangki 16 Liter.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">2</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Aplikasi</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Semprot kabut halus merata pada permukaan atas dan bawah daun pada pagi hari.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">3</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Interval</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Aplikasi tiap 4–5 hari sekali saat musim kabut tebal atau hujan harian.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VISUAL TESTIMONIALS & OVERCLAIM HARVEST GALLERY -->
+    <section class="bg-slate-50/60 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Bukti Lapangan: <span class="hl-brush">Tomat & Kentang Mulus Panen Grade A</span>
+      </h2>
+
+      <div class="mt-5 space-y-5">
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-1.webp`}
+            alt="Pak Wayan Gede, Kintamani, Bali"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Wayan Gede, Kintamani, Bali</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Tomat Servo Bebas Lodoh</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Tomat Servo saya di dataran tinggi kabutnya luar biasa. Disemprot Kojien daunnya kalis gak basah mengendap, bebas lodoh 100%!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-2.webp`}
+            alt="Kang Deden, Pangalengan, Bandung"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Kang Deden, Pangalengan, Bandung</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Kentang Granola Grade A</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Kentang Granola saya aman dari hawar daun lodoh pas musim hujan kemarin berkat Kojien. Umbi panen Grade A melimpah!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-3.webp`}
+            alt="Pak Sugeng, Kejajar, Wonosobo"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Sugeng, Kejajar, Wonosobo</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Tetangga Lonyot Saya Panen</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Tanaman tomat tetangga lonyot hitam habis, punya saya tetap hijau segar dan buahnya lebat mengkilap!"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullwidth Overclaim Panorama -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/hamparan-kebun.webp`}
+          alt="Hamparan kebun hasil panen melimpah"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-950 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Hamparan kebun sayur dataran tinggi tetap asri dan produktif di tengah kabut dingin!
+          </p>
+        </div>
+      </div>
+
+      <!-- 2-Card Final Overclaim Showcase -->
+      <div class="mt-5 grid grid-cols-2 items-stretch gap-3">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-rekor.webp`}
+            alt="Daun Mulus Utuh"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Daun Mulus Utuh</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Bebas busuk daun lodoh hitam</p>
+          </div>
+        </div>
+
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-2.webp`}
+            alt="Panen Super Grade A"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Panen Super Grade A</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Buah dan umbi mulus tanpa cacat</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
+    <section id="checkout-form" class="scroll-mt-4 bg-white py-10">
+      <div class="px-5 pb-5 text-center">
+        <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[12px] font-bold text-emerald-900">
+          Garansi 100% Produk Original {product.productName}
+        </span>
+        <h2 class="mx-auto mt-2 max-w-[360px] text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Kojien Anti-Lodoh</span>
+        </h2>
+        <p class="mx-auto mt-2 max-w-[360px] text-[15px] leading-relaxed text-slate-700">
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
+        </p>
+
+        <!-- Trust Reassurance Badges -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            🚚 Bisa COD Bayar di Tempat
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-[12px] font-semibold text-emerald-900">
+            🛡️ Segel Hologram Asli
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            📦 Privasi & Packing Aman
+          </span>
+        </div>
+      </div>
+
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        mode="hybrid"
+        embedded={true}
+      />
+
+      <div class="px-5 pt-3 pb-6 text-center">
+        <p class="text-[12px] text-slate-500 leading-snug">
+          🔒 Pemesanan aman langsung terhubung ke gudang resmi Taniniaga. CS kami akan menghubungi Anda via WhatsApp untuk konfirmasi pengiriman paket.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <StickyLandingCtaBar
+    ctaText="Pesan Sekarang — Bisa COD"
+    subText="Garansi 100% Produk Original • Bayar Saat Barang Sampai"
+    targetSelector="#checkout-form"
+    heroSelector="[data-landing-hero]"
+  />
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</BaseLayout>

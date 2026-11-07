@@ -1,0 +1,605 @@
+---
+/**
+ * Native Landing Page: Tanaman Kuning Macet Dihajar Hujan? Pecah Tunas Hijau Lebat dalam 72 Jam - Bensu (BENSU)
+ *
+ * Visual-First Clean Direct-Response LP (High Overclaim Visuals, Concise Copy)
+ * Master Product: bensu-pupuk-cair-organik (ID: 21329)
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import StickyLandingCtaBar from '../components/storefront/shared/StickyLandingCtaBar.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/cabai-kuning-macet-hujan-pecah-tunas.css';
+
+export const prerender = false;
+
+const SLUG = 'cabai-kuning-macet-hujan-pecah-tunas';
+
+const product =
+  (await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik')) ??
+  (await getStorefrontProduct(Astro.locals, '21329'));
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/cabai-kuning-macet-hujan-pecah-tunas/hero-problem.webp';
+---
+
+<BaseLayout
+  title={`Tanaman Kuning Macet Dihajar Hujan? Pecah Tunas Hijau Lebat dalam 72 Jam - Bensu - ${Astro.locals.tenant.name}`}
+  description="Solusi tanaman cabai kuning kerdil dan macet tumbuh akibat tanah becek jenuh air hujan. Bensu pecah tunas cabang Y hijau royo-royo dalam 72 jam."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={true}
+>
+  <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector="[data-landing-hero]"
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName || product.productName}
+    price={price}
+  />
+
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white text-slate-950">
+    <!-- 1. HERO SECTION (Clean, Punchy, Visual-First) -->
+    <section class="bg-white pb-4 text-center">
+      <div class="px-5 pt-5">
+        <h1 class="mx-auto max-w-[440px] text-[28px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          <span class="block text-red-600 mb-1.5 tracking-normal text-[18px] font-extrabold uppercase">PERTOLONGAN PERTAMA CABAI KERDIL, MACET & KUNING TERGENANG AIR!</span>
+          Tanaman Kuning Macet Dihajar Hujan? <span class="hl-brush">Pecah Tunas Hijau Lebat</span> dalam 72 Jam!
+        </h1>
+        <p class="mx-auto mt-3 max-w-[410px] text-[15px] font-normal leading-relaxed text-slate-700">
+          Tanah becek jenuh air bikin akar cabai megap-megap kehabisan oksigen: daun menguning kerdil, pucuk macet tidak mau jalan, dan bunga mogok keluar! BENSU dengan 17 L-Asam Amino Bebas langsung diserap daun tanpa butuh bantuan akar yang stres, pecahkan tunas cabang Y segar dalam 72 jam!
+        </p>
+      </div>
+
+      <div class="mt-5">
+        <div class="relative overflow-hidden bg-slate-950 aspect-[3/2]">
+          <img
+            src={heroImage}
+            alt="Tanaman cabai kuning macet pulih meledak tunas hijau lebat cabang Y dengan Bensu"
+            class="h-full w-full object-cover"
+            width="960"
+            height="644"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="absolute bottom-0 left-0 right-0 bg-slate-950/85 px-4 py-2.5 text-center backdrop-blur-sm">
+            <p class="text-[13px] font-bold text-[#BBF7D0]">
+              Hasil Demplot Magelang & Banyuwangi: 72 Jam tunas cabang Y meledak hijau segar, kerdil sembuh!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 text-[13px] font-semibold text-slate-800">
+          <span>17 L-Asam Amino Peptida</span>
+          <span class="text-slate-300">•</span>
+          <span>Langsung Serap Lewat Daun</span>
+          <span class="text-slate-300">•</span>
+          <span>Tunas Baru Lebat 72 Jam</span>
+          <span class="text-slate-300">•</span>
+          <span>Recovery Akar Rusak</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VISUAL PROBLEM SECTION (2 Gejala Mematikan dengan Bukti Foto) -->
+    <section class="bg-red-50/35 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        2 Efek Mematikan <span class="hl-brush-red">Tanah Jenuh Air</span> Bagi Tanaman Cabai
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Saat bedengan terendam air hujan berhari-hari, tanaman mengalami mati lemas di perakaran:
+      </p>
+
+      <div class="space-y-4">
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-1.webp`}
+              alt="Daun cabai menguning pucat dan pertumbuhan tunas pucuk mandek total"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              1. Daun Menguning Kerdil (Klorosis)
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Daun Menguning Pucat & Pertumbuhan Pucuk Macet Total</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Akar yang tercekik air kehilangan daya hisap nitrogen dan magnesium, menyebabkan pembentukan klorofil berhenti dan daun menguning kerdil.
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-2.webp`}
+              alt="Akar cabai berubah kecokelatan busuk berlendir akibat tergenang air"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              2. Akar Busuk Kehabisan Oksigen
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Serabut Akar Menghitam & Pupuk Tabur Kimia Menjadi Racun</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Pemberian pupuk tabur saat tanah becek justru membakar akar yang sedang lemah dan mempercepat pembusukan perakaran.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VISUAL RECOVERY TIMELINE & COMPARISON (Full Visual Overclaim) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Transformasi Nyata: <span class="hl-brush-red">Kuning Mandek</span> Jadi <span class="hl-brush">Cabang Y Rimbun</span>
+      </h2>
+
+      <!-- 3-Stage Visual Progression Banner -->
+      <div class="-mx-5 mt-4 mb-5 relative bg-slate-950">
+        <img
+          src={`/images/landing/${SLUG}/overclaim-timeline.webp`}
+          alt="Progres pemulihan cabai kuning macet menjadi rimbun bertunas hijau segar"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="grid grid-cols-3 bg-slate-950 text-center text-[12px] font-bold py-2.5 px-2 border-t border-slate-800">
+          <span class="text-red-400">24 Jam: Klorofil Mulai Aktif</span>
+          <span class="text-amber-300">48 Jam: Pucuk Membuka</span>
+          <span class="text-emerald-400">72 Jam: Tunas Y Meledak</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 items-stretch gap-3">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-rusak.webp`}
+            alt="Tanaman cabai tanpa Bensu daun kuning kerdil dan pucuk mandek"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Tanpa BENSU
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-slate-900">Kuning Pucat & Kerdil</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-600">
+              Pucuk mandek berbulan-bulan, daun rontok, dan tanaman kerdil gagal panen.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-pulih.webp`}
+            alt="Tanaman cabai dengan Bensu pecah tunas hijau rimbun lebat"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Pakai BENSU
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-emerald-900">Pecah Tunas Hijau Rimbun</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-700">
+              Daun hijau segar royo-royo, cabang Y membelah lebat siap membawa bunga.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PRODUCT & 3 BRUTAL VISUAL OVERCLAIMS -->
+    <section class="bg-slate-50/70 px-5 py-8">
+      <!-- Authentic Bottle Held by Farmer / Field Shot -->
+      <div class="-mx-5 mb-5 overflow-hidden bg-slate-100">
+        <img
+          src={`/images/landing/${SLUG}/bensu-hero.webp`}
+          alt="Botol resmi Bensu Pupuk Cair Organik berhologram asli di kebun"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Compact Official Hologram Badge (Guaranteed local asset) -->
+      <div class="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-white p-3 shadow-sm">
+        <img
+          src={`/images/landing/${SLUG}/product-packshot.webp`}
+          alt="Foto Botol Resmi BENSU Segel Hologram Anti-Pemalsuan"
+          class="h-14 w-14 shrink-0 rounded-lg object-contain bg-white border border-emerald-100 p-1"
+          width="56"
+          height="56"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="min-w-0">
+          <p class="text-[13px] font-bold text-emerald-950">BENSU Original, Segel Hologram Resmi</p>
+          <p class="text-[12px] text-slate-600 leading-snug mt-0.5">
+            17 L-Asam Amino Bebas 16,5% + Asam Glutamat 4,8% + Mikro Kelat EDTA Lengkap (Kemasan Resmi 500ml, 1L & 2L).
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        3 Jalur Kilat <span class="hl-brush">Bensu Asam Amino Cabai</span>
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Menyuplai energi instan tanpa menunggu pemulihan akar di bawah tanah:
+      </p>
+
+      <!-- 3 Big Visual Overclaim Cards -->
+      <div class="space-y-5">
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-1.webp`}
+              alt="Semprotan asam amino Bensu langsung diserap stomata daun cabai"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 1 • BY-PASS NUTRISI LEWAT DAUN
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Tidak Butuh Bantuan Akar yang Rusak Terendam Air Hujan!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Molekul peptida asam amino berukuran sangat kecil langsung menembus stomata daun dan segera diubah menjadi protein pertumbuhan.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-2.webp`}
+              alt="Daun cabai kuning pucat berubah menjadi hijau tua segar berkilap"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 2 • REAKTIVASI KLOROFIL 72 JAM
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Daun Kuning Pucat Berubah Hijau Royo-Royo dalam 3 Hari!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Asam glutamat dan kelat mikro memicu pembentukan molekul klorofil baru, mengaktifkan kembali fotosintesis seketika.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-3.webp`}
+              alt="Pohon cabai membelah cabang Y dengan bunga dan pentil lebat"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 3 • LEDAKAN CABANG & BUNGA BARU
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Ranting Y Membelah Rapat Membawa Calon Bunga Melimpah!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Fitohormon bioaktif memecah dormansi titik tumbuh pucuk, memicu percabangan ganda yang lebat dari pangkal hingga atas.
+          </p>
+        </div>
+      </div>
+
+      <!-- Macro Detail Proof -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/macro-proof.webp`}
+          alt="Detail makro pucuk tunas baru cabai yang segar hijau muda tebal"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Pucuk Segar Terbuka Lebar: Tunas cabang Y baru bermunculan serempak dalam 72 jam!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ULTRA-CLEAN SOP (Gambar + 3 Baris Praktis) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Cara Pakai <span class="hl-brush">Super Praktis</span>
+      </h2>
+
+      <div class="-mx-5 my-4">
+        <img
+          src={`/images/landing/${SLUG}/aplikasi-kebun.webp`}
+          alt="Aplikasi semprot kabut di lahan pertanian"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="grid grid-cols-3 items-stretch gap-2.5 text-center">
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">1</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Takaran</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Gunakan 25–30 ml Bensu per tangki 16 Liter.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">2</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Aplikasi</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Semprot kabut halus merata pada permukaan atas dan bawah daun pagi hari.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">3</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Interval</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Semprot 3 hari sekali selama masa recovery (2-3 kali), lalu lanjutkan 7 hari sekali.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VISUAL TESTIMONIALS & OVERCLAIM HARVEST GALLERY -->
+    <section class="bg-slate-50/60 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Bukti Lapangan: <span class="hl-brush">Cabai Kuning Macet Meledak Tunas Hijau</span>
+      </h2>
+
+      <div class="mt-5 space-y-5">
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-1.webp`}
+            alt="Pak Slamet, Magelang"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Slamet, Magelang</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Cabai Tergenang Pulih 3 Hari</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Cabai saya sempat tergenang air hujan 3 hari, daunnya kuning pucat dan berhenti tumbuh. Semprot Bensu 2 kali, 3 hari kemudian langsung meledak tunas hijau baru!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-2.webp`}
+            alt="Mas Joko, Cluring, Banyuwangi"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Mas Joko, Cluring, Banyuwangi</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Langsung Hijau Segar</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Pupuk kimia tabur udah gak mempan karena akar busuk. Untung ada Bensu, disemprot daunnya langsung hijau segar dan buahnya lebat!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-3.webp`}
+            alt="Pak Samsul, Gisting, Lampung"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Samsul, Gisting, Lampung</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Gak Jadi Dibongkar</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Tanaman cabai yang tadinya mau saya cabut akhirnya terselamatkan pakai Bensu, sekarang petik tiap minggu!"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullwidth Overclaim Panorama -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/hamparan-kebun.webp`}
+          alt="Hamparan kebun hasil panen melimpah"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-950 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Hamparan kebun cabai pulih hijau royo-royo dan berbuah lebat berkat kawalan Bensu!
+          </p>
+        </div>
+      </div>
+
+      <!-- 2-Card Final Overclaim Showcase -->
+      <div class="mt-5 grid grid-cols-2 items-stretch gap-3">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-rekor.webp`}
+            alt="Cabang Y Lebat"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Cabang Y Lebat</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Ranting rimbun bunga melimpah</p>
+          </div>
+        </div>
+
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-2.webp`}
+            alt="Buah Lebat Mengkilap"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Buah Lebat Mengkilap</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Petikan cabai lebat berkualitas super</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
+    <section id="checkout-form" class="scroll-mt-4 bg-white py-10">
+      <div class="px-5 pb-5 text-center">
+        <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[12px] font-bold text-emerald-900">
+          Garansi 100% Produk Original {product.productName}
+        </span>
+        <h2 class="mx-auto mt-2 max-w-[360px] text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Bensu Pemulih Cabai</span>
+        </h2>
+        <p class="mx-auto mt-2 max-w-[360px] text-[15px] leading-relaxed text-slate-700">
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
+        </p>
+
+        <!-- Trust Reassurance Badges -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            🚚 Bisa COD Bayar di Tempat
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-[12px] font-semibold text-emerald-900">
+            🛡️ Segel Hologram Asli
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            📦 Privasi & Packing Aman
+          </span>
+        </div>
+      </div>
+
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        mode="hybrid"
+        embedded={true}
+      />
+
+      <div class="px-5 pt-3 pb-6 text-center">
+        <p class="text-[12px] text-slate-500 leading-snug">
+          🔒 Pemesanan aman langsung terhubung ke gudang resmi Taniniaga. CS kami akan menghubungi Anda via WhatsApp untuk konfirmasi pengiriman paket.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <StickyLandingCtaBar
+    ctaText="Pesan Sekarang — Bisa COD"
+    subText="Garansi 100% Produk Original • Bayar Saat Barang Sampai"
+    targetSelector="#checkout-form"
+    heroSelector="[data-landing-hero]"
+  />
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</BaseLayout>

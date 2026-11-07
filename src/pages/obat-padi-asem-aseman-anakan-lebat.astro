@@ -1,0 +1,605 @@
+---
+/**
+ * Native Landing Page: Sembuhkan Sawah Asem-Aseman Musim Hujan! Ledakkan 45+ Anakan Produktif - Bensu (BENSU)
+ *
+ * Visual-First Clean Direct-Response LP (High Overclaim Visuals, Concise Copy)
+ * Master Product: bensu-pupuk-cair-organik (ID: 21329)
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import StickyLandingCtaBar from '../components/storefront/shared/StickyLandingCtaBar.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/obat-padi-asem-aseman-anakan-lebat.css';
+
+export const prerender = false;
+
+const SLUG = 'obat-padi-asem-aseman-anakan-lebat';
+
+const product =
+  (await getStorefrontProduct(Astro.locals, 'bensu-pupuk-cair-organik')) ??
+  (await getStorefrontProduct(Astro.locals, '21329'));
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/obat-padi-asem-aseman-anakan-lebat/hero-problem.webp';
+---
+
+<BaseLayout
+  title={`Sembuhkan Sawah Asem-Aseman Musim Hujan! Ledakkan 45+ Anakan Produktif - Bensu - ${Astro.locals.tenant.name}`}
+  description="Solusi ampuh sawah asem-aseman di musim hujan: netralkan racun besi Fe2+, pacu akar putih lebat gondrong, daun hijau tegak dan anakan padi pecah 45+ batang."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={true}
+>
+  <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector="[data-landing-hero]"
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName || product.productName}
+    price={price}
+  />
+
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white text-slate-950">
+    <!-- 1. HERO SECTION (Clean, Punchy, Visual-First) -->
+    <section class="bg-white pb-4 text-center">
+      <div class="px-5 pt-5">
+        <h1 class="mx-auto max-w-[440px] text-[28px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          <span class="block text-red-600 mb-1.5 tracking-normal text-[18px] font-extrabold uppercase">PENYEMBUH SAWAH ASEM-ASEMAN & PEMICU 45+ ANAKAN PADI PRODUKTIF!</span>
+          Sembuhkan Sawah Asem-Aseman Musim Hujan! <span class="hl-brush">Ledakkan 45+ Anakan</span> Padi Produktif!
+        </h1>
+        <p class="mx-auto mt-3 max-w-[410px] text-[15px] font-normal leading-relaxed text-slate-700">
+          Jerami busuk belum matang dan air hujan asam bikin sawah asem-aseman parah: padi merah karat, akar hitam bau lumpur, dan anakan kerdil cuma 5-8 batang! BENSU mengikat racun besi Fe2+, menetralkan stres asam di perakaran, memacu akar putih baru gondrong, dan meledakkan anakan 45-50 batang per rumpun!
+        </p>
+      </div>
+
+      <div class="mt-5">
+        <div class="relative overflow-hidden bg-slate-950 aspect-[3/2]">
+          <img
+            src={heroImage}
+            alt="Tanaman padi sembuh dari asem-aseman dengan anakan lebat 45 batang rumpun padat"
+            class="h-full w-full object-cover"
+            width="960"
+            height="644"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="absolute bottom-0 left-0 right-0 bg-slate-950/85 px-4 py-2.5 text-center backdrop-blur-sm">
+            <p class="text-[13px] font-bold text-[#BBF7D0]">
+              Hasil Demplot Indramayu & Cilacap: 7 Hari daun merah hilang, akar putih gondrong, anakan 45+ batang!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 text-[13px] font-semibold text-slate-800">
+          <span>Netralkan Racun Besi Fe2+</span>
+          <span class="text-slate-300">•</span>
+          <span>Akar Putih Gondrong Cepat</span>
+          <span class="text-slate-300">•</span>
+          <span>Anakan 45-50 Batang Rumpun</span>
+          <span class="text-slate-300">•</span>
+          <span>Bisa Bayar di Tempat (COD)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VISUAL PROBLEM SECTION (2 Gejala Mematikan dengan Bukti Foto) -->
+    <section class="bg-red-50/35 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        2 Gejala Fatal <span class="hl-brush-red">Sawah Padi Asem-Aseman</span> di Musim Rendeng
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Kondisi tanah reduksi tinggi akibat jerami fermentasi anaerob meracuni perakaran padi muda:
+      </p>
+
+      <div class="space-y-4">
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-1.webp`}
+              alt="Daun padi menguning kecokelatan seperti berkarat akibat keracunan besi tanah masam"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              1. Daun Merah Karat Kerdil
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Daun Padi Menguning Kemerahan Seperti Terbakar Karat Besi</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Tingginya ion besi terlarut (Fe2+) meracuni jaringan pembuluh daun, membuat tepi daun berwarna cokelat karat dan tanaman kerdil mandek.
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-2.webp`}
+              alt="Perakaran padi berwarna hitam pekat berbau busuk tanpa ada serabut akar putih"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              2. Akar Hitam Busuk Bau Lumpur
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Perakaran Menghitam Bau Belerang & Gagal Membelah Anakan</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Tanpa oksigen perakaran mati membusuk, padi tidak bisa menyerap pupuk urea maupun phonska yang ditaburkan ke sawah.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VISUAL RECOVERY TIMELINE & COMPARISON (Full Visual Overclaim) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Transformasi Nyata: <span class="hl-brush-red">Merah Karat Kerdil</span> Jadi <span class="hl-brush">Rumpun Hijau Rimbun</span>
+      </h2>
+
+      <!-- 3-Stage Visual Progression Banner -->
+      <div class="-mx-5 mt-4 mb-5 relative bg-slate-950">
+        <img
+          src={`/images/landing/${SLUG}/overclaim-timeline.webp`}
+          alt="Progres pemulihan sawah asem-aseman menjadi rumpun padi lebat dengan Bensu"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="grid grid-cols-3 bg-slate-950 text-center text-[12px] font-bold py-2.5 px-2 border-t border-slate-800">
+          <span class="text-red-400">Hari 3: Akar Putih Baru Menusuk</span>
+          <span class="text-amber-300">Hari 7: Daun Hijau Segar Tegak</span>
+          <span class="text-emerald-400">Hari 20: Rumpun 45+ Anakan</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 items-stretch gap-3">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-rusak.webp`}
+            alt="Tanaman padi tanpa Bensu kerdil merah karat kena asem-aseman"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Tanpa BENSU
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-slate-900">Asem-Aseman & Kerdil</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-600">
+              Daun merah karat, anakan cuma 5–7 batang kerdil, panen gagal total.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-pulih.webp`}
+            alt="Tanaman padi dengan Bensu anakan lebat hijau tegak subur"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Pakai BENSU
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-emerald-900">Anakan Lebat 45+ Batang</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-700">
+              Akar putih gondrong, anakan rapat menutup tanah, malai panjang bernas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PRODUCT & 3 BRUTAL VISUAL OVERCLAIMS -->
+    <section class="bg-slate-50/70 px-5 py-8">
+      <!-- Authentic Bottle Held by Farmer / Field Shot -->
+      <div class="-mx-5 mb-5 overflow-hidden bg-slate-100">
+        <img
+          src={`/images/landing/${SLUG}/bensu-hero.webp`}
+          alt="Botol resmi Bensu Pupuk Cair Organik berhologram asli di kebun"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Compact Official Hologram Badge (Guaranteed local asset) -->
+      <div class="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-white p-3 shadow-sm">
+        <img
+          src={`/images/landing/${SLUG}/product-packshot.webp`}
+          alt="Foto Botol Resmi BENSU Segel Hologram Anti-Pemalsuan"
+          class="h-14 w-14 shrink-0 rounded-lg object-contain bg-white border border-emerald-100 p-1"
+          width="56"
+          height="56"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="min-w-0">
+          <p class="text-[13px] font-bold text-emerald-950">BENSU Original, Segel Hologram Resmi</p>
+          <p class="text-[12px] text-slate-600 leading-snug mt-0.5">
+            17 L-Asam Amino Bebas 16,5% + Asam Humat Murni + Kelat Pengikat Toksisitas Fe (Kemasan Resmi 500ml, 1L & 2L).
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        3 Solusi Cepat <span class="hl-brush">Bensu Penawar Sawah Asam</span>
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Menetralisir racun tanah dan mengaktifkan kembali hormon pembelahan sel anakan:
+      </p>
+
+      <!-- 3 Big Visual Overclaim Cards -->
+      <div class="space-y-5">
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-1.webp`}
+              alt="Akar padi bersih dari racun besi terlarut setelah aplikasi Bensu"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 1 • DETOKSIFIKASI ASAM & BESI
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Netralkan Racun Jerami Busuk & Besi Fe2+ dalam 48 Jam!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Senyawa khelat alami mengikat ion besi bebas dan menurunkan keasaman di zona perakaran aktif tanaman padi.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-2.webp`}
+              alt="Serabut akar padi putih gondrong mencengkeram tanah lumpur"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 2 • PACU AKAR PUTIH GONDRONG
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Akar Baru Menusuk Tanah Menyerap Pupuk Secara Agresif!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Merangsang inisiasi akar lateral dan rambut akar baru yang bersih putih untuk menyedot kembali hara makro tanah.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-3.webp`}
+              alt="Satu rumpun padi anakan lebat berjejal lebih dari 45 batang produktif"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 3 • LEDAKAN 45+ ANAKAN RUMPUN
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                1 Bibit Pecah Jadi 45–50 Anakan Produktif Berbuah Malai!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Sitokinin organik dan asam amino membuka titik mata tunas anakan di buku batang bawah secara serempak.
+          </p>
+        </div>
+      </div>
+
+      <!-- Macro Detail Proof -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/macro-proof.webp`}
+          alt="Detail makro akar padi putih panjang lebat bebas warna karat"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Akar Putih Gondrong Cepat: Daya cengkeram kuat, serap pupuk 100% tanpa terbuang!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ULTRA-CLEAN SOP (Gambar + 3 Baris Praktis) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Cara Pakai <span class="hl-brush">Super Praktis</span>
+      </h2>
+
+      <div class="-mx-5 my-4">
+        <img
+          src={`/images/landing/${SLUG}/aplikasi-kebun.webp`}
+          alt="Aplikasi semprot kabut di lahan pertanian"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="grid grid-cols-3 items-stretch gap-2.5 text-center">
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">1</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Takaran</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Gunakan 30–40 ml Bensu per tangki 16 Liter.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">2</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Aplikasi</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Semprot kabut basah pada pangkal batang dan daun padi saat pagi hari.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">3</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Interval</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Aplikasi pada umur 10, 18, dan 28 HST saat pembentukan anakan aktif.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VISUAL TESTIMONIALS & OVERCLAIM HARVEST GALLERY -->
+    <section class="bg-slate-50/60 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Bukti Lapangan: <span class="hl-brush">Sawah Asem-Aseman Panen 9 Ton/Ha</span>
+      </h2>
+
+      <div class="mt-5 space-y-5">
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-1.webp`}
+            alt="H. Mansur, Losarang, Indramayu"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">H. Mansur, Losarang, Indramayu</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Anakan Tembus 48 Batang</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Sawah saya langganan asem-aseman tiap rendeng, daun padi merah kayak kebakar. Disemprot Bensu seminggu kemudian langsung hijau royo-royo dan anakan tembus 48 batang!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-2.webp`}
+            alt="Pak Warso, Kroya, Cilacap"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Warso, Kroya, Cilacap</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Akar Putih Gondrong</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Akar padi yang tadinya hitam busuk langsung tumbuh akar putih lebat. Rumpun padi nutup tanah rapat banget!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-3.webp`}
+            alt="Mas Nurkholis, Wirosari, Grobogan"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Mas Nurkholis, Wirosari, Grobogan</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Panen Rekor 8,9 Ton/Ha</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Panen biasanya cuma dapet 5 ton/Ha gara-gara asem-aseman. Musim kemarin tembus 8,9 ton berkat kawalan Bensu!"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullwidth Overclaim Panorama -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/hamparan-kebun.webp`}
+          alt="Hamparan kebun hasil panen melimpah"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-950 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Hamparan sawah bebas asem-aseman tumbuh hijau seragam dan rimbun lebat!
+          </p>
+        </div>
+      </div>
+
+      <!-- 2-Card Final Overclaim Showcase -->
+      <div class="mt-5 grid grid-cols-2 items-stretch gap-3">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-rekor.webp`}
+            alt="Anakan 45+ Rumpun"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Anakan 45+ Rumpun</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Rumpun padat anakan produktif</p>
+          </div>
+        </div>
+
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-2.webp`}
+            alt="Malai Kuning Bernas"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Malai Kuning Bernas</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Gabah berat bebas hampa</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
+    <section id="checkout-form" class="scroll-mt-4 bg-white py-10">
+      <div class="px-5 pb-5 text-center">
+        <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[12px] font-bold text-emerald-900">
+          Garansi 100% Produk Original {product.productName}
+        </span>
+        <h2 class="mx-auto mt-2 max-w-[360px] text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Bensu Sawah Asem-Aseman</span>
+        </h2>
+        <p class="mx-auto mt-2 max-w-[360px] text-[15px] leading-relaxed text-slate-700">
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
+        </p>
+
+        <!-- Trust Reassurance Badges -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            🚚 Bisa COD Bayar di Tempat
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-[12px] font-semibold text-emerald-900">
+            🛡️ Segel Hologram Asli
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            📦 Privasi & Packing Aman
+          </span>
+        </div>
+      </div>
+
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        mode="hybrid"
+        embedded={true}
+      />
+
+      <div class="px-5 pt-3 pb-6 text-center">
+        <p class="text-[12px] text-slate-500 leading-snug">
+          🔒 Pemesanan aman langsung terhubung ke gudang resmi Taniniaga. CS kami akan menghubungi Anda via WhatsApp untuk konfirmasi pengiriman paket.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <StickyLandingCtaBar
+    ctaText="Pesan Sekarang — Bisa COD"
+    subText="Garansi 100% Produk Original • Bayar Saat Barang Sampai"
+    targetSelector="#checkout-form"
+    heroSelector="[data-landing-hero]"
+  />
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</BaseLayout>

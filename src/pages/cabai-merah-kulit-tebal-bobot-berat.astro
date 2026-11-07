@@ -1,0 +1,605 @@
+---
+/**
+ * Native Landing Page: Kulit Tebal Mengkilap, Bobot Berat & Tahan Patek Musim Hujan - Saratoga (SARATOGA)
+ *
+ * Visual-First Clean Direct-Response LP (High Overclaim Visuals, Concise Copy)
+ * Master Product: saratoga-serum-tanaman-premium (ID: 50510)
+ * Kontrak Arsitektur: docs/LANDING-PAGES.md
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MetaLandingTracker from '../components/storefront/tracking/MetaLandingTracker.astro';
+import GeoIpResolvedForm from '../components/storefront/forms/GeoIpResolvedForm.astro';
+import SocialProofToast from '../components/storefront/shared/SocialProofToast.astro';
+import StickyLandingCtaBar from '../components/storefront/shared/StickyLandingCtaBar.astro';
+import { getStorefrontProduct } from '../lib/catalog';
+import { formatIdr } from '../lib/format-idr';
+import { nativeLandingCanonicalPath } from '../lib/landing-pages';
+import { defaultCatalogContentId } from '../lib/catalog-feed';
+import { recentOrderCount } from '../lib/social-proof';
+import { getRuntimeEnv } from '../lib/env';
+import '../styles/form-hybrid.css';
+import '../styles/landing-pages/cabai-merah-kulit-tebal-bobot-berat.css';
+
+export const prerender = false;
+
+const SLUG = 'cabai-merah-kulit-tebal-bobot-berat';
+
+const product =
+  (await getStorefrontProduct(Astro.locals, 'saratoga-serum-tanaman-premium')) ??
+  (await getStorefrontProduct(Astro.locals, '50510'));
+if (!product) return Astro.rewrite('/404');
+
+const socialProofOrders = await recentOrderCount(
+  getRuntimeEnv(Astro.locals)?.OMS_DB as D1Database | undefined,
+);
+
+const cheapest = [...product.variants].sort((a, b) => a.price - b.price)[0] ?? null;
+const price = cheapest?.price ?? product.price;
+
+const canonical = `${Astro.locals.tenant.siteUrl}${await nativeLandingCanonicalPath(Astro.locals, SLUG)}`;
+const heroImage = '/images/landing/cabai-merah-kulit-tebal-bobot-berat/hero-problem.webp';
+---
+
+<BaseLayout
+  title={`Kulit Tebal Mengkilap, Bobot Berat & Tahan Patek Musim Hujan - Saratoga - ${Astro.locals.tenant.name}`}
+  description="Rahasia cabai merah besar berkulit tebal mengkilap, tahan jamur antraknosa patek musim hujan, dan bobot timbangan naik 35%. Panen mulus harga super."
+  image={heroImage}
+  preloadImages={heroImage}
+  canonical={canonical}
+  hideHeader={true}
+  hideFooter={true}
+>
+  <div data-landing-hero aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-screen"></div>
+  <SocialProofToast
+    orderCount={socialProofOrders}
+    heroSelector="[data-landing-hero]"
+    formSelector="#checkout-form"
+  />
+  <MetaLandingTracker
+    slug={SLUG}
+    contentId={defaultCatalogContentId(product)}
+    contentName={product.contentName || product.productName}
+    price={price}
+  />
+
+  <main class="mx-auto min-h-screen w-full max-w-[480px] bg-white text-slate-950">
+    <!-- 1. HERO SECTION (Clean, Punchy, Visual-First) -->
+    <section class="bg-white pb-4 text-center">
+      <div class="px-5 pt-5">
+        <h1 class="mx-auto max-w-[440px] text-[28px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          <span class="block text-red-600 mb-1.5 tracking-normal text-[18px] font-extrabold uppercase">KULIT CABAI TEBAL SEKERAS BAJA & BEBAS PATEK!</span>
+          Kulit Tebal Mengkilap, <span class="hl-brush">Bobot Berat & Tahan Patek</span> Dihajar Hujan Rendeng!
+        </h1>
+        <p class="mx-auto mt-3 max-w-[410px] text-[15px] font-normal leading-relaxed text-slate-700">
+          Semprotkan SARATOGA sejak pentil buah terbentuk! Kalsium Boron Kelat & Biostimulan mempertebal dinding sel kulit cabai sekeras lilin, buah merah mengilat mulus, bobot timbangan naik hingga 35%, dan 100% tahan patek busuk buah!
+        </p>
+      </div>
+
+      <div class="mt-5">
+        <div class="relative overflow-hidden bg-slate-950 aspect-[3/2]">
+          <img
+            src={heroImage}
+            alt="Cabai merah besar berbobot berat berkulit tebal mengilap tahan patek musim hujan"
+            class="h-full w-full object-cover"
+            width="960"
+            height="644"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <div class="absolute bottom-0 left-0 right-0 bg-slate-950/85 px-4 py-2.5 text-center backdrop-blur-sm">
+            <p class="text-[13px] font-bold text-[#BBF7D0]">
+              Hasil Demplot Magelang & Garut: Bobot peti naik 35%, 0% patek antraknosa, kulit merah mengkilap keras!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 text-[13px] font-semibold text-slate-800">
+          <span>Dinding Sel Tebal Keras</span>
+          <span class="text-slate-300">•</span>
+          <span>Anti-Patek & Busuk Buah</span>
+          <span class="text-slate-300">•</span>
+          <span>Timbangan Naik 35%</span>
+          <span class="text-slate-300">•</span>
+          <span>Tahan Kirim Antar Pulau</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VISUAL PROBLEM SECTION (2 Gejala Mematikan dengan Bukti Foto) -->
+    <section class="bg-red-50/35 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        2 Musuh Utama <span class="hl-brush-red">Petani Cabai Merah Besar</span> di Musim Hujan
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Hujan malam hari dan kelembapan 90% menghancurkan hasil panen jika kulit cabai lembek tipis:
+      </p>
+
+      <div class="space-y-4">
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-1.webp`}
+              alt="Buah cabai membusuk melingkar hitam akibat jamur antraknosa patek"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              1. Patek Antraknosa Buah
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Bercak Lingkaran Busuk Cokelat Menghitam (Patek)</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Spora jamur Colletotrichum dengan mudah menembus kulit cabai yang tipis dan lembek, membuat buah membusuk dan gugur massal.
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+          <div class="relative aspect-[16/9] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/gejala-2.webp`}
+              alt="Cabai merah berkerut keriput lembek dan susut timbangan saat dikirim"
+              class="h-full w-full object-cover"
+              width="960"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="absolute left-2.5 top-2.5 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+              2. Bobot Ringan & Cepat Kisut
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-[16px] font-bold text-slate-950">Daging Buah Tipis, Keriput & Bobot Merosot Saat Dikirim</h3>
+            <p class="text-[13px] text-slate-600 mt-1.5 leading-relaxed">
+              Kurangnya kalsium organik pembentuk dinding sel menyebabkan sel buah mudah bocor air, keriput layu dan ditolak pedagang pasar induk.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VISUAL RECOVERY TIMELINE & COMPARISON (Full Visual Overclaim) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Transformasi Nyata: <span class="hl-brush-red">Buah Lembek Patek</span> Jadi <span class="hl-brush">Kulit Keras Mulus</span>
+      </h2>
+
+      <!-- 3-Stage Visual Progression Banner -->
+      <div class="-mx-5 mt-4 mb-5 relative bg-slate-950">
+        <img
+          src={`/images/landing/${SLUG}/overclaim-timeline.webp`}
+          alt="Progres pemulihan cabai merah besar dari gejala patek menjadi panen merah mengilap"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="grid grid-cols-3 bg-slate-950 text-center text-[12px] font-bold py-2.5 px-2 border-t border-slate-800">
+          <span class="text-red-400">Fase Pentil: Dinding Kulit Tebal</span>
+          <span class="text-amber-300">Buah Hijau: Kulit Mengilap</span>
+          <span class="text-emerald-400">Panen: Merah Menyala Berbobot</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 items-stretch gap-3">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-rusak.webp`}
+            alt="Cabai merah tanpa Saratoga busuk patek dan berkulit tipis"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-red-600 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Tanpa SARATOGA
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-slate-900">Lembek & Rontok Patek</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-600">
+              Kulit tipis mudah tertusuk spora jamur, buah lonyot busuk di pohon.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/kondisi-pulih.webp`}
+            alt="Cabai merah dengan Saratoga kulit tebal mulus merah mengilat"
+            class="aspect-[16/9] w-full shrink-0 object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="absolute left-2 top-2 rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+            Pakai SARATOGA
+          </div>
+          <div class="flex flex-1 flex-col justify-center p-3.5">
+            <h3 class="text-[14px] font-bold leading-tight text-emerald-900">Kulit Tebal Mengilap</h3>
+            <p class="mt-1 text-[13px] leading-snug text-slate-700">
+              Dinding sel keras berlilin, spora patek mental, buah berbobot padat berat.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PRODUCT & 3 BRUTAL VISUAL OVERCLAIMS -->
+    <section class="bg-slate-50/70 px-5 py-8">
+      <!-- Authentic Bottle Held by Farmer / Field Shot -->
+      <div class="-mx-5 mb-5 overflow-hidden bg-slate-100">
+        <img
+          src={`/images/landing/${SLUG}/saratoga-hero.webp`}
+          alt="Botol resmi Saratoga Serum Tanaman Premium berhologram asli di kebun"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Compact Official Hologram Badge (Guaranteed local asset) -->
+      <div class="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-white p-3 shadow-sm">
+        <img
+          src={`/images/landing/${SLUG}/product-packshot.webp`}
+          alt="Foto Botol Resmi SARATOGA Segel Hologram Anti-Pemalsuan"
+          class="h-14 w-14 shrink-0 rounded-lg object-contain bg-white border border-emerald-100 p-1"
+          width="56"
+          height="56"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="min-w-0">
+          <p class="text-[13px] font-bold text-emerald-950">SARATOGA Original, Segel Hologram Resmi</p>
+          <p class="text-[12px] text-slate-600 leading-snug mt-0.5">
+            Serum Kalsium-Boron Kelat Organik + Fitohormon Penguat Dinding Sel Cabai (Kemasan Resmi 250ml & 500ml).
+          </p>
+        </div>
+      </div>
+
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        3 Keunggulan Mutlak <span class="hl-brush">Saratoga Cabai Merah</span>
+      </h2>
+      <p class="text-[15px] text-slate-700 mt-2 mb-5 leading-relaxed">
+        Menebalkan kulit buah dan memadatkan daging cabai dari dalam secara permanen:
+      </p>
+
+      <!-- 3 Big Visual Overclaim Cards -->
+      <div class="space-y-5">
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-1.webp`}
+              alt="Kulit cabai merah tebal mengilap licin penolak jamur"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 1 • KULIT SEKERAS LILIN BAJA
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Spora Jamur Patek Rontok Tak Mampu Menembus Dinding Sel!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Lapisan kutikula dan pektin kalsium mengeras seketika, menghentikan infeksi Colletotrichum walau terguyur hujan deras berhari-hari.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-2.webp`}
+              alt="Timbangan cabai merah besar dengan bobot padat berat"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 2 • TIMBANGAN MELEJIT 35%
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Daging Tebal Padat, 1 Kilogram Cuma Butuh 60–70 Buah!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Nutrisi mikro kelat mengisi ruang interseluler daging buah hingga padat berisi, menaikkan tonase panen per petak secara drastis.
+          </p>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+          <div class="relative aspect-[3/2] w-full bg-slate-900">
+            <img
+              src={`/images/landing/${SLUG}/overclaim-3.webp`}
+              alt="Cabai merah dalam peti tetap segar mengkilap siap kirim antar pulau"
+              class="h-full w-full object-cover"
+              width="960"
+              height="644"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent px-4 pb-3 pt-6">
+              <span class="inline-block rounded bg-emerald-700 px-2.5 py-1 text-[12px] font-bold text-white shadow">
+                EFEK 3 • TAHAN SIMPAN 12 HARI
+              </span>
+              <h3 class="text-[16px] font-bold text-white mt-1.5 leading-snug">
+                Merah Menyala Sempurna, Tahan Kirim Antar Pulau Bebas Lembek!
+              </h3>
+            </div>
+          </div>
+          <p class="p-3.5 text-[14px] text-slate-700 leading-relaxed">
+            Daya simpan meningkat 2x lipat lebih lama, buah tetap kencang mengilap dan tidak keriput di perjalanan ekspedisi.
+          </p>
+        </div>
+      </div>
+
+      <!-- Macro Detail Proof -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/macro-proof.webp`}
+          alt="Detail makro irisan cabai merah berdaging super tebal"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-900 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Dinding Kulit Tebal Berlapis: Kulit mengilap keras, daging padat berisi biji rapat!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ULTRA-CLEAN SOP (Gambar + 3 Baris Praktis) -->
+    <section class="bg-white px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Cara Pakai <span class="hl-brush">Super Praktis</span>
+      </h2>
+
+      <div class="-mx-5 my-4">
+        <img
+          src={`/images/landing/${SLUG}/aplikasi-kebun.webp`}
+          alt="Aplikasi semprot kabut di lahan pertanian"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="grid grid-cols-3 items-stretch gap-2.5 text-center">
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">1</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Takaran</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Gunakan 25 ml Saratoga per tangki 16 Liter.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">2</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Aplikasi</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Semprot kabut merata ke seluruh pentil buah dan ranting saat cuaca teduh.
+          </p>
+        </div>
+
+        <div class="flex h-full flex-col rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+          <span class="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#14532D] text-[12px] font-bold text-white">3</span>
+          <h3 class="mt-2 text-[13px] font-bold leading-tight text-slate-900">Interval</h3>
+          <p class="mt-1 text-[12px] leading-snug text-slate-700">
+            Mulai saat bunga mekar penuh, ulangi tiap 5–7 hari sekali.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VISUAL TESTIMONIALS & OVERCLAIM HARVEST GALLERY -->
+    <section class="bg-slate-50/60 px-5 py-8">
+      <h2 class="text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+        Bukti Lapangan: <span class="hl-brush">Panen Cabai Mulus Bebas Patek</span>
+      </h2>
+
+      <div class="mt-5 space-y-5">
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-1.webp`}
+            alt="Pak Wayan, Tabanan, Bali"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Wayan, Tabanan, Bali</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">0% Patek Hujan</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Cabai merah besar saya diguyur hujan 2 minggu nonstop biasanya rontok patek 40%. Pakai Saratoga, buah tetap mulus merah menyala tanpa patek satupun!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-2.webp`}
+            alt="Pak Junaedi, Magelang"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Pak Junaedi, Magelang</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">Kirim Kramat Jati Segar</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Kulit cabainya tebal banget pas dipencet padat. Kirim ke Pasar Induk Kramat Jati Jakarta 2 hari perjalanan tetap segar mengilap!"
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/testi-3.webp`}
+            alt="Mas Rian, Garut"
+            class="aspect-[16/9] w-full object-cover"
+            width="960"
+            height="536"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[15px] font-bold text-slate-950">Mas Rian, Garut</h3>
+              <span class="rounded bg-emerald-100 px-2.5 py-1 text-[12px] font-bold text-emerald-900">1 Peti Tembus 52 Kg</span>
+            </div>
+            <p class="mt-2 text-[14px] leading-relaxed text-slate-700 italic">
+              "Biasanya 1 peti cabai cuma 40 kg, ini bisa tembus 52 kg karena daging buahnya tebal padat berisi!"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullwidth Overclaim Panorama -->
+      <div class="-mx-5 mt-6 relative">
+        <img
+          src={`/images/landing/${SLUG}/hamparan-kebun.webp`}
+          alt="Hamparan kebun hasil panen melimpah"
+          class="aspect-[16/9] w-full object-cover"
+          width="960"
+          height="536"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="bg-slate-950 py-2.5 px-4 text-center">
+          <p class="text-[13px] font-bold text-[#BBF7D0]">
+            Hamparan kebun cabai merah sentra Jawa Barat & Jawa Tengah panen raya super berbobot!
+          </p>
+        </div>
+      </div>
+
+      <!-- 2-Card Final Overclaim Showcase -->
+      <div class="mt-5 grid grid-cols-2 items-stretch gap-3">
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-rekor.webp`}
+            alt="Bobot Timbangan Super"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Bobot Timbangan Super</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Daging buah tebal berisi padat</p>
+          </div>
+        </div>
+
+        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <img
+            src={`/images/landing/${SLUG}/panen-2.webp`}
+            alt="Kulit Merah Mengkilap"
+            class="aspect-[3/2] w-full shrink-0 object-cover object-center"
+            width="960"
+            height="644"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-1 flex-col justify-center px-3 py-2.5 text-center">
+            <h3 class="text-[13px] font-bold leading-tight text-slate-900">Kulit Merah Mengkilap</h3>
+            <p class="mt-1 text-[12px] leading-snug text-slate-600">Tahan simpan dan kirim jarak jauh</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CHECKOUT FORM SECTION: AdsBook CMS Form Hybrid -->
+    <section id="checkout-form" class="scroll-mt-4 bg-white py-10">
+      <div class="px-5 pb-5 text-center">
+        <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[12px] font-bold text-emerald-900">
+          Garansi 100% Produk Original {product.productName}
+        </span>
+        <h2 class="mx-auto mt-2 max-w-[360px] text-[24px] font-bold leading-[1.2] tracking-normal text-slate-950">
+          Form Pemesanan <span class="hl-brush">Paket Saratoga Cabai Merah</span>
+        </h2>
+        <p class="mx-auto mt-2 max-w-[360px] text-[15px] leading-relaxed text-slate-700">
+          Pilih ukuran kemasan resmi ({product.variants.map((v) => `${v.label} ${formatIdr(v.price)}`).join(' / ')}) di bawah. Bisa bayar di tempat (COD) saat barang sampai.
+        </p>
+
+        <!-- Trust Reassurance Badges -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            🚚 Bisa COD Bayar di Tempat
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-[12px] font-semibold text-emerald-900">
+            🛡️ Segel Hologram Asli
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200/80 px-2.5 py-1 text-[12px] font-semibold text-slate-800">
+            📦 Privasi & Packing Aman
+          </span>
+        </div>
+      </div>
+
+      <GeoIpResolvedForm
+        productSlug={product.slug}
+        mode="hybrid"
+        embedded={true}
+      />
+
+      <div class="px-5 pt-3 pb-6 text-center">
+        <p class="text-[12px] text-slate-500 leading-snug">
+          🔒 Pemesanan aman langsung terhubung ke gudang resmi Taniniaga. CS kami akan menghubungi Anda via WhatsApp untuk konfirmasi pengiriman paket.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <StickyLandingCtaBar
+    ctaText="Pesan Sekarang — Bisa COD"
+    subText="Garansi 100% Produk Original • Bayar Saat Barang Sampai"
+    targetSelector="#checkout-form"
+    heroSelector="[data-landing-hero]"
+  />
+
+  <script slot="head" is:inline>
+    document.addEventListener('click', (e) => {
+      const target =
+        e.target instanceof Element
+          ? e.target.closest('a[href="#checkout-form"]')
+          : null;
+      if (!target) return;
+      e.preventDefault();
+      document
+        .getElementById('checkout-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</BaseLayout>
